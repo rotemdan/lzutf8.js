@@ -47,24 +47,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Demo\demo.less" />
-    <Content Include="CLI\LargeCalgaryCorpus\bib" />
-    <Content Include="CLI\LargeCalgaryCorpus\book1" />
-    <Content Include="CLI\LargeCalgaryCorpus\book2" />
-    <Content Include="CLI\LargeCalgaryCorpus\geo" />
-    <Content Include="CLI\LargeCalgaryCorpus\news" />
-    <Content Include="CLI\LargeCalgaryCorpus\obj1" />
-    <Content Include="CLI\LargeCalgaryCorpus\obj2" />
-    <Content Include="CLI\LargeCalgaryCorpus\paper1" />
-    <Content Include="CLI\LargeCalgaryCorpus\paper2" />
-    <Content Include="CLI\LargeCalgaryCorpus\paper3" />
-    <Content Include="CLI\LargeCalgaryCorpus\paper4" />
-    <Content Include="CLI\LargeCalgaryCorpus\paper5" />
-    <Content Include="CLI\LargeCalgaryCorpus\paper6" />
-    <Content Include="CLI\LargeCalgaryCorpus\pic" />
-    <Content Include="CLI\LargeCalgaryCorpus\progc" />
-    <Content Include="CLI\LargeCalgaryCorpus\progl" />
-    <Content Include="CLI\LargeCalgaryCorpus\progp" />
-    <Content Include="CLI\LargeCalgaryCorpus\trans" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
