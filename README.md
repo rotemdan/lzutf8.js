@@ -4,7 +4,7 @@ A high-performance string compression algorithm and library:
   - Very fast, especially decompression (benchmark results are for a single core, Intel Pentium G3220 running Windows 7, processing 1MB files):
      - Javascript (Chrome): 3-12MB/s compression , 20-60MB/s decompression
      - C++ : 30-40MB/s compression, 300-500MB/s decompression (may be improved in the future)
-  - Reasonable compression ratio - excellent for shorter strings (<32k), but relatively lower for longer ones.
+  - Reasonable compression ratio - excellent for shorter strings (<32k), but less efficient for longer ones.
   - Conceived with web and mobile use cases in mind. Algorithm was designed for and implemented in Javascript from the very beginning.
   - Simple and easy-to-use API that's consistent across all platforms, both in the browser and in Node.js
   -  100% patent-free
@@ -25,14 +25,15 @@ Useful and somewhat unusual properties of the compressed stream:
 Javascript implementation:
 
   - Thoroughly tested on all popular browsers  - Chrome, Firefox, IE8+, Android 4+, Safari 6+
-  - Can operate asynchronously, both in Node.js and in the browser. Uses web workers when available and falls back to async iterations when not.
+  - Can operate asynchronously, both in Node.js and in the browser. Uses web workers when available (and takes full advantage of [transferable objects](https://developer.mozilla.org/en-US/docs/Web/Guide/Performance/Using_web_workers#Passing_data_by_transferring_ownership_%28transferable_objects%29) if supported) and falls back to async iterations when not.
   - Allows compressed data to be efficiently packed in plain UTF-16 strings when binary storage is not available or desired (e.g. when using LocalStorage).
   - Fully supports Node.js streams
   - Concise, high quality and well structured code written in TypeScript (compiles to approx. ~1700 JS lines excluding comments, test and benchmark code).
 
 On a more technical note, The LZ-UTF8 byte format is a newly designed, backwards-compatible extension for UTF-8 adding byte-aligned LZ77 pointer sequences while preserving compatibility with plain UTF-8 byte sequences. A complete technical specification will be published when funding goal is reached.
 
-**TODO:** *add benchmark results*
+**TODO:** *add detailed benchmark results and comparison to other libraries*
+
 **TODO:** *set up hosted page on github and link to demo and test suites*
 
 #Funding and proprietary use
