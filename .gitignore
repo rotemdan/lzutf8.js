@@ -1,0 +1,9 @@
+#ignore thumbnails created by windows
+Thumbs.db
+
+#ignore
+node_modules
+*.sln.ide
+bin
+obj
+/LZUTF8/CLI/Test Files

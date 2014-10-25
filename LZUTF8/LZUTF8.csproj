@@ -1,0 +1,164 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <ProjectGuid>{5B6E8C12-F727-4FD7-801B-FF0AA9AA8E41}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <OutputPath>bin</OutputPath>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <TypeScriptToolsVersion>1.0</TypeScriptToolsVersion>
+    <UseIISExpress>false</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="Benchmarks\index.html" />
+    <Content Include="Benchmarks\StartNodeBenchmarks.js" />
+    <Content Include="CLI\lzutf8-cli.js" />
+    <Content Include="CLI\Test Files\Alice In Wonderland - Japanese.txt" />
+    <Content Include="CLI\Test Files\Bible-English-1MB.txt" />
+    <Content Include="CLI\Test Files\Bible-Hindi-1MB.txt" />
+    <Content Include="CLI\Test Files\Bible-Hindi-Complete-9MB.txt" />
+    <Content Include="CLI\Test Files\Bulalakaw-Tagalog.txt" />
+    <Content Include="CLI\Test Files\DBPadDatabaseFile-1MB.txt" />
+    <Content Include="CLI\Test Files\DBPadDatabaseFile-7MB.txt" />
+    <Content Include="CLI\Test Files\Gesammelte-German.txt" />
+    <Content Include="CLI\Test Files\Hunger-Hebrew.txt" />
+    <Content Include="CLI\Test Files\jqueryui.txt" />
+    <Content Include="CLI\Test Files\Kumon-Japanese.txt" />
+    <Content Include="CLI\Test Files\TouPeng-Chinese.txt" />
+    <Content Include="Demo\demo.css" />
+    <Content Include="Demo\gh-buttons.css" />
+    <Content Include="Demo\index.html" />
+    <Content Include="Tests\Dependencies\jasmine\boot.js" />
+    <Content Include="Tests\Dependencies\jasmine\console.js" />
+    <Content Include="Tests\Dependencies\jasmine\jasmine-html.js" />
+    <Content Include="Tests\Dependencies\jasmine\jasmine.css" />
+    <Content Include="Tests\Dependencies\jasmine\jasmine.js" />
+    <Content Include="Tests\Dependencies\jasmine\jasmine_favicon.png" />
+    <Content Include="Tests\index.html" />
+    <Content Include="web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Demo\demo.less" />
+    <Content Include="CLI\LargeCalgaryCorpus\bib" />
+    <Content Include="CLI\LargeCalgaryCorpus\book1" />
+    <Content Include="CLI\LargeCalgaryCorpus\book2" />
+    <Content Include="CLI\LargeCalgaryCorpus\geo" />
+    <Content Include="CLI\LargeCalgaryCorpus\news" />
+    <Content Include="CLI\LargeCalgaryCorpus\obj1" />
+    <Content Include="CLI\LargeCalgaryCorpus\obj2" />
+    <Content Include="CLI\LargeCalgaryCorpus\paper1" />
+    <Content Include="CLI\LargeCalgaryCorpus\paper2" />
+    <Content Include="CLI\LargeCalgaryCorpus\paper3" />
+    <Content Include="CLI\LargeCalgaryCorpus\paper4" />
+    <Content Include="CLI\LargeCalgaryCorpus\paper5" />
+    <Content Include="CLI\LargeCalgaryCorpus\paper6" />
+    <Content Include="CLI\LargeCalgaryCorpus\pic" />
+    <Content Include="CLI\LargeCalgaryCorpus\progc" />
+    <Content Include="CLI\LargeCalgaryCorpus\progl" />
+    <Content Include="CLI\LargeCalgaryCorpus\progp" />
+    <Content Include="CLI\LargeCalgaryCorpus\trans" />
+    <None Include="web.Debug.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+    <None Include="web.Release.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="Benchmarks\BenchmarkSuites\AsyncBenchmarks.ts" />
+    <TypeScriptCompile Include="Library\Common\EventLoop.ts" />
+    <TypeScriptCompile Include="Library\Common\Globals.ext.ts" />
+    <TypeScriptCompile Include="Library\Common\GlobalInterfaces.ts" />
+    <TypeScriptCompile Include="Library\Common\ObjectTools.ts" />
+    <TypeScriptCompile Include="Library\Async\WebWorker.ts" />
+    <TypeScriptCompile Include="Library\Async\AsyncCompressor.ts" />
+    <TypeScriptCompile Include="Library\Async\AsyncDecompressor.ts" />
+    <TypeScriptCompile Include="_references.ts" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <TypeScriptCompile Include="Benchmarks\BenchmarkSuites\CompressionBenchmarks.ts" />
+    <TypeScriptCompile Include="Benchmarks\BenchmarkSuites\EncodingBenchmarks.ts" />
+    <TypeScriptCompile Include="Benchmarks\Common\Benchmark.ts" />
+    <TypeScriptCompile Include="CLI\CLI.ts" />
+    <TypeScriptCompile Include="Library\Common\ArraySegment.ts" />
+    <TypeScriptCompile Include="Library\Common\ArrayTools.ts" />
+    <TypeScriptCompile Include="Library\Common\ByteArray.ts" />
+    <TypeScriptCompile Include="Library\Common\CompressionCommon.ts" />
+    <TypeScriptCompile Include="Library\Exports\Exports.ts" />
+    <TypeScriptCompile Include="Library\Common\StringBuilder.ts" />
+    <TypeScriptCompile Include="Library\Common\Timer.ts" />
+    <TypeScriptCompile Include="Library\Compression\Compressor.ts" />
+    <TypeScriptCompile Include="Library\Compression\CompressorCustomHashTable.ts" />
+    <TypeScriptCompile Include="Library\Compression\CompressorSimpleHashTable.ts" />
+    <TypeScriptCompile Include="Library\Decompression\Decompressor.ts" />
+    <TypeScriptCompile Include="Library\Dependencies\node-internal.d.ts" />
+    <TypeScriptCompile Include="Library\Encoding\Base64.ts" />
+    <TypeScriptCompile Include="Library\Encoding\BinaryString.ts" />
+    <TypeScriptCompile Include="Library\Encoding\Misc.ts" />
+    <TypeScriptCompile Include="Library\Encoding\UTF8.ts" />
+    <TypeScriptCompile Include="Tests\Common\JasmineFiller.ts" />
+    <TypeScriptCompile Include="Tests\Common\Random.ts" />
+    <TypeScriptCompile Include="Tests\Common\TestData.ts" />
+    <TypeScriptCompile Include="Tests\Dependencies\jasmine.d.ts" />
+    <TypeScriptCompile Include="Tests\TestSuites\CompressionTests.spec.ts" />
+    <TypeScriptCompile Include="Tests\TestSuites\EncodingTests.spec.ts" />
+    <TypeScriptCompile Include="Tests\Common\TestingTools.ts" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>LZUTF8</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets')" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>53412</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost/LZ-UTF8</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>http://localhost/LZ-UTF8</CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TypeScriptRemoveComments>false</TypeScriptRemoveComments>
+    <TypeScriptSourceMap>True</TypeScriptSourceMap>
+    <TypeScriptModuleKind>commonjs</TypeScriptModuleKind>
+    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
+    <TypeScriptOutFile>Build/lzutf8.js</TypeScriptOutFile>
+    <TypeScriptTarget>ES3</TypeScriptTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <TypeScriptRemoveComments>true</TypeScriptRemoveComments>
+    <TypeScriptSourceMap>True</TypeScriptSourceMap>
+    <TypeScriptModuleKind>commonjs</TypeScriptModuleKind>
+    <TypeScriptOutFile>Build/lzutf8.js</TypeScriptOutFile>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
+  <PropertyGroup>
+    <PostBuildEvent>rem cd "$(SolutionDir)Build"
+rem uglifyjs $(TargetName).js --screw-ie8 -c -m -o $(TargetName).min.js</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>cd "$(ProjectDir)"
+node "..\TSBuildTools\GenerateTypeScriptReferenceFile" . ./_references.ts</PreBuildEvent>
+  </PropertyGroup>
+</Project>
