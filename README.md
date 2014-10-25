@@ -32,10 +32,15 @@ Javascript implementation:
 
 On a more technical note, The LZ-UTF8 byte format is a newly designed, backwards-compatible extension for UTF-8 adding byte-aligned LZ77 pointer sequences while preserving compatibility with plain UTF-8 byte sequences. A complete technical specification will be published when funding goal is reached.
 
+**TODO:** *add benchmark results*
+**TODO:** *set up hosted page on github and link to demo and test suites*
+
 #Funding and proprietary use
 This library is currently distributed under the [GNU AGPL v3.0](http://choosealicense.com/licenses/agpl-3.0/) license and thus **cannot** be used in most proprietary, closed-source applications and websites.
 
 If you or your company find it valuable and wish it to be made available under a more permissive license - enabling unrestricted commercial use for yourself and others, consider participating in the *fund drive*:
+
+**TODO:** *set up a fundraiser and add widget and links*
 
 As soon as I gather a minimum total of **7,000 USD** I am committed to release:
 
@@ -102,6 +107,8 @@ npm install lzutf8
 ```js
 var LZUTF8 = require('lzutf8');
 ```
+
+**TODO:** *add npm support*
 
 ##Core Types
 *`ByteArray`* - a platform dependent array of bytes. Based on the platform and availability of the underlying types, would either be a regular `Array` (IE8, IE9), `Uint8Array` (IE10+, all other modern browsers) or `Buffer` (Node.js).
@@ -191,14 +198,6 @@ Web workers are available only if supported by the browser and the library's scr
 Only one worker instance is spawned per page - multiple operations are processed sequentially.
 
 In case a worker is not available (such as in Node.js, IE8, IE9, Android browser < 4.4) or desired, it will iteratively process 64KB blocks while yielding to the event loop whenever a 20ms interval has elapsed . Note: In this execution method, parallel operations are not guaranteed to complete by their initiation order.
-
-<!--
-*The following heuristic is currently used for the default setting of web workers:*
-
-  * In case the browser supports [*transferable objects*](https://developer.mozilla.org/en-US/docs/Web/Guide/Performance/Using_web_workers#Passing_data_by_transferring_ownership_%28transferable_objects%29) (Desktop Chrome 21+, Firefox 18+, IE11+, Opera 15+, Desktop Safari 6+) a web worker will always be used.
-  * In case it doesn't, a web worker will only be used if the output is encoded in a string (for compression) or input is encoded in a string (for decompression).
-
-In most cases, the default option will ensure a web worker will only be used if it will increase the overall performance and responsiveness of the application. **It is generally not recommended to force a setting other than the default**.-->
 
 ## Lower-level Methods
 
@@ -392,7 +391,7 @@ Honestly, I'd prefer this not to be a community effort (also because I'm dedicat
 
 For larger tasks (e.g. "make a C++ implementation"*) consider sponsoring me to do it, either by yourself / your company or by teaming with others using funding platforms such as Pledgie/Bountysource/Gratipay/Flattr etc.
 
-**A C++ implementation actually does exist, but for an earlier draft of the algorithm. Though it works well (and turned out to be 3-10x faster on average than the Javascript version), it'd need some major work to update, port, test and document.*
+*A C++ implementation actually does exist, but for an earlier draft of the algorithm. Though it works well (and turned out to be 3-10x faster on average than the Javascript version), it'd need some major work to update, port, test and document.*
 
 
 
