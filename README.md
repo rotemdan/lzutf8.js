@@ -7,18 +7,19 @@ A high-performance string compression algorithm and library:
     - C++ : 30-40MB/s compression, 300-500MB/s decompression (unreleased, may be improved in the future)
   - Reasonable compression ratio - excellent for shorter strings (<32k), but less efficient for longer ones.
   - Conceived with web and mobile use cases in mind. Algorithm was designed for and implemented in Javascript from the very beginning.
-  - Simple and easy-to-use API that's consistent across all platforms, both in the browser and in Node.js
-  - 100% patent-free
+  - Simple and easy-to-use API that's consistent across all platforms, both in the browser and in Node.js.
+  - 100% patent-free.
 
-Quick start:
+#Quick start
+
   - Try the [online demo](https://rotemdan.github.io/lzutf8/Demo/) to quickly test and benchmark different inputs.
-  - Download the [latest compiled script](https://raw.githubusercontent.com/rotemdan/lzutf8-js/master/ReleaseBuild/lzutf8.js) (or the [minified version](https://raw.githubusercontent.com/rotemdan/lzutf8-js/master/ReleaseBuild/lzutf8.min.js))
+  - Download the [latest compiled script](https://raw.githubusercontent.com/rotemdan/lzutf8-js/master/ReleaseBuild/lzutf8.js) (or the [minified version](https://raw.githubusercontent.com/rotemdan/lzutf8-js/master/ReleaseBuild/lzutf8.min.js)).
   - Run the [automated tests](https://rotemdan.github.io/lzutf8/Tests/).
-  - Run the [core benchmarks](https://rotemdan.github.io/lzutf8/Benchmarks/) (**note: in development, only a handful are currently available**)
+  - Run the [core benchmarks](https://rotemdan.github.io/lzutf8/Benchmarks/) (*note: in development, only a handful are currently available*).
 
 #General characteristics
 
-Design objectives and special properties:
+*Design objectives and special properties:*
 
   - Allows incremental compression and decompression with any arbitrary partitioning of the source material
   - Individually compressed blocks can be freely concatenated and yield a valid compressed stream that may be decompressed as a single unit
@@ -30,12 +31,12 @@ Design objectives and special properties:
   - Compression **always** results in a byte length that is smaller or equal to the source length, even for random source strings.
   - One single scheme, as no metadata is stored in the compressed stream.
 
-Javascript implementation:
+*Javascript implementation:*
 
-  - Thoroughly tested on all popular browsers  - Chrome, Firefox, IE8+, Android 4+, Safari 6+
+  - Thoroughly tested on all popular browsers  - Chrome, Firefox, IE8+, Android 4+, Safari 6+.
   - Can operate asynchronously, both in Node.js and in the browser. Uses web workers when available (and takes full advantage of [transferable objects](https://developer.mozilla.org/en-US/docs/Web/Guide/Performance/Using_web_workers#Passing_data_by_transferring_ownership_%28transferable_objects%29) if supported) and falls back to async iterations when not.
   - Allows compressed data to be efficiently packed in plain UTF-16 strings when binary storage is not available or desired (e.g. when using LocalStorage).
-  - Fully supports Node.js streams
+  - Fully supports Node.js streams.
   - Concise, high quality and well structured code written in TypeScript (compiles to approx. ~1700 JS lines excluding comments, test and benchmark code).
 
 On a more technical note, The LZ-UTF8 byte format is a newly designed, backwards-compatible extension for UTF-8 adding byte-aligned LZ77 pointer sequences while preserving compatibility with plain UTF-8 byte sequences. A complete technical specification will be published when funding goal is reached.
@@ -51,9 +52,9 @@ If you or your company find it valuable and wish it to be made available under a
 
 As soon as I gather a minimum total of **7,000 USD** I am committed to release:
 
-  - All source code, for existing and future versions, under the [**MIT License**](http://choosealicense.com/licenses/mit/)
-  - All documentation under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
-  - A detailed technical specification and implementer's guide under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+  - All source code, for existing and future versions, under the [**MIT License**](http://choosealicense.com/licenses/mit/).
+  - All documentation under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+  - A detailed technical specification and implementer's guide under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 
 As a stretch goal, when **10,000 USD** is reached I will release a highly optimized cross-platform C++ implementation under the same license, both as a library and as a CLI application.
 
