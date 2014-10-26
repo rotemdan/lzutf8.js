@@ -1,7 +1,7 @@
 {
   "name": "lzutf8-src",
   "version": "0.1.0",  
-  "description": "High performance text compression library",
+  "description": "High performance string compression library",
   "author": "Rotem Dan <rotemdan@gmail.com>",
   "license": "GNU AGPL v3.0",
   "private": true,

@@ -3,11 +3,17 @@ A high-performance string compression algorithm and library:
 
   - Very fast, especially decompression (benchmark results are for a single core, Intel Pentium G3220 running Windows 7, processing 1MB files):
      - Javascript (Chrome): 3-12MB/s compression , 20-60MB/s decompression
-     - C++ : 30-40MB/s compression, 300-500MB/s decompression (may be improved in the future)
+     - C++ : 30-40MB/s compression, 300-500MB/s decompression (unreleased, may be improved in the future)
   - Reasonable compression ratio - excellent for shorter strings (<32k), but less efficient for longer ones.
   - Conceived with web and mobile use cases in mind. Algorithm was designed for and implemented in Javascript from the very beginning.
   - Simple and easy-to-use API that's consistent across all platforms, both in the browser and in Node.js
-  -  100% patent-free
+  - 100% patent-free
+
+Quick start:
+  - Download the [latest compiled script](https://raw.githubusercontent.com/rotemdan/lzutf8-js/master/ReleaseBuild/lzutf8.js) (or [minified version](https://raw.githubusercontent.com/rotemdan/lzutf8-js/master/ReleaseBuild/lzutf8.min.js) )
+  - Try the [online demo](https://rotemdan.github.io/lzutf8/Demo/) to quickly test and benchmark different inputs.
+  - Run the [automated tests](https://rotemdan.github.io/lzutf8/Test/).
+
 
 Useful and somewhat unusual properties of the compressed stream:
 
@@ -33,8 +39,6 @@ Javascript implementation:
 On a more technical note, The LZ-UTF8 byte format is a newly designed, backwards-compatible extension for UTF-8 adding byte-aligned LZ77 pointer sequences while preserving compatibility with plain UTF-8 byte sequences. A complete technical specification will be published when funding goal is reached.
 
 **TODO:** *add detailed benchmark results and comparison to other libraries*
-
-**TODO:** *set up hosted page on github and link to demo and test suites*
 
 #Funding and proprietary use
 This library is currently distributed under the [GNU AGPL v3.0](http://choosealicense.com/licenses/agpl-3.0/) license and thus **cannot** be used in most proprietary, closed-source applications and websites.
@@ -372,7 +376,7 @@ Decodes a binary string.
 
 *returns*: decoded bytes as ``ByteArray``
 
-*remarks:* Multiple binary strings may be freely concatenated and decoded as a single string. This is allowed by ending every sequence with single end-of-stream marker. (char code 32768 for an even-length sequence and 32769 for a an odd-length sequence).
+*remarks:* Multiple binary strings may be freely concatenated and decoded as a single string. This is made possible by ending every sequence with single end-of-stream marker. (char code 32768 for an even-length sequence and 32769 for a an odd-length sequence).
 
 #General / Misc FAQ
 
@@ -402,7 +406,7 @@ That implementing production-level software involving close bit manipulation is 
 #Some interesting facts about the code
 * Everything was written by myself - no outside libraries or "borrowed" code snippets.
 * The UTF-8, Base64 and Binary String encoders and decoders are very fast (possibly some of the fastest JS implementations in existence) and were rigorously tested (matched with random input of various lengths against the versions within Node) and benchmarked.
-* In contrast to the Node.js decoder or others available in various libraries, the JS UTF-8 decoder will throw errors if the stream if malformed or truncated, so it can also be used to verify the correctness of arbitrary UTF-8 byte sequences.
+* Differently from Node.js decoder or others available in various libraries, the JS UTF-8 decoder will throw errors if the stream is malformed or truncated, so it can also be used to verify the correctness of arbitrary UTF-8 byte sequences.
 
 #License
 Copyright (c) 2014, Rotem Dan  
