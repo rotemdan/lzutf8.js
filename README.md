@@ -10,9 +10,9 @@ A high-performance string compression algorithm and library:
   - 100% patent-free
 
 Quick start:
-  - Download the [latest compiled script](https://raw.githubusercontent.com/rotemdan/lzutf8-js/master/ReleaseBuild/lzutf8.js) (or [minified version](https://raw.githubusercontent.com/rotemdan/lzutf8-js/master/ReleaseBuild/lzutf8.min.js) )
+  - Download the [latest compiled script](https://raw.githubusercontent.com/rotemdan/lzutf8-js/master/ReleaseBuild/lzutf8.js) (or [minified version](https://raw.githubusercontent.com/rotemdan/lzutf8-js/master/ReleaseBuild/lzutf8.min.js))
   - Try the [online demo](https://rotemdan.github.io/lzutf8/Demo/) to quickly test and benchmark different inputs.
-  - Run the [automated tests](https://rotemdan.github.io/lzutf8/Test/).
+  - Run the [automated tests](https://rotemdan.github.io/lzutf8/Tests/).
 
 
 Useful and somewhat unusual properties of the compressed stream:
