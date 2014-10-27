@@ -60,7 +60,7 @@ As a stretch goal, when **10,000 USD** is reached I will release a highly optimi
 
 Companies or individuals who pledge **100 USD** or more receive a special *Sponsor's permit* that immediately exempts them from the AGPL's obligation to disclose source code of software using or derived from this library, effectively granting them permission for proprietary use (permit is granted once for unlimited use, regardless of company size, and will be given in a digitally signed form, contact me for more details).
 
-The amounts stated are comparable to about a month or two's paycheck, which I find reasonable for the large amount of full-time unpayed work I've put forth to design, develop, test, benchmark and eventually bring this library to the quality and polish it is right now. Very little (if any) profit, is intended.
+The amounts stated are comparable to about a month or two's paycheck, which I find reasonable for the large amount of full-time unpayed work I've put forth to design, develop, test, benchmark, document and eventually bring this library to the quality and polish it is right now. Very little (if any) profit, is intended.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -130,7 +130,7 @@ var output = LZUTF8.compress(input, [options]);
 ```
 Compresses the given input data.
 
-*`input`* can be either a ``String``, `Array`, `Uint8Array` or `Buffer`
+*`input`* can be either a ``String`` or UTF-8 bytes stored in an `Array`, `Uint8Array` or `Buffer`
 
 *`options`* (optional): an object that may have any of the properties:
 
@@ -149,7 +149,7 @@ Decompresses the given compressed data.
 *`options`* (optional): an object that may have the properties:
 
 * `inputEncoding`:  `"ByteArray"` (default), `"BinaryString"` or `"Base64"`
-* `outputEncoding`: `"String"` (default) or `"ByteArray"`
+* `outputEncoding`: `"String"` (default), `"ByteArray"` to return UTF-8 bytes
 
 *returns*: decompressed bytes encoded as `encoding`, or as `String` if not specified.
 
@@ -163,7 +163,7 @@ LZUTF8.compressAsync(input, [options], callback);
 ```
 Asynchronously compresses the given input data.
 
-*`input`* can be either a ``String``, `Array`, `Uint8Array` or `Buffer`
+*`input`* can be either a ``String``, or UTF-8 bytes stored in an `Array`, `Uint8Array` or `Buffer`
 *`options`* (optional): an object that may have any of the properties:
 
 * `outputEncoding`: `"ByteArray"` (default), `"BinaryString"` or `"Base64"`
@@ -188,7 +188,7 @@ Asynchronously decompresses the given compressed input.
 *`options`* (optional): an object that may have the properties:
 
 * `inputEncoding`: `"ByteArray"` (default), `"BinaryString"` or `"Base64"`
-* `outputEncoding`: `"String"` (default), `"ByteArray"`
+* `outputEncoding`: `"String"` (default), `"ByteArray"` to return UTF-8 bytes.
 * `useWebWorker`: `true` (default) would use a web worker if available. `false` would use incremental yielding instead. 
  
 *`callback`*: a user-defined callback function accepting a single parameter containing the resulting uncompressed data as a specified by `outputEncoding` or `String` if not specified.
@@ -204,6 +204,8 @@ LZUTF8.decompressAsync(input, {inputEncoding: "BinaryString", outputEncoding: "B
 ### *General notes on async operations*
 
 Web workers are available only if supported by the browser and the library's script source is referenced in the document with a `<script>` tag having `id` of `"lzutf8"` (its `src` attribute is then used as the source URI for the web worker). 
+
+Workers are optimized for various input and output encoding schemes, so only the minimal amount of work is done in the main Javascript thread. Internally, conversion to or from various encodings is performed within the worker itself, reducing delays and allowing greater parallelization. Additionaly, if [transferable objects](https://developer.mozilla.org/en-US/docs/Web/Guide/Performance/Using_web_workers#Passing_data_by_transferring_ownership_%28transferable_objects%29) are supported by the browser, binary arrays will be transferred virtually instantly to the worker.
 
 Only one worker instance is spawned per page - multiple operations are processed sequentially.
 
@@ -226,7 +228,7 @@ var compressedBlock = compressor.compressBlock(input);
 ```
 Compresses the given input UTF-8 block.
 
-*`input`* can be either a `String`, `Array`, `Uint8Array` or `Buffer`
+*`input`* can be either a `String`, or UTF-8 bytes store in an `Array`, `Uint8Array` or `Buffer`
 
 *returns*: compressed bytes as `ByteArray`
 
@@ -257,7 +259,7 @@ Decompresses the given block of compressed bytes.
 
 *`input`* can be either an `Array`, `Uint8Array` or `Buffer`
 
-*returns*: decompressed bytes as `ByteArray`
+*returns*: decompressed UTF-8 bytes as `ByteArray`
 
 *Remarks*: will always return the longest valid UTF-8 stream of bytes possible from the given input block. Incomplete input or output byte sequences will be prepended to the next block.
 
