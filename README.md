@@ -146,6 +146,7 @@ var output = LZUTF8.decompress(input, [options]);
 Decompresses the given compressed data.
 
 *`input`*: can be either an `Array`, `Uint8Array`, `Buffer` or `String` (where encoding scheme is then specified in `inputEncoding`)
+
 *`options`* (optional): an object that may have the properties:
 
 * `inputEncoding`:  `"ByteArray"` (default), `"BinaryString"` or `"Base64"`
@@ -163,7 +164,8 @@ LZUTF8.compressAsync(input, [options], callback);
 ```
 Asynchronously compresses the given input data.
 
-*`input`* can be either a ``String``, or UTF-8 bytes stored in an `Array`, `Uint8Array` or `Buffer`
+*`input`* can be either a ``String``, or UTF-8 bytes stored in an `Array`, `Uint8Array` or `Buffer`.
+
 *`options`* (optional): an object that may have any of the properties:
 
 * `outputEncoding`: `"ByteArray"` (default), `"BinaryString"` or `"Base64"`
@@ -184,7 +186,8 @@ LZUTF8.decompressAsync(input, [options], callback);
 ```
 Asynchronously decompresses the given compressed input.
 
-*`input`*: can be either an `Array`, `Uint8Array`, `Buffer` or `String` (where encoding is set with `inputEncoding`)
+*`input`*: can be either an `Array`, `Uint8Array`, `Buffer` or `String` (where encoding is set with `inputEncoding`).
+
 *`options`* (optional): an object that may have the properties:
 
 * `inputEncoding`: `"ByteArray"` (default), `"BinaryString"` or `"Base64"`
@@ -228,7 +231,7 @@ var compressedBlock = compressor.compressBlock(input);
 ```
 Compresses the given input UTF-8 block.
 
-*`input`* can be either a `String`, or UTF-8 bytes store in an `Array`, `Uint8Array` or `Buffer`
+*`input`* can be either a `String`, or UTF-8 bytes stored in an `Array`, `Uint8Array` or `Buffer`
 
 *returns*: compressed bytes as `ByteArray`
 
