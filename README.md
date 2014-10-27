@@ -3,7 +3,7 @@
 A high-performance string compression algorithm and library:
 
   - Very fast, especially decompression (benchmark results are for a single core, Intel Pentium G3220 running Windows 7, processing 1MB files):
-    - Javascript (Chrome): 3-12MB/s compression , 20-60MB/s decompression.
+    - Javascript: 3-12MB/s compression , 20-60MB/s decompression (detailed benchmarks and comparison to other Javascript libraries can be found [here](https://raw.githubusercontent.com/rotemdan/lzutf8-js/master/Documents/LZ-UTF8 Benchmarks.pdf)).
     - C++ : 30-40MB/s compression, 300-500MB/s decompression (incomplete and unreleased, numbers may improve in the future).
   - Reasonable compression ratio - excellent for shorter strings (<32k), but less efficient for longer ones.
   - Conceived with web and mobile use cases in mind. Algorithm was designed for and implemented in Javascript from the very beginning.
@@ -40,8 +40,6 @@ A high-performance string compression algorithm and library:
   - Concise, high quality and well structured code written in TypeScript (compiles to approx. ~1800 JS lines excluding comments, test and benchmark code).
 
 The LZ-UTF8 byte format is a newly designed, backwards-compatible extension for UTF-8 adding byte-aligned LZ77 pointer sequences while maintaining compatibility with plain UTF-8 byte sequences. A complete technical specification will be published when funding goal is reached.
-
-**TODO:** *add detailed benchmark results and comparison to other Javascript libraries*
 
 #Funding and proprietary use
 This library is currently distributed under the [GNU AGPL v3.0](http://choosealicense.com/licenses/agpl-3.0/) license and thus **cannot** be used in most proprietary, closed-source applications and websites.
