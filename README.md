@@ -13,7 +13,7 @@ A high-performance string compression algorithm and library:
 #Quick start
 
   - Try the [online demo](https://rotemdan.github.io/lzutf8/Demo/) to quickly test and benchmark different inputs.
-  - Download the [latest compiled script](https://raw.githubusercontent.com/rotemdan/lzutf8-js/master/ReleaseBuild/lzutf8.js) (or the [minified version](https://raw.githubusercontent.com/rotemdan/lzutf8-js/master/ReleaseBuild/lzutf8.min.js)).
+  - Download the [latest build](https://raw.githubusercontent.com/rotemdan/lzutf8-js/master/ReleaseBuild/lzutf8.js) (or the [minified version](https://raw.githubusercontent.com/rotemdan/lzutf8-js/master/ReleaseBuild/lzutf8.min.js)).
   - Run the [automated tests](https://rotemdan.github.io/lzutf8/Tests/).
   - Run the [core benchmarks](https://rotemdan.github.io/lzutf8/Benchmarks/) (*note: in development, only a handful are currently available*).
 

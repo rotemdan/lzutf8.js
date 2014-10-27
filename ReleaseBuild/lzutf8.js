@@ -4,7 +4,7 @@
  Copyright (c) 2014, Rotem Dan 
  Released under the GNU Affero GPL v3.0 license.
 
- Build date: 2014-10-25 
+ Build date: 2014-10-27 
 */
 var LZUTF8;
 (function (LZUTF8) {
@@ -47,8 +47,10 @@ var LZUTF8;
         };
 
         StringBuilder.prototype.toString = function () {
-            this.outputBuffer.length = this.outputPosition;
-            return this.outputString + StringBuilder.charCodeArrayToString(this.outputBuffer);
+            this.outputString += StringBuilder.charCodeArrayToString(this.outputBuffer.slice(0, this.outputPosition));
+            this.outputPosition = 0;
+
+            return this.outputString;
         };
 
         StringBuilder.prototype.flushBufferToOutputString = function () {

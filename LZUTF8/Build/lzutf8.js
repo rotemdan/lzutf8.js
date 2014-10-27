@@ -1071,8 +1071,10 @@ var LZUTF8;
         };
 
         StringBuilder.prototype.toString = function () {
-            this.outputBuffer.length = this.outputPosition;
-            return this.outputString + StringBuilder.charCodeArrayToString(this.outputBuffer);
+            this.outputString += StringBuilder.charCodeArrayToString(this.outputBuffer.slice(0, this.outputPosition));
+            this.outputPosition = 0;
+
+            return this.outputString;
         };
 
         StringBuilder.prototype.flushBufferToOutputString = function () {
