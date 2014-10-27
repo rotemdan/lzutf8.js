@@ -48,7 +48,7 @@ This library is currently distributed under the [GNU AGPL v3.0](http://chooseali
 
 If you or your company find it valuable and wish it to be made available under a more permissive license - enabling unrestricted commercial use for yourself and others, consider participating in the *fundraiser*:
 
-**TODO:** *set up a fundraiser and add widget and links*
+<a href='https://pledgie.com/campaigns/27200'><img alt='Click here to lend your support to: LZ-UTF8 string compression library and make a donation at pledgie.com !' src='https://pledgie.com/campaigns/27200.png?skin_name=chrome' border='0' ></a>
 
 As soon as I gather a minimum total of **7,000 USD** I am committed to release:
 
