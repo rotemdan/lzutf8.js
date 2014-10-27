@@ -3,8 +3,8 @@
 A high-performance string compression algorithm and library:
 
   - Very fast, especially decompression (benchmark results are for a single core, Intel Pentium G3220 running Windows 7, processing 1MB files):
-    - Javascript (Chrome): 3-12MB/s compression , 20-60MB/s decompression
-    - C++ : 30-40MB/s compression, 300-500MB/s decompression (incomplete and unreleased, number may be improve in the future)
+    - Javascript (Chrome): 3-12MB/s compression , 20-60MB/s decompression.
+    - C++ : 30-40MB/s compression, 300-500MB/s decompression (incomplete and unreleased, numbers may improve in the future).
   - Reasonable compression ratio - excellent for shorter strings (<32k), but less efficient for longer ones.
   - Conceived with web and mobile use cases in mind. Algorithm was designed for and implemented in Javascript from the very beginning.
   - Simple and easy-to-use API that's consistent across all platforms, both in the browser and in Node.js.
