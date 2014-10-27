@@ -4,7 +4,7 @@ A high-performance string compression algorithm and library:
 
   - Very fast, especially decompression (benchmark results are for a single core, Intel Pentium G3220 running Windows 7, processing 1MB files):
     - Javascript (Chrome): 3-12MB/s compression , 20-60MB/s decompression
-    - C++ : 30-40MB/s compression, 300-500MB/s decompression (unreleased, may be improved in the future)
+    - C++ : 30-40MB/s compression, 300-500MB/s decompression (incomplete and unreleased, number may be improve in the future)
   - Reasonable compression ratio - excellent for shorter strings (<32k), but less efficient for longer ones.
   - Conceived with web and mobile use cases in mind. Algorithm was designed for and implemented in Javascript from the very beginning.
   - Simple and easy-to-use API that's consistent across all platforms, both in the browser and in Node.js.
@@ -17,15 +17,15 @@ A high-performance string compression algorithm and library:
   - Run the [automated tests](https://rotemdan.github.io/lzutf8/Tests/).
   - Run the [core benchmarks](https://rotemdan.github.io/lzutf8/Benchmarks/) (*note: in development, only a handful are currently available*).
 
-#General characteristics
+#Technical details
 
 *Design objectives and special properties:*
 
-  - Allows incremental compression and decompression with any arbitrary partitioning of the source material
-  - Individually compressed blocks can be freely concatenated and yield a valid compressed stream that may be decompressed as a single unit
+  - Allows incremental compression and decompression with any arbitrary partitioning of the source material.
+  - Individually compressed blocks can be freely concatenated and yield a valid compressed stream that may be decompressed as a single unit.
   - **Bytestream is *backwards compatible* with plain UTF-8** - this unusual property allows both compressed and plain UTF-8 streams to be concatenated and decompressed as single unit (or with any arbitrary partitioning). Some possible applications:
     - Sending "static" pre-compressed data followed by dynamically generated uncompressed data from a server.
-    -  Appending both uncompressed/compressed data to a compressed log file without needing to rewrite it.
+    - Appending both uncompressed/compressed data to a compressed log file without needing to rewrite it.
     - Joining multiple source files, where some are possibly pre-compressed, and serving them as a single concatenated file without additional processing.
   - **No flushing** is needed for decompression. The decompressor will always yield the longest valid string possible from the given block.
   - Compression **always** results in a byte length that is smaller or equal to the source length, even for random source strings.
@@ -46,7 +46,7 @@ On a more technical note, The LZ-UTF8 byte format is a newly designed, backwards
 #Funding and proprietary use
 This library is currently distributed under the [GNU AGPL v3.0](http://choosealicense.com/licenses/agpl-3.0/) license and thus **cannot** be used in most proprietary, closed-source applications and websites.
 
-If you or your company find it valuable and wish it to be made available under a more permissive license - enabling unrestricted commercial use for yourself and others, consider participating in the *fund drive*:
+If you or your company find it valuable and wish it to be made available under a more permissive license - enabling unrestricted commercial use for yourself and others, consider participating in the *fundraiser*:
 
 **TODO:** *set up a fundraiser and add widget and links*
 
