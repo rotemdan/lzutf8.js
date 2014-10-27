@@ -6,8 +6,6 @@
 		private outputPosition = 0;
 		private outputString = "";
 
-		//private static charCodeArrayToString: (charCodes) => string = Function.prototype.apply.bind(String.fromCharCode, null);
-
 		append(charCode: number)
 		{
 			this.outputBuffer[this.outputPosition++] = charCode;
@@ -33,15 +31,13 @@
 
 		toString(): string
 		{
-			this.outputString += StringBuilder.charCodeArrayToString(this.outputBuffer.slice(0, this.outputPosition));
-			this.outputPosition = 0;
-
+			this.flushBufferToOutputString();
 			return this.outputString;
 		}
 
 		private flushBufferToOutputString()
 		{
-			this.outputString += StringBuilder.charCodeArrayToString(this.outputBuffer);
+			this.outputString += StringBuilder.charCodeArrayToString(this.outputBuffer.slice(0, this.outputPosition));
 			this.outputPosition = 0;
 		}
 

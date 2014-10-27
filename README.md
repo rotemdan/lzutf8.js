@@ -37,7 +37,7 @@ A high-performance string compression algorithm and library:
   - Can operate asynchronously, both in Node.js and in the browser. Uses web workers when available (and takes full advantage of [transferable objects](https://developer.mozilla.org/en-US/docs/Web/Guide/Performance/Using_web_workers#Passing_data_by_transferring_ownership_%28transferable_objects%29) if supported) and falls back to async iterations when not.
   - Allows compressed data to be efficiently packed in plain UTF-16 strings when binary storage is not available or desired (e.g. when using LocalStorage).
   - Fully supports Node.js streams.
-  - Concise, high quality and well structured code written in TypeScript (compiles to approx. ~1700 JS lines excluding comments, test and benchmark code).
+  - Concise, high quality and well structured code written in TypeScript (compiles to approx. ~1800 JS lines excluding comments, test and benchmark code).
 
 The LZ-UTF8 byte format is a newly designed, backwards-compatible extension for UTF-8 adding byte-aligned LZ77 pointer sequences while maintaining compatibility with plain UTF-8 byte sequences. A complete technical specification will be published when funding goal is reached.
 
