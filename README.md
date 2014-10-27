@@ -17,7 +17,7 @@ A high-performance string compression algorithm and library:
   - Run the [automated tests](https://rotemdan.github.io/lzutf8/Tests/).
   - Run the [core benchmarks](https://rotemdan.github.io/lzutf8/Benchmarks/) (*note: in development, only a handful are currently available*).
 
-#Technical details
+#Technical overview
 
 *Design objectives and special properties:*
 
@@ -39,9 +39,9 @@ A high-performance string compression algorithm and library:
   - Fully supports Node.js streams.
   - Concise, high quality and well structured code written in TypeScript (compiles to approx. ~1700 JS lines excluding comments, test and benchmark code).
 
-On a more technical note, The LZ-UTF8 byte format is a newly designed, backwards-compatible extension for UTF-8 adding byte-aligned LZ77 pointer sequences while preserving compatibility with plain UTF-8 byte sequences. A complete technical specification will be published when funding goal is reached.
+The LZ-UTF8 byte format is a newly designed, backwards-compatible extension for UTF-8 adding byte-aligned LZ77 pointer sequences while maintaining compatibility with plain UTF-8 byte sequences. A complete technical specification will be published when funding goal is reached.
 
-**TODO:** *add detailed benchmark results and comparison to other libraries*
+**TODO:** *add detailed benchmark results and comparison to other Javascript libraries*
 
 #Funding and proprietary use
 This library is currently distributed under the [GNU AGPL v3.0](http://choosealicense.com/licenses/agpl-3.0/) license and thus **cannot** be used in most proprietary, closed-source applications and websites.
@@ -58,7 +58,9 @@ As soon as I gather a minimum total of **7,000 USD** I am committed to release:
 
 As a stretch goal, when **10,000 USD** is reached I will release a highly optimized cross-platform C++ implementation under the same license, both as a library and as a CLI application.
 
-Companies or individuals who pledge **100 USD** or more receive a special *Sponsor's permit* that immediately exempts them from the AGPL's obligation to disclose source code of software using or derived from this library, effectively granting them permission for proprietary use (permit is granted once for unlimited use, regardless of company size).
+Companies or individuals who pledge **100 USD** or more receive a special *Sponsor's permit* that immediately exempts them from the AGPL's obligation to disclose source code of software using or derived from this library, effectively granting them permission for proprietary use (permit is granted once for unlimited use, regardless of company size, and will be given in a digitally signed form, contact me for more details).
+
+The amounts stated are comparable to about a month or two's paycheck, which I find reasonable for the large amount of full-time unpayed work I've put forth to design, develop, test, benchmark and eventually bring this library to the quality and polish it is right now. Very little (if any) profit, is intended.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
