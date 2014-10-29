@@ -420,5 +420,5 @@ That implementing production-level software involving close bit manipulation is 
 Copyright (c) 2014, Rotem Dan  
 All rights reserved.
 
-Source code is available under the [GNU Affero GPL v3.0 license](http://choosealicense.com/licenses/agpl-3.0/)
+Source code is available under the [GNU Affero GPL v3.0 license](http://choosealicense.com/licenses/agpl-3.0/).
 Documentation under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)

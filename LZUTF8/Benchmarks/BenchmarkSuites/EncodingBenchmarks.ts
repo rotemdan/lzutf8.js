@@ -11,15 +11,8 @@
 
 		constructor()
 		{
-			var size = 1000000;
-			this.randomBytes = newByteArray(size);
-			for (var i = 0; i < size; i++)
-				this.randomBytes[i] = Math.floor(Math.random() * size);
-		}
-
-		beforeEach()
-		{
-			this.randomUTF16String = EncodingBenchmarks.getRandomUTF16StringOfLength(300000);
+			this.randomUTF16String = EncodingBenchmarks.getRandomUTF16StringOfLength(500000);
+			this.randomBytes = encodeUTF8(this.randomUTF16String);
 		}
 
 		encodeBase64()

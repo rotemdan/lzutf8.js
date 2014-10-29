@@ -1524,15 +1524,9 @@ var LZUTF8;
 (function (LZUTF8) {
     var EncodingBenchmarks = (function () {
         function EncodingBenchmarks() {
-            var size = 1000000;
-            this.randomBytes = LZUTF8.newByteArray(size);
-            for (var i = 0; i < size; i++)
-                this.randomBytes[i] = Math.floor(Math.random() * size);
+            this.randomUTF16String = EncodingBenchmarks.getRandomUTF16StringOfLength(500000);
+            this.randomBytes = LZUTF8.encodeUTF8(this.randomUTF16String);
         }
-        EncodingBenchmarks.prototype.beforeEach = function () {
-            this.randomUTF16String = EncodingBenchmarks.getRandomUTF16StringOfLength(300000);
-        };
-
         EncodingBenchmarks.prototype.encodeBase64 = function () {
             this.base64String = LZUTF8.Encoding.Base64.encode(this.randomBytes);
         };
