@@ -204,7 +204,7 @@ LZUTF8.decompressAsync(input, {inputEncoding: "BinaryString", outputEncoding: "B
 
 ### *General notes on async operations*
 
-Web workers are available if supported by the browser and the library's script source is referenced in the document with a `<script>` tag having `id` of `"lzutf8"` (its `src` attribute is then used as the source URI for the web worker). In cases where an element is not possible (such as when the script is dynamically loaded or bundled with other scripts) the value of `LZUTF8.WebWorker.scriptURI` may alternatively be set before the first async method call.
+Web workers are available if supported by the browser and the library's script source is referenced in the document with a `<script>` tag having `id` of `"lzutf8"` (its `src` attribute is then used as the source URI for the web worker). In cases where a script tag is not available (such as when the script is dynamically loaded or bundled with other scripts) the value of `LZUTF8.WebWorker.scriptURI` may alternatively be set before the first async method call.
 
 Workers are optimized for various input and output encoding schemes, so only the minimal amount of work is done in the main Javascript thread. Internally, conversion to or from various encodings is performed within the worker itself, reducing delays and allowing greater parallelization. Additionally, if [transferable objects](https://developer.mozilla.org/en-US/docs/Web/Guide/Performance/Using_web_workers#Passing_data_by_transferring_ownership_%28transferable_objects%29) are supported by the browser, binary arrays will be transferred virtually instantly to and from the worker.
 
