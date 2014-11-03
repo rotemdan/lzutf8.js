@@ -167,9 +167,12 @@
 				return;
 
 			if (!WebWorker.isSupported())
-				throw "Web workers are not supported";
+				throw "Web workers are not supported or script source is not available";
 
-			WebWorker.globalWorker = new Worker(document.getElementById("lzutf8").getAttribute("src"));
+			if (!WebWorker.scriptURI)
+				WebWorker.scriptURI = document.getElementById("lzutf8").getAttribute("src");
+
+			WebWorker.globalWorker = new Worker(WebWorker.scriptURI);
 			WebWorker.supportsTransferableObjects = WebWorker.testSupportForTransferableObjects();
 
 			//console.log("WebWorker.supportsTransferableObjects = " + WebWorker.supportsTransferableObjects);
@@ -182,6 +185,9 @@
 
 			if (typeof window != "object" || typeof window["Worker"] != "function")
 				return false;
+
+			if (WebWorker.scriptURI != undefined)
+				return true;
 
 			var scriptElement = document.getElementById("lzutf8");
 
@@ -229,6 +235,7 @@
 
 		static globalWorker: Worker;
 		static supportsTransferableObjects: boolean;
+		static scriptURI: string;
 	}
 
 	interface WebWorkerMessage

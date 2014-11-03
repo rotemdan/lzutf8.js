@@ -4,7 +4,7 @@
  Copyright (c) 2014, Rotem Dan 
  Released under the GNU Affero GPL v3.0 license.
 
- Build date: 2014-10-27 
+ Build date: 2014-11-03 
 */
 var LZUTF8;
 (function (LZUTF8) {
@@ -1242,9 +1242,12 @@ var LZUTF8;
                 return;
 
             if (!WebWorker.isSupported())
-                throw "Web workers are not supported";
+                throw "Web workers are not supported or script source is not available";
 
-            WebWorker.globalWorker = new Worker(document.getElementById("lzutf8").getAttribute("src"));
+            if (!WebWorker.scriptURI)
+                WebWorker.scriptURI = document.getElementById("lzutf8").getAttribute("src");
+
+            WebWorker.globalWorker = new Worker(WebWorker.scriptURI);
             WebWorker.supportsTransferableObjects = WebWorker.testSupportForTransferableObjects();
         };
 
@@ -1254,6 +1257,9 @@ var LZUTF8;
 
             if (typeof window != "object" || typeof window["Worker"] != "function")
                 return false;
+
+            if (WebWorker.scriptURI != undefined)
+                return true;
 
             var scriptElement = document.getElementById("lzutf8");
 

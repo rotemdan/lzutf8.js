@@ -204,13 +204,13 @@ LZUTF8.decompressAsync(input, {inputEncoding: "BinaryString", outputEncoding: "B
 
 ### *General notes on async operations*
 
-Web workers are available only if supported by the browser and the library's script source is referenced in the document with a `<script>` tag having `id` of `"lzutf8"` (its `src` attribute is then used as the source URI for the web worker). 
+Web workers are available if supported by the browser and the library's script source is referenced in the document with a `<script>` tag having `id` of `"lzutf8"` (its `src` attribute is then used as the source URI for the web worker). In cases where an element is not possible (such as when the script is dynamically loaded or bundled with other scripts) the value of `LZUTF8.WebWorker.scriptURI` may alternatively be set before the first async method call.
 
-Workers are optimized for various input and output encoding schemes, so only the minimal amount of work is done in the main Javascript thread. Internally, conversion to or from various encodings is performed within the worker itself, reducing delays and allowing greater parallelization. Additionaly, if [transferable objects](https://developer.mozilla.org/en-US/docs/Web/Guide/Performance/Using_web_workers#Passing_data_by_transferring_ownership_%28transferable_objects%29) are supported by the browser, binary arrays will be transferred virtually instantly to the worker.
+Workers are optimized for various input and output encoding schemes, so only the minimal amount of work is done in the main Javascript thread. Internally, conversion to or from various encodings is performed within the worker itself, reducing delays and allowing greater parallelization. Additionally, if [transferable objects](https://developer.mozilla.org/en-US/docs/Web/Guide/Performance/Using_web_workers#Passing_data_by_transferring_ownership_%28transferable_objects%29) are supported by the browser, binary arrays will be transferred virtually instantly to and from the worker.
 
 Only one worker instance is spawned per page - multiple operations are processed sequentially.
 
-In case a worker is not available (such as in Node.js, IE8, IE9, Android browser < 4.4) or desired, it will iteratively process 64KB blocks while yielding to the event loop whenever a 20ms interval has elapsed . Note: In this execution method, parallel operations are not guaranteed to complete by their initiation order.
+In case a worker is not available (such as in Node.js, IE8, IE9, Android browser < 4.4) or desired, it will iteratively process 64KB blocks while yielding to the event loop whenever a 20ms interval has elapsed. *Note:* In this execution method, parallel operations are not guaranteed to complete by their initiation order.
 
 ## Lower-level Methods
 
@@ -384,7 +384,7 @@ Decodes a binary string.
 
 *returns*: decoded bytes as ``ByteArray``
 
-*remarks:* Multiple binary strings may be freely concatenated and decoded as a single string. This is made possible by ending every sequence with single end-of-stream marker. (char code 32768 for an even-length sequence and 32769 for a an odd-length sequence).
+*remarks:* Multiple binary strings may be freely concatenated and decoded as a single string. This is made possible by ending every sequence with special marker (char code 32768 for an even-length sequence and 32769 for a an odd-length sequence).
 
 #General / Misc FAQ
 
@@ -414,7 +414,7 @@ That implementing production-level software involving close bit manipulation is 
 #Some interesting facts about the code
 * Everything was written by myself - no outside libraries or "borrowed" code snippets.
 * The UTF-8, Base64 and Binary String encoders and decoders are very fast (possibly some of the fastest JS implementations in existence) and were rigorously tested (matched with random input of various lengths against the versions within Node) and benchmarked.
-* Differently from Node.js decoder or others available in various libraries, the JS UTF-8 decoder will throw errors if the stream is malformed or truncated, so it can also be used to verify the correctness of arbitrary UTF-8 byte sequences.
+* The JS UTF-8 decoder will throw errors if the stream is malformed or truncated, so it can also be used to verify the correctness of arbitrary UTF-8 byte sequences (most other libraries, including the on built into Node.js, would usually silently ignore them).
 
 #License
 Copyright (c) 2014, Rotem Dan  

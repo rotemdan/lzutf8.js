@@ -4,7 +4,7 @@ Thumbs.db
 #ignore
 node_modules
 *.sln.ide
-*.suo
+*.v12.suo
 bin
 obj
 /LZUTF8/CLI/Test Files
