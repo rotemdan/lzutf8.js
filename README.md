@@ -90,12 +90,6 @@ The amounts stated are comparable to about a month or two's paycheck, which I fi
     - [LZUTF8.decodeBase64(..)](#lzutf8decodebase64)
     - [LZUTF8.encodeBinaryString(..)](#lzutf8encodebinarystring)
     - [LZUTF8.decodeBinaryString(..)](#lzutf8decodebinarystring)
-- [General / Misc FAQ](#general--misc-faq)
-  - [Who are you?](#who-are-you)
-  - [Where did this come from?](#where-did-this-come-from)
-  - [How can I help?](#how-can-i-help)
-  - [What did you learn from doing this?](#what-did-you-learn-from-doing-this)
-- [Some interesting facts about the code](#some-interesting-facts-about-the-code)
 - [License](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -385,36 +379,6 @@ Decodes a binary string.
 *returns*: decoded bytes as ``ByteArray``
 
 *remarks:* Multiple binary strings may be freely concatenated and decoded as a single string. This is made possible by ending every sequence with special marker (char code 32768 for an even-length sequence and 32769 for a an odd-length sequence).
-
-#General / Misc FAQ
-
-##Who are you?
-I'm an independent software developer dedicated to open source and free software.
-
-##Where did this come from?
-It started as a curiosity, some idea I experimented with, originally arose in the context of another open source project I was working on. Eventually ended as hundreds of unpayed (and somewhat painstaking) work hours to design, develop, rewrite, reiterate, and eventually ensure this software is of the highest quality I can provide. 
-
-
-##How can I help?
-*Short answer:*
-Sponsor the project.
-
-*Long answer:*
-Honestly, I'd prefer this not to be a community effort (also because I'm dedicated to keeping a clean codebase). If you still feel a need to contribute, it might mean there is something to be improved or some feature that is missing. If it is relatively small, just post an issue and I'll gladly try to do my best.
-
-For larger tasks (e.g. "make a C++ implementation"*) consider sponsoring me to do it, either by yourself / your company or by teaming with others using funding platforms such as Pledgie/Bountysource/Gratipay/Flattr etc.
-
-*A C++ implementation actually does exist, but for an earlier draft of the algorithm. Though it works well (and turned out to be 3-10x faster on average than the Javascript version), it'd need some major work to update, port, test and document.*
-
-
-
-##What did you learn from doing this?
-That implementing production-level software involving close bit manipulation is **hard**. Without extreme carefulness, intensive testing and simplicity of design, you might make something that "appears" to work but may still contain unbelievably subtle bugs which, in the case of a compression algorithm, when fixed may also cause to *break compatibility* with existing data and change the entire bit scheme.
-
-#Some interesting facts about the code
-* Everything was written by myself - no outside libraries or "borrowed" code snippets.
-* The UTF-8, Base64 and Binary String encoders and decoders are very fast (possibly some of the fastest JS implementations in existence) and were rigorously tested (matched with random input of various lengths against the versions within Node) and benchmarked.
-* The JS UTF-8 decoder will throw errors if the stream is malformed or truncated, so it can also be used to verify the correctness of arbitrary UTF-8 byte sequences (most other libraries, including the on built into Node.js, would usually silently ignore them).
 
 #License
 Copyright (c) 2014, Rotem Dan  
