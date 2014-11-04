@@ -110,8 +110,6 @@ npm install lzutf8
 var LZUTF8 = require('lzutf8');
 ```
 
-**TODO:** *add npm support*
-
 ##Core Types
 *`ByteArray`* - a platform dependent array of bytes. Based on the platform and availability of the underlying types, would either be a regular `Array` (IE8, IE9), `Uint8Array` (IE10+, all other modern browsers) or `Buffer` (Node.js).
 ##Core Methods
@@ -382,7 +380,7 @@ Decodes a binary string.
 
 #License
 Copyright (c) 2014, Rotem Dan  
-All rights reserved.
+All rights reserved
 
 Source code is available under the [GNU Affero GPL v3.0 license](http://choosealicense.com/licenses/agpl-3.0/).
-Documentation under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+Documentation under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).

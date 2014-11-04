@@ -1,6 +1,6 @@
 /*
-  This is a Grunt build script for release builds. Debug builds, which also 
-  include the testing and benchmark code, are generated within visual studio.
+  This is a Grunt build script for release builds, stored in the ReleaseBuild/ folder. Debug builds, which also 
+  include the testing and benchmark code, are generated within visual studio and stored in the LZUTF8/Build/ folder.
 */
 
 module.exports = function (grunt)
@@ -68,14 +68,25 @@ module.exports = function (grunt)
 					banner: releaseBuildBanner
 				}
 			}
+		},
+		
+		update_json:
+		{
+			options:
+			{
+				indent: '\t'
+			},
+			
+			updateNPMPackageVersion:
+			{
+				src: './package.json',
+				dest: './ReleaseBuild/package.json',
+				fields: {'version': 'version'}
+			}
 		}
 	});
 
-	grunt.loadNpmTasks('grunt-shell');
-	grunt.loadNpmTasks('grunt-ts');
-	grunt.loadNpmTasks('grunt-contrib-concat');
-	grunt.loadNpmTasks('grunt-contrib-uglify');
-
+	require('load-grunt-tasks')(grunt);
 
 	// Default task(s).
 	grunt.registerTask('default',
@@ -84,6 +95,7 @@ module.exports = function (grunt)
 			'ts:buildRelease',
 			'concat:addBannerToReleaseBuild',
 			'uglify:minifyReleaseBuild',
-			'shell:deleteTypescriptReferenceFile'
+			'shell:deleteTypescriptReferenceFile',
+			'update_json:updateNPMPackageVersion'
 		]);
 };

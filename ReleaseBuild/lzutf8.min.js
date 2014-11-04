@@ -1,5 +1,5 @@
 /*
- LZ-UTF8 v0.1.0
+ LZ-UTF8 v0.1.3
 
  Copyright (c) 2014, Rotem Dan 
  Released under the GNU Affero GPL v3.0 license.
