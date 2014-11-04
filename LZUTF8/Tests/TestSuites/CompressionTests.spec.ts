@@ -1,4 +1,5 @@
 ﻿//if (typeof window == "object") window["Uint8Array"] = undefined;
+//jasmine.DEFAULT_TIMEOUT_INTERVAL = 400;
 
 module LZUTF8
 {
@@ -331,6 +332,27 @@ module LZUTF8
 							done();
 					});
 				});
+			});
+
+			describe("Async operations with a custom WebWorker URI", () =>
+			{
+				beforeEach(() =>
+				{
+					WebWorker.terminate();
+					WebWorker.scriptURI = "../Build/lzutf8.js";
+				});
+
+				afterEach(() =>
+				{
+					WebWorker.terminate();
+					WebWorker.scriptURI = undefined;
+				});
+
+
+				if (WebWorker.isSupported())
+				{
+					addTestForEncodingCombination("ByteArray", "BinaryString", "String", true);
+				}
 			});
 		});
 

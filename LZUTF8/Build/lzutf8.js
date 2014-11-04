@@ -609,7 +609,7 @@ var LZUTF8;
             if (typeof window != "object" || typeof window["Worker"] != "function")
                 return false;
 
-            if (WebWorker.scriptURI != undefined)
+            if (WebWorker.scriptURI)
                 return true;
 
             var scriptElement = document.getElementById("lzutf8");
@@ -2297,6 +2297,7 @@ var LZUTF8;
     LZUTF8.Benchmark = Benchmark;
 })(LZUTF8 || (LZUTF8 = {}));
 //if (typeof window == "object") window["Uint8Array"] = undefined;
+//jasmine.DEFAULT_TIMEOUT_INTERVAL = 400;
 var LZUTF8;
 (function (LZUTF8) {
     describe("LZ-UTF8:", function () {
@@ -2591,6 +2592,22 @@ var LZUTF8;
                             done();
                     });
                 });
+            });
+
+            describe("Async operations with a custom WebWorker URI", function () {
+                beforeEach(function () {
+                    LZUTF8.WebWorker.terminate();
+                    LZUTF8.WebWorker.scriptURI = "../Build/lzutf8.js";
+                });
+
+                afterEach(function () {
+                    LZUTF8.WebWorker.terminate();
+                    LZUTF8.WebWorker.scriptURI = undefined;
+                });
+
+                if (LZUTF8.WebWorker.isSupported()) {
+                    addTestForEncodingCombination("ByteArray", "BinaryString", "String", true);
+                }
             });
         });
 

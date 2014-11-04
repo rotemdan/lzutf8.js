@@ -4,7 +4,7 @@
  Copyright (c) 2014, Rotem Dan 
  Released under the GNU Affero GPL v3.0 license.
 
- Build date: 2014-11-03 
+ Build date: 2014-11-04 
 */
 var LZUTF8;
 (function (LZUTF8) {
@@ -1258,7 +1258,7 @@ var LZUTF8;
             if (typeof window != "object" || typeof window["Worker"] != "function")
                 return false;
 
-            if (WebWorker.scriptURI != undefined)
+            if (WebWorker.scriptURI)
                 return true;
 
             var scriptElement = document.getElementById("lzutf8");

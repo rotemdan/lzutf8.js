@@ -186,7 +186,7 @@
 			if (typeof window != "object" || typeof window["Worker"] != "function")
 				return false;
 
-			if (WebWorker.scriptURI != undefined)
+			if (WebWorker.scriptURI)
 				return true;
 
 			var scriptElement = document.getElementById("lzutf8");
