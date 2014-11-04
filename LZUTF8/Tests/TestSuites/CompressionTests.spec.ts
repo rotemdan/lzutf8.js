@@ -334,7 +334,7 @@ module LZUTF8
 				});
 			});
 
-			describe("Async operations with a custom WebWorker URI", () =>
+			describe("Async operations with a custom web worker URI", () =>
 			{
 				beforeEach(() =>
 				{

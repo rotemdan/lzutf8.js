@@ -2594,7 +2594,7 @@ var LZUTF8;
                 });
             });
 
-            describe("Async operations with a custom WebWorker URI", function () {
+            describe("Async operations with a custom web worker URI", function () {
                 beforeEach(function () {
                     LZUTF8.WebWorker.terminate();
                     LZUTF8.WebWorker.scriptURI = "../Build/lzutf8.js";
