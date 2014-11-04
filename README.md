@@ -269,7 +269,7 @@ var decompressedBlock3 = decompressor.decompressBlock(block3);
 ### LZUTF8.Deompressor.decompressBlockToString(..)
 ```js
 var decompressor = new LZUTF8.Decompressor();
-var decompressedBlockAsString = compressor.decompressBlockToString(input);
+var decompressedBlockAsString = decompressor.decompressBlockToString(input);
 ```
 Decompresses the given block of compressed bytes  and converts the result to a `String`.
 
