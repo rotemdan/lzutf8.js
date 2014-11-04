@@ -246,7 +246,7 @@ Creates a decompressor object. Can be used to incrementally decompress a multi-p
 ### LZUTF8.Deompressor.decompressBlock(..)
 ```js
 var decompressor = new LZUTF8.Decompressor();
-var decompressedBlock = compressor.decompressBlock(input);
+var decompressedBlock = decompressor.decompressBlock(input);
 ```
 Decompresses the given block of compressed bytes.
 
