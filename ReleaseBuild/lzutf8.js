@@ -1,10 +1,10 @@
 /*
- LZ-UTF8 v0.1.3
+ LZ-UTF8 v0.1.4
 
- Copyright (c) 2014, Rotem Dan 
+ Copyright (c) 2014-2015, Rotem Dan 
  Released under the GNU Affero GPL v3.0 license.
 
- Build date: 2014-11-04 
+ Build date: 2015-01-03 
 */
 var LZUTF8;
 (function (LZUTF8) {

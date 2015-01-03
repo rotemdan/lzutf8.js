@@ -37,12 +37,12 @@ module LZUTF8
 
 						it("Creates a simple hash table with a bucket count larger than 0", () =>
 						{
-							expect(compressor1.prefixHashTable.getUsedBucketCount() > 0);
+							expect(compressor1.prefixHashTable.getUsedBucketCount()).toBeGreaterThan(0);
 						});
 
 						it("Creates a custom hash table with a bucket count larger than 0", () =>
 						{
-							expect(compressor2.prefixHashTable.getUsedBucketCount() > 0);
+							expect(compressor2.prefixHashTable.getUsedBucketCount()).toBeGreaterThan(0);
 						});
 
 						it("Both the simple and custom hash tables have the same bucket usage", () =>

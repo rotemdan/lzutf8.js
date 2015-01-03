@@ -1,6 +1,6 @@
 {
 	"name": "lzutf8",
-	"version": "0.1.3",
+	"version": "0.1.4",
 	"description": "A high-performance string compression library",
 	"author": "Rotem Dan <rotemdan@gmail.com>",
 	"homepage": "https://github.com/rotemdan/lzutf8.js",

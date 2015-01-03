@@ -22,9 +22,9 @@ A high-performance string compression algorithm and library:
 *Design objectives and special properties:*
 
   - Allows incremental compression and decompression with any arbitrary partitioning of the source material.
-  - Individually compressed blocks can be freely concatenated and yield a valid compressed stream that may be decompressed as a single unit.
-  - **Bytestream is *backwards compatible* with plain UTF-8** - this unusual property allows both compressed and plain UTF-8 streams to be concatenated and decompressed as single unit (or with any arbitrary partitioning). Some possible applications:
-    - Sending "static" pre-compressed data followed by dynamically generated uncompressed data from a server.
+  - Individually compressed blocks can be concatenated and yield a valid compressed stream that may be decompressed as a single unit.
+  - **Bytestream is *backwards compatible* with plain UTF-8** - this unusual property allows both compressed and plain UTF-8 streams to be freely concatenated and decompressed as single unit (or with any arbitrary partitioning). Some possible applications:
+    - Sending "static" pre-compressed data followed by dynamically generated uncompressed data from a server (and possibly appending a compressed static "footer", or repeating the process several times).
     - Appending both uncompressed/compressed data to a compressed log file without needing to rewrite it.
     - Joining multiple source files, where some are possibly pre-compressed, and serving them as a single concatenated file without additional processing.
   - **No flushing** is needed for decompression. The decompressor will always yield the longest valid string possible from the given block.
