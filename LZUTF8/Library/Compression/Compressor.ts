@@ -90,6 +90,11 @@
 					this.outputRawByte(inputValue);
 
 				// Add the current 4 byte sequence to the hash table
+				//
+				// Note: the 4 bytes at position 0 are not added, this is done to avoid occurences of 0 in the bucket
+				// content, which is useful when a 0 is used to signify an empty slot in some implementations.
+				// Removing this behavior might increase compression by a microscopic amount, but break compatibility
+				// with previous versions of the code (or other implementations)
 				if (readPosition > 0)
 					this.prefixHashTable.addValueToBucket(targetBucketIndex, this.inputBufferStreamOffset + readPosition);
 			}
@@ -130,6 +135,7 @@
 					matchedSequencePosition + lengthToSurpass >= input.length)
 					break;
 
+				// Quick check to see if there's any point comparing all the bytes.
 				if (input[testedSequencePosition + lengthToSurpass] !== input[matchedSequencePosition + lengthToSurpass])
 					continue;
 

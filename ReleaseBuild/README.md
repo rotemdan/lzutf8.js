@@ -16,6 +16,7 @@ A high-performance string compression algorithm and library:
   - Download the [latest build](https://raw.githubusercontent.com/rotemdan/lzutf8.js/master/ReleaseBuild/lzutf8.js) (or the [minified version](https://raw.githubusercontent.com/rotemdan/lzutf8.js/master/ReleaseBuild/lzutf8.min.js)).
   - Run the [automated tests](https://rotemdan.github.io/lzutf8/Tests/).
   - Run the [core benchmarks](https://rotemdan.github.io/lzutf8/Benchmarks/) (*note: in development, only a handful are currently available*).
+  - Read the [complete technical specification](https://rotemdan.github.io/lzutf8/Documents/LZ-UTF8 Technical Specification.pdf).
 
 #Technical overview
 
@@ -39,7 +40,7 @@ A high-performance string compression algorithm and library:
   - Fully supports Node.js streams.
   - Concise, high quality and well structured code written in TypeScript.
 
-The LZ-UTF8 byte format is a newly designed, backwards-compatible extension for UTF-8 adding byte-aligned LZ77 pointer sequences while maintaining compatibility with plain UTF-8 byte sequences. A complete technical specification will be published soon.
+Continue reading a more detalied technical specification [here](https://rotemdan.github.io/lzutf8/Documents/LZ-UTF8 Technical Specification.pdf).
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -360,7 +361,7 @@ Decodes a binary string.
 *remarks:* Multiple binary strings may be freely concatenated and decoded as a single string. This is made possible by ending every sequence with special marker (char code 32768 for an even-length sequence and 32769 for a an odd-length sequence).
 
 #License
-Copyright (c) 2014-2015, Rotem Dan &lt;rotemdan@gmail.com&gt;
-All rights reserved
+Copyright (c) 2014-2015, Rotem Dan &lt;rotemdan@gmail.com&gt;.
+All rights reserved.
 
 Source code and documentation are available under the [MIT license](http://choosealicense.com/licenses/mit/).

@@ -32,7 +32,7 @@ module.exports = function (grunt)
 				out: './ReleaseBuild/lzutf8.js',
 				options:
 				{
-					target: 'es5',
+					target: 'es3',
 					module: 'commonjs',
 					fast: 'never',
 					sourceMap: false

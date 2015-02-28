@@ -1,5 +1,5 @@
 /*
- LZ-UTF8 v0.1.5
+ LZ-UTF8 v0.1.6
 
  Copyright (c) 2014-2015, Rotem Dan <rotemdan@gmail.com> 
  Released under the MIT license.
@@ -985,7 +985,7 @@ var LZUTF8;
                     token: request.token,
                     type: "compressionResult",
                     data: compressedData,
-                    inputEncoding: request.outputEncoding,
+                    inputEncoding: request.outputEncoding
                 };
                 if (response.inputEncoding == "ByteArray")
                     self.postMessage(response, [compressedData.buffer]);
@@ -998,7 +998,7 @@ var LZUTF8;
                     token: request.token,
                     type: "decompressionResult",
                     data: decompressedData,
-                    inputEncoding: request.outputEncoding,
+                    inputEncoding: request.outputEncoding
                 };
                 if (response.inputEncoding == "ByteArray")
                     self.postMessage(response, [decompressedData.buffer]);

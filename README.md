@@ -361,7 +361,7 @@ Decodes a binary string.
 *remarks:* Multiple binary strings may be freely concatenated and decoded as a single string. This is made possible by ending every sequence with special marker (char code 32768 for an even-length sequence and 32769 for a an odd-length sequence).
 
 #License
-Copyright (c) 2014-2015, Rotem Dan &lt;rotemdan@gmail.com&gt;
-All rights reserved
+Copyright (c) 2014-2015, Rotem Dan &lt;rotemdan@gmail.com&gt;.
+All rights reserved.
 
 Source code and documentation are available under the [MIT license](http://choosealicense.com/licenses/mit/).
