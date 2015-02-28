@@ -16,7 +16,7 @@ A high-performance string compression algorithm and library:
   - Download the [latest build](https://raw.githubusercontent.com/rotemdan/lzutf8.js/master/ReleaseBuild/lzutf8.js) (or the [minified version](https://raw.githubusercontent.com/rotemdan/lzutf8.js/master/ReleaseBuild/lzutf8.min.js)).
   - Run the [automated tests](https://rotemdan.github.io/lzutf8/Tests/).
   - Run the [core benchmarks](https://rotemdan.github.io/lzutf8/Benchmarks/) (*note: in development, only a handful are currently available*).
-  - Read the [complete technical specification] (https://rotemdan.github.io/lzutf8/Documents/LZ-UTF8 Technical Specification.pdf).
+  - Read the [complete technical specification](https://rotemdan.github.io/lzutf8/Documents/LZ-UTF8 Technical Specification.pdf).
 
 #Technical overview
 
@@ -39,6 +39,8 @@ A high-performance string compression algorithm and library:
   - Allows compressed data to be efficiently packed in plain UTF-16 strings when binary storage is not available or desired (e.g. when using LocalStorage).
   - Fully supports Node.js streams.
   - Concise, high quality and well structured code written in TypeScript.
+
+Continue reading a more detalied technical specification [here](https://rotemdan.github.io/lzutf8/Documents/LZ-UTF8 Technical Specification.pdf).
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
