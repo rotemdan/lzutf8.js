@@ -10,13 +10,6 @@ A high-performance string compression algorithm and library:
   - Simple and easy-to-use API that's consistent across all platforms, both in the browser and in Node.js.
   - 100% patent-free.
 
-#Quick start
-
-  - Try the [online demo](https://rotemdan.github.io/lzutf8/Demo/) to quickly test and benchmark different inputs.
-  - Download the [latest build](https://raw.githubusercontent.com/rotemdan/lzutf8.js/master/ReleaseBuild/lzutf8.js) (or the [minified version](https://raw.githubusercontent.com/rotemdan/lzutf8.js/master/ReleaseBuild/lzutf8.min.js)).
-  - Run the [automated tests](https://rotemdan.github.io/lzutf8/Tests/).
-  - Run the [core benchmarks](https://rotemdan.github.io/lzutf8/Benchmarks/) (*note: in development, only a handful are currently available*).
-
 #Technical overview
 
 *Design objectives and special properties:*
@@ -39,7 +32,13 @@ A high-performance string compression algorithm and library:
   - Fully supports Node.js streams.
   - Concise, high quality and well structured code written in TypeScript.
 
-The LZ-UTF8 byte format is a newly designed, backwards-compatible extension for UTF-8 adding byte-aligned LZ77 pointer sequences while maintaining compatibility with plain UTF-8 byte sequences. A complete technical specification will be published soon.
+#Quick start
+
+  - Try the [online demo](https://rotemdan.github.io/lzutf8/Demo/) to quickly test and benchmark different inputs.
+  - Download the [latest build](https://raw.githubusercontent.com/rotemdan/lzutf8.js/master/ReleaseBuild/lzutf8.js) (or the [minified version](https://raw.githubusercontent.com/rotemdan/lzutf8.js/master/ReleaseBuild/lzutf8.min.js)).
+  - Run the [automated tests](https://rotemdan.github.io/lzutf8/Tests/).
+  - Run the [core benchmarks](https://rotemdan.github.io/lzutf8/Benchmarks/) (*note: in development, only a handful are currently available*).
+  - Read the [complete technical specification] (https://rotemdan.github.io/lzutf8/Documents/LZ-UTF8 Technical Specification.pdf)
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->

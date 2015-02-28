@@ -1,7 +1,7 @@
 /*
  LZ-UTF8 v0.1.5
 
- Copyright (c) 2014-2015, Rotem Dan 
+ Copyright (c) 2014-2015, Rotem Dan <rotemdan@gmail.com> 
  Released under the MIT license.
 
  Build date: 2015-02-28 
