@@ -1,5 +1,5 @@
 /*
- LZ-UTF8 v0.1.6
+ LZ-UTF8 v0.1.7
 
  Copyright (c) 2014-2015, Rotem Dan <rotemdan@gmail.com> 
  Released under the MIT license.
@@ -550,7 +550,7 @@ var LZUTF8;
             this.MaximumSequenceLength = 31;
             this.MaximumMatchDistance = 32767;
             this.PrefixHashTableSize = 65537;
-            this.inputBufferStreamOffset = 0;
+            this.inputBufferStreamOffset = 1;
             this.reusableArraySegmentObject = new LZUTF8.ArraySegment();
             if (useCustomPrefixHashTable && typeof Uint32Array == "function")
                 this.prefixHashTable = new LZUTF8.CompressorCustomHashTable(this.PrefixHashTableSize);
@@ -593,8 +593,8 @@ var LZUTF8;
                 }
                 if (!withinAMatchedRange)
                     this.outputRawByte(inputValue);
-                if (readPosition > 0)
-                    this.prefixHashTable.addValueToBucket(targetBucketIndex, this.inputBufferStreamOffset + readPosition);
+                var streamPosition = this.inputBufferStreamOffset + readPosition;
+                this.prefixHashTable.addValueToBucket(targetBucketIndex, streamPosition);
             }
             return this.outputBuffer.subarray(0, this.outputBufferPosition);
         };
