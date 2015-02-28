@@ -459,7 +459,7 @@ var LZUTF8;
             }
         };
         WebWorker.registerListenerIfRunningInWebWorker = function () {
-            if (typeof self == "object" && self.addEventListener != undefined) {
+            if (typeof self == "object" && self.document === undefined && self.addEventListener != undefined) {
                 self.addEventListener("message", WebWorker.workerMessageHandler);
                 self.addEventListener("error", function (e) {
                     console.log("LZUTF8 WebWorker exception: " + e.message);
@@ -895,11 +895,11 @@ var LZUTF8;
             return this.outputString;
         };
         StringBuilder.prototype.flushBufferToOutputString = function () {
-            this.outputString += StringBuilder.charCodeArrayToString(this.outputBuffer.slice(0, this.outputPosition));
+            if (this.outputPosition === 1024)
+                this.outputString += String.fromCharCode.apply(null, this.outputBuffer);
+            else
+                this.outputString += String.fromCharCode.apply(null, this.outputBuffer.slice(0, this.outputPosition));
             this.outputPosition = 0;
-        };
-        StringBuilder.charCodeArrayToString = function (charCodes) {
-            return String.fromCharCode.apply(null, charCodes);
         };
         return StringBuilder;
     })();
@@ -2341,4 +2341,39 @@ var LZUTF8;
         });
     });
 })(LZUTF8 || (LZUTF8 = {}));
+/// <reference path="./Library/Dependencies/node-internal.d.ts"/>
+/// <reference path="./Tests/Dependencies/jasmine.d.ts"/>
+/// <reference path="./Library/Common/Globals.ext.ts"/>
+/// <reference path="./Library/Compression/Compressor.ts"/>
+/// <reference path="./CLI/CLI.ts"/>
+/// <reference path="./Library/Async/AsyncCompressor.ts"/>
+/// <reference path="./Library/Async/AsyncDecompressor.ts"/>
+/// <reference path="./Library/Async/WebWorker.ts"/>
+/// <reference path="./Library/Common/ArraySegment.ts"/>
+/// <reference path="./Library/Common/ArrayTools.ts"/>
+/// <reference path="./Library/Common/ByteArray.ts"/>
+/// <reference path="./Library/Common/CompressionCommon.ts"/>
+/// <reference path="./Library/Common/EventLoop.ts"/>
+/// <reference path="./Library/Common/GlobalInterfaces.ts"/>
+/// <reference path="./Benchmarks/BenchmarkSuites/AsyncBenchmarks.ts"/>
+/// <reference path="./Library/Common/ObjectTools.ts"/>
+/// <reference path="./Library/Common/StringBuilder.ts"/>
+/// <reference path="./Library/Common/Timer.ts"/>
+/// <reference path="./Benchmarks/BenchmarkSuites/CompressionBenchmarks.ts"/>
+/// <reference path="./Library/Compression/CompressorCustomHashTable.ts"/>
+/// <reference path="./Library/Compression/CompressorSimpleHashTable.ts"/>
+/// <reference path="./Library/Decompression/Decompressor.ts"/>
+/// <reference path="./Benchmarks/BenchmarkSuites/EncodingBenchmarks.ts"/>
+/// <reference path="./Library/Encoding/Base64.ts"/>
+/// <reference path="./Library/Encoding/BinaryString.ts"/>
+/// <reference path="./Library/Encoding/Misc.ts"/>
+/// <reference path="./Library/Encoding/UTF8.ts"/>
+/// <reference path="./Library/Exports/Exports.ts"/>
+/// <reference path="./Tests/Common/JasmineFiller.ts"/>
+/// <reference path="./Tests/Common/Random.ts"/>
+/// <reference path="./Tests/Common/TestData.ts"/>
+/// <reference path="./Tests/Common/TestingTools.ts"/>
+/// <reference path="./Benchmarks/Common/Benchmark.ts"/>
+/// <reference path="./Tests/TestSuites/CompressionTests.spec.ts"/>
+/// <reference path="./Tests/TestSuites/EncodingTests.spec.ts"/>
 //# sourceMappingURL=lzutf8.js.map

@@ -5,7 +5,7 @@
 
 module.exports = function (grunt)
 {
-	var releaseBuildBanner = '/*\n LZ-UTF8 v<%=pkg.version%>\n\n Copyright (c) 2014-2015, Rotem Dan \n Released under the GNU Affero GPL v3.0 license.\n\n Build date: <%= grunt.template.today("yyyy-mm-dd") %> \n*/\n';
+	var releaseBuildBanner = '/*\n LZ-UTF8 v<%=pkg.version%>\n\n Copyright (c) 2014-2015, Rotem Dan \n Released under the MIT license.\n\n Build date: <%= grunt.template.today("yyyy-mm-dd") %> \n*/\n';
 
 	// Project configuration.
 	grunt.initConfig({
@@ -83,6 +83,14 @@ module.exports = function (grunt)
 				dest: './ReleaseBuild/package.json',
 				fields: {'version': 'version'}
 			}
+		},
+		
+		copy:
+		{
+			copyReadmeToReleaseBuild:
+			{
+				files: [ {expand: true, src: ['./README.md'], dest: './ReleaseBuild'} ]
+			},
 		}
 	});
 
@@ -96,6 +104,7 @@ module.exports = function (grunt)
 			'concat:addBannerToReleaseBuild',
 			'uglify:minifyReleaseBuild',
 			'shell:deleteTypescriptReferenceFile',
-			'update_json:updateNPMPackageVersion'
+			'update_json:updateNPMPackageVersion',
+			'copy:copyReadmeToReleaseBuild'
 		]);
 };

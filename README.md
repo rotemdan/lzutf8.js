@@ -4,7 +4,7 @@ A high-performance string compression algorithm and library:
 
   - Very fast, especially decompression (benchmark results are for a single core, Intel Pentium G3220 running Windows 7, processing 1MB files):
     - Javascript: 3-12MB/s compression , 20-60MB/s decompression (detailed benchmarks and comparison to other Javascript libraries can be found [here](https://rotemdan.github.io/lzutf8/Documents/LZ-UTF8 Benchmarks.pdf)).
-    - C++ : 30-40MB/s compression, 300-500MB/s decompression (incomplete and unreleased, numbers may improve in the future).
+    - C++ : 30-40MB/s compression, 300-500MB/s decompression (incomplete and unreleased, figures may improve in the future).
   - Reasonable compression ratio - excellent for shorter strings (&lt;32k), but less efficient for longer ones.
   - Conceived with web and mobile use cases in mind. Algorithm was designed for and implemented in Javascript from the very beginning.
   - Simple and easy-to-use API that's consistent across all platforms, both in the browser and in Node.js.
@@ -23,9 +23,9 @@ A high-performance string compression algorithm and library:
 
   - Allows incremental compression and decompression with any arbitrary partitioning of the source material.
   - Individually compressed blocks can be concatenated and yield a valid compressed stream that may be decompressed as a single unit.
-  - **Bytestream is *backwards compatible* with plain UTF-8** - this unusual property allows both compressed and plain UTF-8 streams to be freely concatenated and decompressed as single unit (or with any arbitrary partitioning). Some possible applications:
-    - Sending "static" pre-compressed data followed by dynamically generated uncompressed data from a server (and possibly appending a compressed static "footer", or repeating the process several times).
-    - Appending both uncompressed/compressed data to a compressed log file without needing to rewrite it.
+  - **Bytestream is *backwards compatible* with plain UTF-8** - this special property allows both compressed and plain UTF-8 streams to be freely concatenated and decompressed as single unit (or with any arbitrary partitioning). Some possible applications:
+    - Sending static pre-compressed data followed by dynamically generated uncompressed data from a server (and possibly appending a compressed static "footer", or repeating the process several times).
+    - Appending both uncompressed/compressed data to a compressed log file/journal without needing to rewrite it.
     - Joining multiple source files, where some are possibly pre-compressed, and serving them as a single concatenated file without additional processing.
   - **No flushing** is needed for decompression. The decompressor will always yield the longest valid string possible from the given block.
   - Compression **always** results in a byte length that is smaller or equal to the source length, even for random source strings.
@@ -33,32 +33,13 @@ A high-performance string compression algorithm and library:
 
 *Javascript implementation:*
 
-  - Thoroughly tested on all popular browsers  - Chrome, Firefox, IE8+, Android 4+, Safari 6+.
-  - Can operate asynchronously, both in Node.js and in the browser. Uses web workers when available (and takes full advantage of [transferable objects](https://developer.mozilla.org/en-US/docs/Web/Guide/Performance/Using_web_workers#Passing_data_by_transferring_ownership_%28transferable_objects%29) if supported) and falls back to async iterations when not.
+  - Thoroughly tested on all popular browsers - Chrome, Firefox, IE8+, Android 4+, Safari 6+.
+  - Can operate asynchronously, both in Node.js and in the browser. Uses web workers when available (and takes full advantage of [transferable objects](http://www.w3.org/html/wg/drafts/html/master/#transferable-objects) if supported) and falls back to async iterations when not.
   - Allows compressed data to be efficiently packed in plain UTF-16 strings when binary storage is not available or desired (e.g. when using LocalStorage).
   - Fully supports Node.js streams.
-  - Concise, high quality and well structured code written in TypeScript (compiles to approx. ~1800 JS lines excluding comments, test and benchmark code).
+  - Concise, high quality and well structured code written in TypeScript.
 
-The LZ-UTF8 byte format is a newly designed, backwards-compatible extension for UTF-8 adding byte-aligned LZ77 pointer sequences while maintaining compatibility with plain UTF-8 byte sequences. A complete technical specification will be published when funding goal is reached.
-
-#Funding and proprietary use
-This library is currently distributed under the [GNU AGPL v3.0](http://choosealicense.com/licenses/agpl-3.0/) license and thus **cannot** be used in most proprietary, closed-source applications and websites.
-
-If you or your company find it valuable and wish it to be made available under a more permissive license - enabling unrestricted commercial use for yourself and others, consider participating in the *fundraiser*:
-
-<a href='https://pledgie.com/campaigns/27200'><img alt='Click here to lend your support to: LZ-UTF8 string compression library and make a donation at pledgie.com !' src='https://pledgie.com/campaigns/27200.png?skin_name=chrome' border='0' ></a>
-
-As soon as I gather a minimum total of **7,000 USD** I am committed to release:
-
-  - All source code, for existing and future versions, under the [**MIT License**](http://choosealicense.com/licenses/mit/).
-  - All documentation under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
-  - A detailed technical specification and implementer's guide under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
-
-As a stretch goal, when **10,000 USD** is reached I will release a highly optimized cross-platform C++ implementation under the same license, both as a library and as a CLI application.
-
-Companies or individuals who pledge **100 USD** or more receive a special *Sponsor's permit* that immediately exempts them from the AGPL's obligation to disclose source code of software using or derived from this library, effectively granting them permission for proprietary use (permit is granted once for unlimited use, regardless of company size, and will be given in a digitally signed form, contact me for more details).
-
-The amounts stated are comparable to about a month or two's paycheck, which I find reasonable for the large amount of full-time unpayed work I've put forth to design, develop, test, benchmark, document and eventually bring this library to the quality and polish it is right now. Very little (if any) profit, is intended.
+The LZ-UTF8 byte format is a newly designed, backwards-compatible extension for UTF-8 adding byte-aligned LZ77 pointer sequences while maintaining compatibility with plain UTF-8 byte sequences. A complete technical specification will be published soon.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -379,8 +360,7 @@ Decodes a binary string.
 *remarks:* Multiple binary strings may be freely concatenated and decoded as a single string. This is made possible by ending every sequence with special marker (char code 32768 for an even-length sequence and 32769 for a an odd-length sequence).
 
 #License
-Copyright (c) 2014, Rotem Dan  
+Copyright (c) 2014-2015, Rotem Dan  
 All rights reserved
 
-Source code is available under the [GNU Affero GPL v3.0 license](http://choosealicense.com/licenses/agpl-3.0/).
-Documentation under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+Source code and documentation are available under the [MIT license](http://choosealicense.com/licenses/mit/).

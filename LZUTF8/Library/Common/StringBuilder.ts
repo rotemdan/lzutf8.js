@@ -37,13 +37,12 @@
 
 		private flushBufferToOutputString()
 		{
-			this.outputString += StringBuilder.charCodeArrayToString(this.outputBuffer.slice(0, this.outputPosition));
-			this.outputPosition = 0;
-		}
+			if (this.outputPosition === 1024)
+				this.outputString += String.fromCharCode.apply(null, this.outputBuffer);
+			else
+				this.outputString += String.fromCharCode.apply(null, this.outputBuffer.slice(0, this.outputPosition));
 
-		private static charCodeArrayToString(charCodes: number[])
-		{
-			return String.fromCharCode.apply(null, charCodes);
+			this.outputPosition = 0;
 		}
 	}
 

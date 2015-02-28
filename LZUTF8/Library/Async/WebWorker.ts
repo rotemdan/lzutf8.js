@@ -150,7 +150,7 @@
 
 		static registerListenerIfRunningInWebWorker()
 		{
-			if (typeof self == "object" && self.addEventListener != undefined)
+			if (typeof self == "object" && self.document === undefined && self.addEventListener != undefined)
 			{
 				self.addEventListener("message", WebWorker.workerMessageHandler);
 
