@@ -2,45 +2,39 @@
 
 A high-performance string compression algorithm and library:
 
-  - Very fast, especially decompression (benchmark results are for a single core, Intel Pentium G3220 running Windows 7, processing 1MB files):
-    - Javascript: 3-12MB/s compression , 20-60MB/s decompression (detailed benchmarks and comparison to other Javascript libraries can be found [here](https://rotemdan.github.io/lzutf8/Documents/LZ-UTF8 Benchmarks.pdf)).
-    - C++ : 30-40MB/s compression, 300-500MB/s decompression (incomplete and unreleased, figures may improve in the future).
+  - Very fast, especially decompression (times are for a low-end desktop PC processing 1MB files):
+    - Javascript: 3-14MB/s compression , 20-80MB/s decompression (detailed benchmarks and comparison to other Javascript libraries can be found [here](https://goo.gl/1aFNxK)).
+    - C++ : 30-40MB/s compression, 300-500MB/s decompression (currently unreleased, figures may improve in the future).
   - Reasonable compression ratio - excellent for shorter strings (&lt;32k), but less efficient for longer ones.
-  - Conceived with web and mobile use cases in mind. Algorithm was designed for and implemented in Javascript from the very beginning.
+  - Conceived with web and mobile use cases in mind. Designed for and implemented in Javascript from the very beginning.
   - Simple and easy-to-use API that's consistent across all platforms, both in the browser and in Node.js.
   - 100% patent-free.
 
-#Quick start
-
-  - Try the [online demo](https://rotemdan.github.io/lzutf8/Demo/) to quickly test and benchmark different inputs.
-  - Download the [latest build](https://raw.githubusercontent.com/rotemdan/lzutf8.js/master/ReleaseBuild/lzutf8.js) (or the [minified version](https://raw.githubusercontent.com/rotemdan/lzutf8.js/master/ReleaseBuild/lzutf8.min.js)).
-  - Run the [automated tests](https://rotemdan.github.io/lzutf8/Tests/).
-  - Run the [core benchmarks](https://rotemdan.github.io/lzutf8/Benchmarks/) (*note: in development, only a handful are currently available*).
-  - Read the [complete technical specification](https://rotemdan.github.io/lzutf8/Documents/LZ-UTF8 Technical Specification.pdf).
-
-#Technical overview
-
-*Design objectives and special properties:*
-
-  - Allows incremental compression and decompression with any arbitrary partitioning of the source material.
-  - Individually compressed blocks can be concatenated and yield a valid compressed stream that may be decompressed as a single unit.
-  - **Bytestream is *backwards compatible* with plain UTF-8** - this special property allows both compressed and plain UTF-8 streams to be freely concatenated and decompressed as single unit (or with any arbitrary partitioning). Some possible applications:
+*Technical objectives and properties:*
+  - Based on **[LZ77](https://en.wikipedia.org/wiki/LZ77_and_LZ78)**. An efficient decompressor implementations should essentially run in realtime as it only involves the copying of raw memory blocks.
+  - Compresses UTF-8 and 7-bit ASCII strings **only**. Doesn't support arbitrary binary content or other string encodings.
+  - Byte aligned, meaning individually compressed blocks can be freely concatenated and intermixed with each other and yield a valid compressed stream than decompresses to the equivalent concatenated strings.
+  - **Fully compatible with UTF-8**. Any valid UTF-8 bytestream is also a valid LZ-UTF8 stream (but not vice versa). This special property allows both compressed and plain UTF-8 streams to be freely concatenated and decompressed as single unit (or with any arbitrary partitioning). Some possible applications:
     - Sending static pre-compressed data followed by dynamically generated uncompressed data from a server (and possibly appending a compressed static "footer", or repeating the process several times).
     - Appending both uncompressed/compressed data to a compressed log file/journal without needing to rewrite it.
     - Joining multiple source files, where some are possibly pre-compressed, and serving them as a single concatenated file without additional processing.
-  - **No flushing** is needed for decompression. The decompressor will always yield the longest valid string possible from the given block.
-  - Compression **always** results in a byte length that is smaller or equal to the source length, even for random source strings.
-  - One single scheme, as no metadata is stored in the compressed stream.
+  - Compression always result in a byte count smaller or equal to the source material size (a consequence of not applying an entropy coder).
 
 *Javascript implementation:*
 
   - Thoroughly tested on all popular browsers - Chrome, Firefox, IE8+, Android 4+, Safari 6+.
   - Can operate asynchronously, both in Node.js and in the browser. Uses web workers when available (and takes full advantage of [transferable objects](http://www.w3.org/html/wg/drafts/html/master/#transferable-objects) if supported) and falls back to async iterations when not.
-  - Allows compressed data to be efficiently packed in plain UTF-16 strings when binary storage is not available or desired (e.g. when using LocalStorage).
-  - Fully supports Node.js streams.
+  - Allows compressed data to be efficiently packed in plain UTF-16 strings when binary storage is not available or desired (e.g. when using LocalStorage or older IndexedDB).
+  - Supports Node.js streams.
   - Concise, high quality and well structured code written in TypeScript.
 
-Continue reading a more detalied technical specification [here](https://rotemdan.github.io/lzutf8/Documents/LZ-UTF8 Technical Specification.pdf).
+#Quick start
+
+  - Try the [online demo](https://rotemdan.github.io/lzutf8/Demo/) to test and benchmark different inputs.
+  - Download the [latest build](https://raw.githubusercontent.com/rotemdan/lzutf8.js/master/ReleaseBuild/lzutf8.js) (or the [minified version](https://raw.githubusercontent.com/rotemdan/lzutf8.js/master/ReleaseBuild/lzutf8.min.js)).
+  - Run the [automated tests](https://rotemdan.github.io/lzutf8/Tests/).
+  - Run the [core benchmarks](https://rotemdan.github.io/lzutf8/Benchmarks/).
+  - Read the [technical paper](https://goo.gl/0g0fzm).
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->

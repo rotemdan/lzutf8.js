@@ -1,10 +1,10 @@
 /*
- LZ-UTF8 v0.1.7
+ LZ-UTF8 v0.1.8
 
  Copyright (c) 2014-2015, Rotem Dan <rotemdan@gmail.com> 
  Released under the MIT license.
 
- Build date: 2015-02-28 
+ Build date: 2015-03-05 
 */
 var LZUTF8;
 (function (LZUTF8) {
@@ -593,8 +593,8 @@ var LZUTF8;
                 }
                 if (!withinAMatchedRange)
                     this.outputRawByte(inputValue);
-                var streamPosition = this.inputBufferStreamOffset + readPosition;
-                this.prefixHashTable.addValueToBucket(targetBucketIndex, streamPosition);
+                var inputStreamPosition = this.inputBufferStreamOffset + readPosition;
+                this.prefixHashTable.addValueToBucket(targetBucketIndex, inputStreamPosition);
             }
             return this.outputBuffer.subarray(0, this.outputBufferPosition);
         };

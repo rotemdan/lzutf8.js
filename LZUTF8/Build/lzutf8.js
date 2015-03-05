@@ -71,10 +71,10 @@ var LZUTF8;
                 if (!withinAMatchedRange)
                     this.outputRawByte(inputValue);
                 // Add the current 4 byte sequence to the hash table 
-                // (note that input buffer offset starts at 1, so it will never equal 0, thus the hash
-                // table can safely use 0 as an empty slot indicator - this property is used by the custom hash table implementation).
-                var streamPosition = this.inputBufferStreamOffset + readPosition;
-                this.prefixHashTable.addValueToBucket(targetBucketIndex, streamPosition);
+                // (note that input stream offset starts at 1, so it will never equal 0, thus the hash
+                // table can safely use 0 as an empty bucket slot indicator - this property is critical for the  custom hash table implementation).
+                var inputStreamPosition = this.inputBufferStreamOffset + readPosition;
+                this.prefixHashTable.addValueToBucket(targetBucketIndex, inputStreamPosition);
             }
             //this.logStatisticsToConsole(readPosition - bufferStartingReadOffset);
             return this.outputBuffer.subarray(0, this.outputBufferPosition);
