@@ -36,10 +36,12 @@
 
 				if (inputValue >>> 6 != 3)
 				{
+					// If at the continuation byte of a UTF-8 codepoint sequence, output the literal value and continue
 					this.outputByte(inputValue);
 					continue;
 				}
 
+				// At this point it is know that the current byte is the lead byte of either a UTF-8 codepoint or a sized pointer sequence.
 				var sequenceLengthIdentifier = inputValue >>> 5; // 6 for 2 bytes, 7 for at least 3 bytes
 
 				// If bytes in read position imply the start of a truncated input sequence (either a literal codepoint or a pointer)
@@ -51,9 +53,10 @@
 					break;
 				}
 
+				// If at the leading byte of a UTF-8 codepoint byte sequence
 				if (input[readPosition + 1] >>> 7 === 1)
 				{
-					// Beginning of a codepoint byte sequence
+					// Output the literal value
 					this.outputByte(inputValue);
 				}
 				else
@@ -75,6 +78,7 @@
 
 					var matchPosition = this.outputPosition - matchDistance;
 
+					// Copy the match bytes to output
 					for (var offset = 0; offset < matchLength; offset++)
 						this.outputByte(this.outputBuffer[matchPosition + offset]);
 				}

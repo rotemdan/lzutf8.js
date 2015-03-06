@@ -91,7 +91,7 @@
 
 				// Add the current 4 byte sequence to the hash table 
 				// (note that input stream offset starts at 1, so it will never equal 0, thus the hash
-				// table can safely use 0 as an empty bucket slot indicator - this property is critical for the  custom hash table implementation).
+				// table can safely use 0 as an empty bucket slot indicator - this property is critical for the custom hash table implementation).
 				var inputStreamPosition = this.inputBufferStreamOffset + readPosition;
 				this.prefixHashTable.addValueToBucket(targetBucketIndex, inputStreamPosition);
 			}

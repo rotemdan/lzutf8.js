@@ -1,40 +1,47 @@
+
+
 #LZ-UTF8
 
-A high-performance string compression algorithm and library:
+
+A high-performance string compression library and stream format:
 
   - Very fast, especially decompression (times are for a low-end desktop PC processing 1MB files):
-    - Javascript: 3-14MB/s compression , 20-80MB/s decompression (detailed benchmarks and comparison to other Javascript libraries can be found [here](https://goo.gl/1aFNxK)).
-    - C++ : 30-40MB/s compression, 300-500MB/s decompression (currently unreleased, figures may improve in the future).
+    - Javascript: 3-14MB/s compression , 20-80MB/s decompression (detailed benchmarks and comparison to other Javascript libraries can be found in the [technical paper](https://goo.gl/0g0fzm)).
+    - C++: 30-40MB/s compression, 300-500MB/s decompression (currently unreleased, figures may improve in the future).
   - Reasonable compression ratio - excellent for shorter strings (&lt;32k), but less efficient for longer ones.
   - Conceived with web and mobile use cases in mind. Designed for and implemented in Javascript from the very beginning.
   - Simple and easy-to-use API that's consistent across all platforms, both in the browser and in Node.js.
   - 100% patent-free.
 
 *Technical objectives and properties:*
-  - Based on **[LZ77](https://en.wikipedia.org/wiki/LZ77_and_LZ78)**. An efficient decompressor implementations should essentially run in realtime as it only involves the copying of raw memory blocks.
+
+  - Based on **[LZ77](https://en.wikipedia.org/wiki/LZ77_and_LZ78)**. An efficient decompressor implementation should run virtually in realtime as the decompression process only involves the copying of raw memory blocks.
   - Compresses UTF-8 and 7-bit ASCII strings **only**. Doesn't support arbitrary binary content or other string encodings.
-  - Byte aligned, meaning individually compressed blocks can be freely concatenated and intermixed with each other and yield a valid compressed stream than decompresses to the equivalent concatenated strings.
+  - Byte aligned, meaning individually compressed blocks can be freely concatenated and intermixed with each other and yield a valid compressed stream that decompresses to the equivalent concatenated strings.
   - **Fully compatible with UTF-8**. Any valid UTF-8 bytestream is also a valid LZ-UTF8 stream (but not vice versa). This special property allows both compressed and plain UTF-8 streams to be freely concatenated and decompressed as single unit (or with any arbitrary partitioning). Some possible applications:
     - Sending static pre-compressed data followed by dynamically generated uncompressed data from a server (and possibly appending a compressed static "footer", or repeating the process several times).
     - Appending both uncompressed/compressed data to a compressed log file/journal without needing to rewrite it.
     - Joining multiple source files, where some are possibly pre-compressed, and serving them as a single concatenated file without additional processing.
-  - Compression always result in a byte count smaller or equal to the source material size (a consequence of not applying an entropy coder).
+  - Compression always results in a byte count smaller or equal to the source material size (a consequence of not applying an entropy coder).
 
 *Javascript implementation:*
 
-  - Thoroughly tested on all popular browsers - Chrome, Firefox, IE8+, Android 4+, Safari 6+.
+  - Thoroughly tested on all popular browsers and platforms - Chrome, Firefox, IE8+, Android 4+, Safari 6+ and Node.js 0.10+.
+  - Allows compressed data to be efficiently packed in plain UTF-16 strings (see the "BinaryString" encoding) when binary storage is not available or desired (e.g. when using LocalStorage or older IndexedDB).
   - Can operate asynchronously, both in Node.js and in the browser. Uses web workers when available (and takes full advantage of [transferable objects](http://www.w3.org/html/wg/drafts/html/master/#transferable-objects) if supported) and falls back to async iterations when not.
-  - Allows compressed data to be efficiently packed in plain UTF-16 strings when binary storage is not available or desired (e.g. when using LocalStorage or older IndexedDB).
   - Supports Node.js streams.
-  - Concise, high quality and well structured code written in TypeScript.
+  - Well structured and documented code written in TypeScript.
+
 
 #Quick start
+
 
   - Try the [online demo](https://rotemdan.github.io/lzutf8/Demo/) to test and benchmark different inputs.
   - Download the [latest build](https://raw.githubusercontent.com/rotemdan/lzutf8.js/master/ReleaseBuild/lzutf8.js) (or the [minified version](https://raw.githubusercontent.com/rotemdan/lzutf8.js/master/ReleaseBuild/lzutf8.min.js)).
   - Run the [automated tests](https://rotemdan.github.io/lzutf8/Tests/).
   - Run the [core benchmarks](https://rotemdan.github.io/lzutf8/Benchmarks/).
   - Read the [technical paper](https://goo.gl/0g0fzm).
+
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -70,8 +77,13 @@ A high-performance string compression algorithm and library:
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
+
 #API Reference
+
+
 ##Getting started
+
+
 Browser:
 ```html
 <script id="lzutf8" src="path/to/lzutf8.js"></script>
@@ -86,11 +98,19 @@ npm install lzutf8
 var LZUTF8 = require('lzutf8');
 ```
 
+
 ##Core Types
+
+
 *`ByteArray`* - a platform dependent array of bytes. Based on the platform and availability of the underlying types, would either be a regular `Array` (IE8, IE9), `Uint8Array` (IE10+, all other modern browsers) or `Buffer` (Node.js).
+
+
 ##Core Methods
 
+
+
 ### LZUTF8.compress(..)
+
 ```js
 var output = LZUTF8.compress(input, [options]);
 ```
@@ -106,6 +126,7 @@ Compresses the given input data.
 
 
 ### LZUTF8.decompress(..)
+
 ```js
 var output = LZUTF8.decompress(input, [options]);
 ```
@@ -125,6 +146,7 @@ Decompresses the given compressed data.
 
 
 ### LZUTF8.compressAsync(..)
+
 ```js
 LZUTF8.compressAsync(input, [options], callback);
 ```
@@ -147,6 +169,7 @@ LZUTF8.compressAsync(input, {outputEncoding: "BinaryString"}, function (result) 
 ```
 
 ### LZUTF8.decompressAsync(..)
+
 ```js
 LZUTF8.decompressAsync(input, [options], callback);
 ```
@@ -172,6 +195,7 @@ LZUTF8.decompressAsync(input, {inputEncoding: "BinaryString", outputEncoding: "B
 
 ### *General notes on async operations*
 
+
 Web workers are available if supported by the browser and the library's script source is referenced in the document with a `<script>` tag having `id` of `"lzutf8"` (its `src` attribute is then used as the source URI for the web worker). In cases where a script tag is not available (such as when the script is dynamically loaded or bundled with other scripts) the value of `LZUTF8.WebWorker.scriptURI` may alternatively be set before the first async method call.
 
 Workers are optimized for various input and output encoding schemes, so only the minimal amount of work is done in the main Javascript thread. Internally, conversion to or from various encodings is performed within the worker itself, reducing delays and allowing greater parallelization. Additionally, if [transferable objects](http://www.w3.org/html/wg/drafts/html/master/#transferable-objects) are supported by the browser, binary arrays will be transferred virtually instantly to and from the worker.
@@ -180,9 +204,12 @@ Only one worker instance is spawned per page - multiple operations are processed
 
 In case a worker is not available (such as in Node.js, IE8, IE9, Android browser < 4.4) or desired, it will iteratively process 64KB blocks while yielding to the event loop whenever a 20ms interval has elapsed. *Note:* In this execution method, parallel operations are not guaranteed to complete by their initiation order.
 
+
 ## Lower-level Methods
 
+
 ###LZUTF8.Compressor
+
 ```js
 var compressor = new LZUTF8.Compressor();
 ```
@@ -191,6 +218,7 @@ Creates a compressor object. Can be used to incrementally compress a multi-part 
 *returns*: a new `LZUTF8.Compressor` object
 
 ### LZUTF8.Compressor.compressBlock(..)
+
 ```js
 var compressor = new LZUTF8.Compressor();
 var compressedBlock = compressor.compressBlock(input);
@@ -212,6 +240,7 @@ var compressedBlock3 = compressor.compressBlock(block3);
 ```
 
 ###LZUTF8.Decompressor
+
 ```js
 var decompressor = new LZUTF8.Deompressor();
 ```
@@ -220,6 +249,7 @@ Creates a decompressor object. Can be used to incrementally decompress a multi-p
 *returns*: a new `LZUTF8.Decompressor` object
 
 ### LZUTF8.Deompressor.decompressBlock(..)
+
 ```js
 var decompressor = new LZUTF8.Decompressor();
 var decompressedBlock = decompressor.decompressBlock(input);
@@ -243,6 +273,7 @@ var decompressedBlock3 = decompressor.decompressBlock(block3);
 ```
 
 ### LZUTF8.Deompressor.decompressBlockToString(..)
+
 ```js
 var decompressor = new LZUTF8.Decompressor();
 var decompressedBlockAsString = decompressor.decompressBlockToString(input);
@@ -255,7 +286,9 @@ Decompresses the given block of compressed bytes  and converts the result to a `
 
 *Remarks*: will always return the longest valid string possible from the given input block. Incomplete input or output byte sequences will be prepended to the next block.
 
+
 ## Node.js only methods
+
 
 ###LZUTF8.createCompressionStream()
 
@@ -282,9 +315,12 @@ var decompressionStream = LZUTF8.createDecompressionStream();
 
 Creates a decompression stream. The stream will accept and return Buffers.
 
+
 ##Character encoding methods
 
+
 ### LZUTF8.encodeUTF8(..)
+
 ```js
 var output = LZUTF8.encodeUTF8(input);
 ```
@@ -294,7 +330,9 @@ Encodes a string to UTF-8.
 
 *returns*: encoded bytes as `ByteArray`
 
+
 ### LZUTF8.decodeUTF8(..)
+
 ```js
 var outputString = LZUTF8.encodeUTF8(input);
 ```
@@ -305,8 +343,8 @@ Decodes UTF-8 bytes to a String.
 *returns*: decoded bytes as `String`
 
 
-
 ### LZUTF8.encodeBase64(..)
+
 ```js
 var outputString = LZUTF8.encodeBase64(bytes);
 ```
@@ -319,6 +357,7 @@ Encodes bytes to a Base64 string.
 *remarks*: Maps every 3 consecutive input bytes to 4 output characters of the set ``A-Z``,``a-z``,``0-9``,``+``,``/`` (a total of 64 characters). Increases stored byte size to 133.33% of original (when stored as ASCII or UTF-8) or 266% (stored as UCS-2/UTF-16).
 
 ### LZUTF8.decodeBase64(..)
+
 ```js
 var output = LZUTF8.decodeBase64(input);
 ```
@@ -331,6 +370,7 @@ Decodes UTF-8 bytes to a String.
 *remarks:* the decoder cannot decode concatenated base64 strings. Although it is possible to add this capability to the JS version, compatibility with other decoders (such as the Node.js decoder) prevents this feature to be added.
 
 ### LZUTF8.encodeBinaryString(..)
+
 ```js
 var outputString = LZUTF8.encodeBinaryString(bytes);
 ```
@@ -343,6 +383,7 @@ Encodes binary bytes to a valid UTF-16 string.
 *remarks*: To comply with the UTF-16 standard, it only uses the bottom 15 bits of each character, effectively mapping every 15 input bits to a single 16 bit output character. This Increases the stored byte size to 106.66% of original.
 
 ### LZUTF8.decodeBinaryString(..)
+
 ```js
 var output = LZUTF8.decodeBinaryString(input);
 ```
@@ -354,8 +395,9 @@ Decodes a binary string.
 
 *remarks:* Multiple binary strings may be freely concatenated and decoded as a single string. This is made possible by ending every sequence with special marker (char code 32768 for an even-length sequence and 32769 for a an odd-length sequence).
 
+
 #License
+
 Copyright (c) 2014-2015, Rotem Dan &lt;rotemdan@gmail.com&gt;.
-All rights reserved.
 
 Source code and documentation are available under the [MIT license](http://choosealicense.com/licenses/mit/).
