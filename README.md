@@ -1,6 +1,4 @@
-
-
-#LZ-UTF8
+# LZ-UTF8
 
 
 A high-performance string compression library and stream format:
@@ -33,7 +31,7 @@ A high-performance string compression library and stream format:
   - Well structured and documented code written in TypeScript.
 
 
-#Quick start
+# Quick start
 
 
   - Try the [online demo](https://rotemdan.github.io/lzutf8/Demo/) to test and benchmark different inputs.
@@ -45,7 +43,7 @@ A high-performance string compression library and stream format:
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-#Table of Contents
+# Table of Contents
 
 - [API Reference](#api-reference)
   - [Getting started](#getting-started)
@@ -78,10 +76,10 @@ A high-performance string compression library and stream format:
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 
-#API Reference
+# API Reference
 
 
-##Getting started
+## Getting started
 
 
 Browser:
@@ -99,13 +97,13 @@ var LZUTF8 = require('lzutf8');
 ```
 
 
-##Core Types
+## Core Types
 
 
 *`ByteArray`* - a platform dependent array of bytes. Based on the platform and availability of the underlying types, would either be a regular `Array` (IE8, IE9), `Uint8Array` (IE10+, all other modern browsers) or `Buffer` (Node.js).
 
 
-##Core Methods
+## Core Methods
 
 
 
@@ -208,7 +206,7 @@ In case a worker is not available (such as in Node.js, IE8, IE9, Android browser
 ## Lower-level Methods
 
 
-###LZUTF8.Compressor
+### LZUTF8.Compressor
 
 ```js
 var compressor = new LZUTF8.Compressor();
@@ -239,7 +237,7 @@ var compressedBlock3 = compressor.compressBlock(block3);
 ..
 ```
 
-###LZUTF8.Decompressor
+### LZUTF8.Decompressor
 
 ```js
 var decompressor = new LZUTF8.Deompressor();
@@ -307,7 +305,7 @@ var compressionStream = LZUTF8.createCompressionStream();
 sourceReadStrem.pipe(compressionStream).pipe(destWriteStream);
 ```
 
-###LZUTF8.createDecompressionStream()
+### LZUTF8.createDecompressionStream()
 
 ```js
 var decompressionStream = LZUTF8.createDecompressionStream();
@@ -316,7 +314,7 @@ var decompressionStream = LZUTF8.createDecompressionStream();
 Creates a decompression stream. The stream will accept and return Buffers.
 
 
-##Character encoding methods
+## Character encoding methods
 
 
 ### LZUTF8.encodeUTF8(..)
@@ -396,7 +394,7 @@ Decodes a binary string.
 *remarks:* Multiple binary strings may be freely concatenated and decoded as a single string. This is made possible by ending every sequence with special marker (char code 32768 for an even-length sequence and 32769 for a an odd-length sequence).
 
 
-#License
+# License
 
 Copyright (c) 2014-2015, Rotem Dan &lt;rotemdan@gmail.com&gt;.
 
