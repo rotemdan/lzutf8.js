@@ -43,7 +43,11 @@ A high-performance string compression library and stream format:
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+
 # Table of Contents
+
+
 
 - [API Reference](#api-reference)
   - [Getting started](#getting-started)
@@ -288,7 +292,7 @@ Decompresses the given block of compressed bytes  and converts the result to a `
 ## Node.js only methods
 
 
-###LZUTF8.createCompressionStream()
+### LZUTF8.createCompressionStream()
 
 ```js
 var compressionStream = LZUTF8.createCompressionStream();
