@@ -2001,15 +2001,15 @@ var LZUTF8;
             addTestsForInputString("Lorem ipsum", LZUTF8.TestData.loremIpsum);
             addTestsForInputString("Chinese text", LZUTF8.TestData.chineseText);
             addTestsForInputString("Hindi text", LZUTF8.TestData.hindiText);
-            addTestsForInputString("Random unicode characters (up to codepoint 1112064)", LZUTF8.Random.getRandomUTF16StringOfLength(10000));
+            addTestsForInputString("Random unicode characters (up to codepoint 1112064)", LZUTF8.Random.getRandomUTF16StringOfLength(2000));
             addTestsForInputString("Long mixed text", LZUTF8.TestData.hindiText + LZUTF8.TestData.loremIpsum + LZUTF8.TestData.hindiText + LZUTF8.TestData.chineseText + LZUTF8.TestData.chineseText);
-            addTestsForInputString("Repeating String 'aaaaaaa'..", LZUTF8.repeatString("aaaaaaaaaa", 10000));
+            addTestsForInputString("Repeating String 'aaaaaaa'..", LZUTF8.repeatString("aaaaaaaaaa", 2000));
         });
         describe("Sycnhronous operations with different input and output encodings", function () {
             var sourceAsString = LZUTF8.TestData.hindiText.substr(0, 100);
             var sourceAsByteArray = LZUTF8.encodeUTF8(sourceAsString);
             function addTestForEncodingCombination(testedSourceEncoding, testedCompressedEncoding, testedDecompressedEncoding) {
-                it("Successfuly compresses compresses a " + testedSourceEncoding + " to a " + testedCompressedEncoding + " and decompresses to a " + testedDecompressedEncoding, function () {
+                it("Successfuly compresses a " + testedSourceEncoding + " to a " + testedCompressedEncoding + " and decompresses to a " + testedDecompressedEncoding, function () {
                     var source;
                     if (testedSourceEncoding == "String")
                         source = sourceAsString;
@@ -2382,4 +2382,40 @@ var LZUTF8;
 /// <reference path="./Benchmarks/Common/Benchmark.ts"/>
 /// <reference path="./Tests/TestSuites/CompressionTests.spec.ts"/>
 /// <reference path="./Tests/TestSuites/EncodingTests.spec.ts"/>
+/// <reference path="./LZUTF8/Library/Dependencies/node-internal.d.ts"/>
+/// <reference path="./LZUTF8/Tests/Dependencies/jasmine.d.ts"/>
+/// <reference path="./LZUTF8/Library/Common/Globals.ext.ts"/>
+/// <reference path="./LZUTF8/Library/Compression/Compressor.ts"/>
+/// <reference path="./LZUTF8/CLI/CLI.ts"/>
+/// <reference path="./LZUTF8/Library/Async/AsyncCompressor.ts"/>
+/// <reference path="./LZUTF8/Library/Async/AsyncDecompressor.ts"/>
+/// <reference path="./LZUTF8/Library/Async/WebWorker.ts"/>
+/// <reference path="./LZUTF8/Library/Common/ArraySegment.ts"/>
+/// <reference path="./LZUTF8/Library/Common/ArrayTools.ts"/>
+/// <reference path="./LZUTF8/Library/Common/ByteArray.ts"/>
+/// <reference path="./LZUTF8/Library/Common/CompressionCommon.ts"/>
+/// <reference path="./LZUTF8/Library/Common/EventLoop.ts"/>
+/// <reference path="./LZUTF8/Library/Common/GlobalInterfaces.ts"/>
+/// <reference path="./LZUTF8/Benchmarks/BenchmarkSuites/AsyncBenchmarks.ts"/>
+/// <reference path="./LZUTF8/Library/Common/ObjectTools.ts"/>
+/// <reference path="./LZUTF8/Library/Common/StringBuilder.ts"/>
+/// <reference path="./LZUTF8/Library/Common/Timer.ts"/>
+/// <reference path="./LZUTF8/Benchmarks/BenchmarkSuites/CompressionBenchmarks.ts"/>
+/// <reference path="./LZUTF8/Library/Compression/CompressorCustomHashTable.ts"/>
+/// <reference path="./LZUTF8/Library/Compression/CompressorSimpleHashTable.ts"/>
+/// <reference path="./LZUTF8/Library/Decompression/Decompressor.ts"/>
+/// <reference path="./LZUTF8/Benchmarks/BenchmarkSuites/EncodingBenchmarks.ts"/>
+/// <reference path="./LZUTF8/Library/Encoding/Base64.ts"/>
+/// <reference path="./LZUTF8/Library/Encoding/BinaryString.ts"/>
+/// <reference path="./LZUTF8/Library/Encoding/Misc.ts"/>
+/// <reference path="./LZUTF8/Library/Encoding/UTF8.ts"/>
+/// <reference path="./LZUTF8/Library/Exports/Exports.ts"/>
+/// <reference path="./LZUTF8/Tests/Common/JasmineFiller.ts"/>
+/// <reference path="./LZUTF8/Tests/Common/Random.ts"/>
+/// <reference path="./LZUTF8/Tests/Common/TestData.ts"/>
+/// <reference path="./LZUTF8/Tests/Common/TestingTools.ts"/>
+/// <reference path="./LZUTF8/Benchmarks/Common/Benchmark.ts"/>
+/// <reference path="./LZUTF8/_references.ts"/>
+/// <reference path="./LZUTF8/Tests/TestSuites/CompressionTests.spec.ts"/>
+/// <reference path="./LZUTF8/Tests/TestSuites/EncodingTests.spec.ts"/>
 //# sourceMappingURL=lzutf8.js.map

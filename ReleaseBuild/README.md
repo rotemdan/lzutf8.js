@@ -1,5 +1,6 @@
 # LZ-UTF8
 
+[![npm version](https://badge.fury.io/js/lzutf8.svg)](http://badge.fury.io/js/lzutf8)
 
 A high-performance string compression library and stream format:
 
@@ -336,7 +337,7 @@ Encodes a string to UTF-8.
 ### LZUTF8.decodeUTF8(..)
 
 ```js
-var outputString = LZUTF8.encodeUTF8(input);
+var outputString = LZUTF8.decodeUTF8(input);
 ```
 Decodes UTF-8 bytes to a String.
 

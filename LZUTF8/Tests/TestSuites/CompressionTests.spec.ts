@@ -146,9 +146,9 @@ module LZUTF8
 			addTestsForInputString("Lorem ipsum", TestData.loremIpsum);
 			addTestsForInputString("Chinese text", TestData.chineseText);
 			addTestsForInputString("Hindi text", TestData.hindiText);
-			addTestsForInputString("Random unicode characters (up to codepoint 1112064)", Random.getRandomUTF16StringOfLength(10000));
+			addTestsForInputString("Random unicode characters (up to codepoint 1112064)", Random.getRandomUTF16StringOfLength(2000));
 			addTestsForInputString("Long mixed text", TestData.hindiText + TestData.loremIpsum + TestData.hindiText + TestData.chineseText + TestData.chineseText);
-			addTestsForInputString("Repeating String 'aaaaaaa'..", repeatString("aaaaaaaaaa", 10000));
+			addTestsForInputString("Repeating String 'aaaaaaa'..", repeatString("aaaaaaaaaa", 2000));
 		});
 
 		describe("Sycnhronous operations with different input and output encodings", () =>
@@ -158,7 +158,7 @@ module LZUTF8
 
 			function addTestForEncodingCombination(testedSourceEncoding: string, testedCompressedEncoding: string, testedDecompressedEncoding: string)
 			{
-				it("Successfuly compresses compresses a " + testedSourceEncoding + " to a " + testedCompressedEncoding + " and decompresses to a " + testedDecompressedEncoding, () =>
+				it("Successfuly compresses a " + testedSourceEncoding + " to a " + testedCompressedEncoding + " and decompresses to a " + testedDecompressedEncoding, () =>
 				{
 					var source: any;
 					if (testedSourceEncoding == "String")

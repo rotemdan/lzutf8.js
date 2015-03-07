@@ -1,8 +1,3 @@
-/*
-  This is a Grunt build script for release builds, stored in the ReleaseBuild/ folder. Debug builds, which also 
-  include the testing and benchmark code, are generated within visual studio and stored in the LZUTF8/Build/ folder.
-*/
-
 module.exports = function (grunt)
 {
 	var releaseBuildBanner = '/*\n LZ-UTF8 v<%=pkg.version%>\n\n Copyright (c) 2014-2015, Rotem Dan <rotemdan@gmail.com> \n Released under the MIT license.\n\n Build date: <%= grunt.template.today("yyyy-mm-dd") %> \n*/\n';
@@ -13,19 +8,39 @@ module.exports = function (grunt)
 
 		shell:
 		{
-			generateTypescriptReferenceFile:
+			generateDebugBuildReferencesFile:
+			{
+				command: 'node ./TSBuildTools/GenerateTypescriptReferenceFile.js ./LZUTF8 ./_DebugBuildReferences.ts'
+			},
+			
+			generateReleaseBuildReferencesFile:
 			{
 				command: 'node ./TSBuildTools/GenerateTypescriptReferenceFile.js ./LZUTF8/Library ./_ReleaseBuildReferences.ts'
 			},
-
-			deleteTypescriptReferenceFile:
-			{
-				command: 'del _ReleaseBuildReferences.ts'
-			}
+		},
+		
+		clean: 
+		{
+			deleteDebugBuildReferencesFile: ["_DebugBuildReferences.ts"],
+			deleteReleaseBuildReferencesFile: ["_ReleaseBuildReferences.ts"],
 		},
 
 		ts:
 		{
+			buildDebug:
+			{
+				src: './_DebugBuildReferences.ts',
+				out: './LZUTF8/Build/lzutf8.js',
+				options:
+				{
+					target: 'es3',
+					module: 'commonjs',
+					fast: 'never',
+					sourceMap: true,
+					removeComments: false
+				}
+			},
+			
 			buildRelease:
 			{
 				src: './_ReleaseBuildReferences.ts',
@@ -35,8 +50,25 @@ module.exports = function (grunt)
 					target: 'es3',
 					module: 'commonjs',
 					fast: 'never',
-					sourceMap: false
+					sourceMap: false,
+					removeComments: true
 				}
+			}
+		},
+		
+		jasmine_nodejs:
+		{
+			options:
+			{
+				specNameSuffix: ".js"
+			},
+			
+			runJasmineTestsWithinDebugBuild:
+			{
+				specs:
+				[
+					"./LZUTF8/Build/lzutf8.js"
+				]
 			}
 		},
 
@@ -96,15 +128,42 @@ module.exports = function (grunt)
 
 	require('load-grunt-tasks')(grunt);
 
-	// Default task(s).
 	grunt.registerTask('default',
 		[
-			'shell:generateTypescriptReferenceFile',
+			// Generate debug build
+			'shell:generateDebugBuildReferencesFile',
+			'ts:buildDebug',
+			'clean:deleteDebugBuildReferencesFile',	
+			
+			// Run tests included within the debug build
+			'jasmine_nodejs:runJasmineTestsWithinDebugBuild',
+			
+			// Generate release build
+			'shell:generateReleaseBuildReferencesFile',
 			'ts:buildRelease',
+			'clean:deleteReleaseBuildReferencesFile',			
+			
+			// Add banner to the release build
 			'concat:addBannerToReleaseBuild',
+			
+			// Minify release build
 			'uglify:minifyReleaseBuild',
-			'shell:deleteTypescriptReferenceFile',
+			
+			// Update NPM package version to version within the development package.json
 			'update_json:updateNPMPackageVersion',
+			
+			// Copy the readme file to the release path
 			'copy:copyReadmeToReleaseBuild'
 		]);
+		
+	grunt.registerTask('test',
+		[
+			// Generate debug build
+			'shell:generateDebugBuildReferencesFile',
+			'ts:buildDebug',
+			'clean:deleteDebugBuildReferencesFile',	
+			
+			// Run tests included within the debug build
+			'jasmine_nodejs:runJasmineTestsWithinDebugBuild',
+		]);		
 };
