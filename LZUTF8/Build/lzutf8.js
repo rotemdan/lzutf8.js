@@ -5,9 +5,12 @@ var LZUTF8;
     }
     LZUTF8.runningInNodeJS = runningInNodeJS;
     if (runningInNodeJS()) {
-        process.on('uncaughtException', function (e) {
+        /*
+        process.on('uncaughtException', function (e)
+        {
             console.log(e);
         });
+        */
         module.exports = LZUTF8;
     }
 })(LZUTF8 || (LZUTF8 = {}));

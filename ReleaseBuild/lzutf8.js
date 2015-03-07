@@ -1,5 +1,5 @@
 /*
- LZ-UTF8 v0.1.12
+ LZ-UTF8 v0.1.13
 
  Copyright (c) 2014-2015, Rotem Dan <rotemdan@gmail.com> 
  Released under the MIT license.
@@ -13,9 +13,6 @@ var LZUTF8;
     }
     LZUTF8.runningInNodeJS = runningInNodeJS;
     if (runningInNodeJS()) {
-        process.on('uncaughtException', function (e) {
-            console.log(e);
-        });
         module.exports = LZUTF8;
     }
 })(LZUTF8 || (LZUTF8 = {}));
