@@ -1,5 +1,7 @@
+
 # LZ-UTF8
 
+[![Build Status](https://travis-ci.org/rotemdan/lzutf8.js.svg)](https://travis-ci.org/rotemdan/lzutf8.js)
 [![npm version](https://badge.fury.io/js/lzutf8.svg)](http://badge.fury.io/js/lzutf8)
 
 A high-performance string compression library and stream format:

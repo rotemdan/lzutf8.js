@@ -1,3 +1,4 @@
+
 # LZ-UTF8
 
 [![Build Status](https://travis-ci.org/rotemdan/lzutf8.js.svg)](https://travis-ci.org/rotemdan/lzutf8.js)
