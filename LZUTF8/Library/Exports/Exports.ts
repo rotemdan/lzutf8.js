@@ -56,7 +56,6 @@
 		}
 		else
 		{
-
 			AsyncCompressor.compressAsync(input, options, callback);
 		}
 	}

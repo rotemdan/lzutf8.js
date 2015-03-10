@@ -11,8 +11,9 @@
 
 		constructor()
 		{
-			this.randomUTF16String = EncodingBenchmarks.getRandomUTF16StringOfLength(500000);
+			this.randomUTF16String = EncodingBenchmarks.getRandomUTF16StringOfLength(250000);
 			this.randomBytes = encodeUTF8(this.randomUTF16String);
+			//console.log(this.randomBytes.length);
 		}
 
 		encodeBase64()

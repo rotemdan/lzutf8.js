@@ -1237,8 +1237,9 @@ var LZUTF8;
 (function (LZUTF8) {
     var EncodingBenchmarks = (function () {
         function EncodingBenchmarks() {
-            this.randomUTF16String = EncodingBenchmarks.getRandomUTF16StringOfLength(500000);
+            this.randomUTF16String = EncodingBenchmarks.getRandomUTF16StringOfLength(250000);
             this.randomBytes = LZUTF8.encodeUTF8(this.randomUTF16String);
+            //console.log(this.randomBytes.length);
         }
         EncodingBenchmarks.prototype.encodeBase64 = function () {
             this.base64String = LZUTF8.Encoding.Base64.encode(this.randomBytes);
