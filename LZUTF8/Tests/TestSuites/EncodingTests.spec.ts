@@ -121,7 +121,7 @@
 						var encodedString4: string = encodeBase64(randomValues4);
 						var encodedString5: string = encodeBase64(randomValues5);
 
-						var decodedConcatenatedStrings = decodeConcatBase64(encodedString1 + encodedString2 + encodedString3 + encodedString4 + encodedString5);
+						var decodedConcatenatedStrings = decodeConcatenatedBase64(encodedString1 + encodedString2 + encodedString3 + encodedString4 + encodedString5);
 
 						var joinedRandomValues = ArrayTools.joinByteArrays([randomValues1, randomValues2, randomValues3, randomValues4, randomValues5]);
 

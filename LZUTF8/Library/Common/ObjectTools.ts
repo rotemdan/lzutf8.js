@@ -2,23 +2,15 @@
 {
 	export class ObjectTools
 	{
-		static setDefaultPropertiesIfNotSet(properties: any, defaultProperties: any)
+		static extendObject(obj: any, newProperties: any): any
 		{
-			var resultObject = {};
-
-			if (properties)
+			if (newProperties != null)
 			{
-				for (var propertyName in properties)
-					resultObject[propertyName] = properties[propertyName];
+				for (var property in newProperties)
+					obj[property] = newProperties[property];
 			}
-			else
-				properties = {};
 
-			for (var propertyName in defaultProperties)
-				if (properties[propertyName] == undefined)
-					resultObject[propertyName] = defaultProperties[propertyName];
-
-			return resultObject;
+			return obj;
 		}
 
 		static findPropertyInObject(propertyToFind, object): string

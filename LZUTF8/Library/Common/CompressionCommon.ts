@@ -41,7 +41,7 @@
 		static decodeCompressedData(compressedData: any, inputEncoding: string): ByteArray
 		{
 			if (inputEncoding == "ByteArray" && typeof compressedData == "string")
-				throw "decodeCompressedBytes: receieved input was string when encoding was set to a ByteArray";
+				throw "decodeCompressedData: receieved input was string when encoding was set to a ByteArray";
 
 			switch (inputEncoding)
 			{
@@ -52,7 +52,7 @@
 				case "Base64":
 					return decodeBase64(compressedData);
 				default:
-					throw "decodeCompressedBytes: Invalid input encoding requested";
+					throw "decodeCompressedData: Invalid input encoding requested";
 			}
 		}
 

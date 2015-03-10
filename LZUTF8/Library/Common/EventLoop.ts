@@ -11,17 +11,17 @@
 			{
 				setImmediate(func);
 			}
-			else if (window.postMessage === undefined || window.addEventListener === undefined)
-			{
-				window.setTimeout(func, 0);
-			}
-			else
+			else if ((typeof window === "object") && (window.postMessage !== undefined))
 			{
 				if (!EventLoop.instanceToken)
 					EventLoop.registerWindowMessageHandler();
 
 				EventLoop.queuedFunctions.push(func);
 				window.postMessage(EventLoop.instanceToken, window.location.href);
+			}
+			else
+			{
+				window.setTimeout(func, 0);
 			}
 		}
 

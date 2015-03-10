@@ -45,7 +45,8 @@
 			this.outputPosition = 0;
 		}
 	}
-
+	
+	/*
 	export class StringBuilder1
 	{
 		private outputString = "";
@@ -75,4 +76,5 @@
 			return this.outputString;
 		}
 	}
+	*/
 } 

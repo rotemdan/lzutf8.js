@@ -6,7 +6,7 @@
 		if (input === undefined || input === null)
 			throw "compress: undefined or null input received";
 
-		options = ObjectTools.setDefaultPropertiesIfNotSet(options, { outputEncoding: "ByteArray" });
+		options = ObjectTools.extendObject({ outputEncoding: "ByteArray" }, options);
 
 		var compressor = new Compressor();
 		var compressedBytes = compressor.compressBlock(input);
@@ -19,7 +19,7 @@
 		if (input === undefined || input === null)
 			throw "decompress: undefined or null input received";
 
-		options = ObjectTools.setDefaultPropertiesIfNotSet(options, { inputEncoding: "ByteArray", outputEncoding: "String" });
+		options = ObjectTools.extendObject({ inputEncoding: "ByteArray", outputEncoding: "String" }, options);
 
 		input = CompressionCommon.decodeCompressedData(input, options.inputEncoding);
 
@@ -35,33 +35,30 @@
 		if (input === undefined || input === null)
 			throw "compressAsync: undefined or null input received";
 
-		if (callback == undefined)
+		if (callback == null)
 			callback = () => { };
 
 
-		enqueueImmediate(() =>
+		var defaultOptions: CompressionOptions =
+			{
+				inputEncoding: CompressionCommon.detectCompressionSourceEncoding(input),
+				outputEncoding: "ByteArray",
+				useWebWorker: true,
+				blockSize: 65536
+			}
+
+		options = ObjectTools.extendObject(defaultOptions, options);
+
+		if (options.useWebWorker === true && WebWorker.isSupported())
 		{
-			var defaultOptions: CompressionOptions =
-				{
-					inputEncoding: CompressionCommon.detectCompressionSourceEncoding(input),
-					outputEncoding: "ByteArray",
-					useWebWorker: true,
-					blockSize: 65536
-				}
+			WebWorker.createGlobalWorkerIfItDoesntExist();
+			WebWorker.compressAsync(input, options, callback);
+		}
+		else
+		{
 
-			options = ObjectTools.setDefaultPropertiesIfNotSet(options, defaultOptions);
-
-			if (options.useWebWorker === true && WebWorker.isSupported())
-			{
-				WebWorker.createGlobalWorkerIfItDoesntExist();
-				WebWorker.compressAsync(input, options, callback);
-			}
-			else
-			{
-
-				AsyncCompressor.compressAsync(input, options, callback);
-			}
-		});
+			AsyncCompressor.compressAsync(input, options, callback);
+		}
 	}
 
 	export function decompressAsync(input: any, options: CompressionOptions, callback: (result: any) => void)
@@ -69,35 +66,31 @@
 		if (input === undefined || input === null)
 			throw "decompressAsync: undefined or null input received";
 
-		if (callback == undefined)
+		if (callback == null)
 			callback = () => { };
 
-		enqueueImmediate(() =>
+		var defaultOptions: CompressionOptions =
+			{
+				inputEncoding: "ByteArray",
+				outputEncoding: "String",
+				useWebWorker: true,
+				blockSize: 65536
+			}
+
+		options = ObjectTools.extendObject(defaultOptions, options);
+
+		if (options.useWebWorker === true && WebWorker.isSupported())
 		{
-			var defaultOptions: CompressionOptions =
-				{
-					inputEncoding: "ByteArray",
-					outputEncoding: "String",
-					useWebWorker: true,
-					blockSize: 65536
-				}
-
-			options = ObjectTools.setDefaultPropertiesIfNotSet(options, defaultOptions);
-
-			if (options.useWebWorker === true && WebWorker.isSupported())
-			{
-				WebWorker.createGlobalWorkerIfItDoesntExist();
-				WebWorker.decompressAsync(input, options, callback);
-			}
-			else
-			{
-
-				AsyncDecompressor.decompressAsync(input, options, callback);
-			}
-		});
+			WebWorker.createGlobalWorkerIfItDoesntExist();
+			WebWorker.decompressAsync(input, options, callback);
+		}
+		else
+		{
+			AsyncDecompressor.decompressAsync(input, options, callback);
+		}
 	}
 
-	// Node.js specific
+	// Node.js streams
 	export function createCompressionStream(): stream.Transform
 	{
 		return AsyncCompressor.createCompressionStream();
@@ -107,7 +100,6 @@
 	{
 		return AsyncDecompressor.createDecompressionStream();
 	}
-
 	
 	// Encodings
 	export function encodeUTF8(str: string): ByteArray
@@ -146,7 +138,7 @@
 			return Encoding.Base64.decode(str);
 	}
 
-	export function decodeConcatBase64(concatBase64Strings: string): ByteArray
+	export function decodeConcatenatedBase64(concatBase64Strings: string): ByteArray
 	{
 		var base64Strings: string[] = [];
 

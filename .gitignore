@@ -8,7 +8,7 @@ node_modules
 bin
 obj
 LZUTF8/CLI/Test Files
-LZUTF8/Build/*
+LZUTF8/Build
 npm-debug.log
 GitHubWebsite
 ReleaseBuild/SanityTest

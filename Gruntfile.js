@@ -1,3 +1,4 @@
+/// <vs />
 module.exports = function (grunt)
 {
 	var releaseBuildBanner = '/*\n LZ-UTF8 v<%=pkg.version%>\n\n Copyright (c) 2014-2015, Rotem Dan <rotemdan@gmail.com> \n Released under the MIT license.\n\n Build date: <%= grunt.template.today("yyyy-mm-dd") %> \n*/\n';
@@ -10,11 +11,21 @@ module.exports = function (grunt)
 		{
 			generateDebugBuildReferencesFile:
 			{
+				options:
+				{
+					stdin: false
+				},
+				
 				command: 'node ./TSBuildTools/GenerateTypescriptReferenceFile.js ./LZUTF8 ./_DebugBuildReferences.ts'
 			},
 			
 			generateReleaseBuildReferencesFile:
 			{
+				options:
+				{
+					stdin: false
+				},
+				
 				command: 'node ./TSBuildTools/GenerateTypescriptReferenceFile.js ./LZUTF8/Library ./_ReleaseBuildReferences.ts'
 			},
 		},
