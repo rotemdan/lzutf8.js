@@ -4,7 +4,7 @@
  Copyright (c) 2014-2015, Rotem Dan <rotemdan@gmail.com> 
  Released under the MIT license.
 
- Build date: 2015-03-10 
+ Build date: 2015-03-13 
 */
 var LZUTF8;
 (function (LZUTF8) {

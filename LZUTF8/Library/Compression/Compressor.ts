@@ -22,7 +22,7 @@
 			else
 				this.prefixHashTable = new CompressorSimpleHashTable(this.PrefixHashTableSize);
 		}
-
+		
 		compressBlock(input: any): ByteArray
 		{
 			if (input === undefined || input === null)

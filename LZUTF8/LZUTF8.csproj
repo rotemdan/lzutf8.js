@@ -16,6 +16,7 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
+    <TypeScriptEnabled>false</TypeScriptEnabled>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Benchmarks\index.html" />
@@ -66,7 +67,6 @@
     <TypeScriptCompile Include="Library\Async\WebWorker.ts" />
     <TypeScriptCompile Include="Library\Async\AsyncCompressor.ts" />
     <TypeScriptCompile Include="Library\Async\AsyncDecompressor.ts" />
-    <TypeScriptCompile Include="_references.ts" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
@@ -130,20 +130,22 @@
     <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
     <TypeScriptOutFile>Build/lzutf8.js</TypeScriptOutFile>
     <TypeScriptTarget>ES3</TypeScriptTarget>
+    <TypeScriptCompileOnSaveEnabled>False</TypeScriptCompileOnSaveEnabled>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <TypeScriptRemoveComments>true</TypeScriptRemoveComments>
     <TypeScriptSourceMap>True</TypeScriptSourceMap>
     <TypeScriptModuleKind>commonjs</TypeScriptModuleKind>
     <TypeScriptOutFile>Build/lzutf8.js</TypeScriptOutFile>
+    <TypeScriptCompileOnSaveEnabled>False</TypeScriptCompileOnSaveEnabled>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <PropertyGroup>
-    <PostBuildEvent>rem cd "$(SolutionDir)Build"
-rem uglifyjs $(TargetName).js --screw-ie8 -c -m -o $(TargetName).min.js</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>cd "$(ProjectDir)"
-node "..\TSBuildTools\GenerateTypeScriptReferenceFile" . ./_references.ts</PreBuildEvent>
+    <PreBuildEvent>rem cd "$(ProjectDir)"
+rem node "..\TSBuildTools\GenerateTypeScriptReferenceFile" . ./_references.ts</PreBuildEvent>
   </PropertyGroup>
 </Project>

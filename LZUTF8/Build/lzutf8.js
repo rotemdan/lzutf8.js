@@ -16,154 +16,61 @@ var LZUTF8;
 })(LZUTF8 || (LZUTF8 = {}));
 var LZUTF8;
 (function (LZUTF8) {
-    var Compressor = (function () {
-        function Compressor(useCustomPrefixHashTable) {
-            if (useCustomPrefixHashTable === void 0) { useCustomPrefixHashTable = true; }
-            this.MinimumSequenceLength = 4;
-            this.MaximumSequenceLength = 31;
-            this.MaximumMatchDistance = 32767;
-            this.PrefixHashTableSize = 65537;
-            this.inputBufferStreamOffset = 1;
-            this.reusableArraySegmentObject = new LZUTF8.ArraySegment();
-            if (useCustomPrefixHashTable && typeof Uint32Array == "function")
-                this.prefixHashTable = new LZUTF8.CompressorCustomHashTable(this.PrefixHashTableSize);
+    var Timer = (function () {
+        function Timer(timestampFunc) {
+            if (timestampFunc)
+                this.getTimestamp = timestampFunc;
             else
-                this.prefixHashTable = new LZUTF8.CompressorSimpleHashTable(this.PrefixHashTableSize);
+                this.getTimestamp = Timer.getHighResolutionTimestampFunction();
+            this.restart();
         }
-        Compressor.prototype.compressBlock = function (input) {
-            if (input === undefined || input === null)
-                throw "compressBlock: undefined or null input received";
-            if (typeof input == "string")
-                input = LZUTF8.encodeUTF8(input);
-            return this.compressByteArrayBlock(input);
+        Timer.prototype.restart = function () {
+            this.startTime = this.getTimestamp();
         };
-        Compressor.prototype.compressByteArrayBlock = function (utf8Bytes) {
-            if (!utf8Bytes || utf8Bytes.length == 0)
-                return LZUTF8.newByteArray(0);
-            utf8Bytes = LZUTF8.convertToByteArray(utf8Bytes);
-            var bufferStartingReadOffset = this.cropAndAddNewBytesToInputBuffer(utf8Bytes);
-            var inputBuffer = this.inputBuffer;
-            var inputBufferLength = this.inputBuffer.length;
-            this.outputBuffer = LZUTF8.newByteArray(utf8Bytes.length);
-            this.outputBufferPosition = 0;
-            var latestMatchEndPosition = 0;
-            for (var readPosition = bufferStartingReadOffset; readPosition < inputBufferLength; readPosition++) {
-                var inputValue = inputBuffer[readPosition];
-                var withinAMatchedRange = readPosition < latestMatchEndPosition;
-                // Last 3 bytes are not matched
-                if (readPosition > inputBufferLength - this.MinimumSequenceLength) {
-                    if (!withinAMatchedRange)
-                        this.outputRawByte(inputValue);
-                    continue;
-                }
-                // Find the target bucket index
-                var targetBucketIndex = this.getBucketIndexForPrefix(readPosition);
-                if (!withinAMatchedRange) {
-                    // Try to find the longest match for the sequence starting at the current position
-                    var matchLocator = this.findLongestMatch(readPosition, targetBucketIndex);
-                    // If match found
-                    if (matchLocator !== null) {
-                        // Output a pointer to the match
-                        this.outputPointerBytes(matchLocator.length, matchLocator.distance);
-                        // Keep the end position of the match
-                        latestMatchEndPosition = readPosition + matchLocator.length;
-                        withinAMatchedRange = true;
-                    }
-                }
-                // If not in a range of a match, output the literal byte
-                if (!withinAMatchedRange)
-                    this.outputRawByte(inputValue);
-                // Add the current 4 byte sequence to the hash table 
-                // (note that input stream offset starts at 1, so it will never equal 0, thus the hash
-                // table can safely use 0 as an empty bucket slot indicator - this property is critical for the custom hash table implementation).
-                var inputStreamPosition = this.inputBufferStreamOffset + readPosition;
-                this.prefixHashTable.addValueToBucket(targetBucketIndex, inputStreamPosition);
+        Timer.prototype.getElapsedTime = function () {
+            return this.getTimestamp() - this.startTime;
+        };
+        Timer.prototype.getElapsedTimeAndRestart = function () {
+            var elapsedTime = this.getElapsedTime();
+            this.restart();
+            return elapsedTime;
+        };
+        Timer.prototype.logAndRestart = function (title, logToDocument) {
+            if (logToDocument === void 0) { logToDocument = false; }
+            var message = title + ": " + this.getElapsedTime().toFixed(3);
+            console.log(message);
+            if (logToDocument && typeof document == "object")
+                document.body.innerHTML += message + "<br/>";
+            this.restart();
+        };
+        Timer.prototype.getTimestamp = function () {
+            return undefined;
+        };
+        Timer.getHighResolutionTimestampFunction = function () {
+            if (typeof chrome == "object" && chrome.Interval) {
+                var chromeIntervalObject = new chrome.Interval();
+                chromeIntervalObject.start();
+                return function () { return chromeIntervalObject.microseconds() / 1000; };
             }
-            //this.logStatisticsToConsole(readPosition - bufferStartingReadOffset);
-            return this.outputBuffer.subarray(0, this.outputBufferPosition);
-        };
-        Compressor.prototype.findLongestMatch = function (matchedSequencePosition, bucketIndex) {
-            var bucket = this.prefixHashTable.getArraySegmentForBucketIndex(bucketIndex, this.reusableArraySegmentObject);
-            if (bucket == null)
-                return null;
-            var input = this.inputBuffer;
-            var longestMatchDistance;
-            var longestMatchLength;
-            for (var i = 0; i < bucket.length; i++) {
-                // Adjust to the actual buffer position. Note: position might be negative (not in the current buffer)
-                var testedSequencePosition = bucket.getInReversedOrder(i) - this.inputBufferStreamOffset;
-                var testedSequenceDistance = matchedSequencePosition - testedSequencePosition;
-                // Find the length to surpass for this match
-                if (longestMatchDistance === undefined)
-                    var lengthToSurpass = this.MinimumSequenceLength - 1;
-                else if (longestMatchDistance < 128 && testedSequenceDistance >= 128)
-                    var lengthToSurpass = longestMatchLength + (longestMatchLength >>> 1); // floor(l * 1.5)
-                else
-                    var lengthToSurpass = longestMatchLength;
-                // Break if any of the conditions occur
-                if (testedSequenceDistance > this.MaximumMatchDistance || lengthToSurpass >= this.MaximumSequenceLength || matchedSequencePosition + lengthToSurpass >= input.length)
-                    break;
-                // Quick check to see if there's any point comparing all the bytes.
-                if (input[testedSequencePosition + lengthToSurpass] !== input[matchedSequencePosition + lengthToSurpass])
-                    continue;
-                for (var offset = 0;; offset++) {
-                    if (matchedSequencePosition + offset === input.length || input[testedSequencePosition + offset] !== input[matchedSequencePosition + offset]) {
-                        if (offset > lengthToSurpass) {
-                            longestMatchDistance = testedSequenceDistance;
-                            longestMatchLength = offset;
-                        }
-                        break;
-                    }
-                    else if (offset === this.MaximumSequenceLength)
-                        return { distance: testedSequenceDistance, length: this.MaximumSequenceLength };
-                }
+            else if (typeof window == "object" && window.performance && window.performance.now) {
+                return function () { return window.performance.now(); };
             }
-            if (longestMatchDistance !== undefined)
-                return { distance: longestMatchDistance, length: longestMatchLength };
-            else
-                return null;
-        };
-        Compressor.prototype.getBucketIndexForPrefix = function (startPosition) {
-            return (this.inputBuffer[startPosition] * 7880599 + this.inputBuffer[startPosition + 1] * 39601 + this.inputBuffer[startPosition + 2] * 199 + this.inputBuffer[startPosition + 3]) % this.PrefixHashTableSize;
-        };
-        Compressor.prototype.outputPointerBytes = function (length, distance) {
-            if (distance < 128) {
-                this.outputRawByte(192 | length);
-                this.outputRawByte(distance);
+            else if (typeof process == "object" && process.hrtime) {
+                return function () {
+                    var timeStamp = process.hrtime();
+                    return (timeStamp[0] * 1000) + (timeStamp[1] / 1000000);
+                };
+            }
+            else if (Date.now) {
+                return function () { return Date.now(); };
             }
             else {
-                this.outputRawByte(224 | length);
-                this.outputRawByte(distance >>> 8);
-                this.outputRawByte(distance & 255);
+                return function () { return (new Date()).getTime(); };
             }
         };
-        Compressor.prototype.outputRawByte = function (value) {
-            this.outputBuffer[this.outputBufferPosition++] = value;
-        };
-        Compressor.prototype.cropAndAddNewBytesToInputBuffer = function (newInput) {
-            if (this.inputBuffer === undefined) {
-                this.inputBuffer = newInput;
-                return 0;
-            }
-            else {
-                var cropLength = Math.min(this.inputBuffer.length, this.MaximumMatchDistance);
-                var cropStartOffset = this.inputBuffer.length - cropLength;
-                this.inputBuffer = LZUTF8.CompressionCommon.getCroppedAndAppendedBuffer(this.inputBuffer, cropStartOffset, cropLength, newInput);
-                this.inputBufferStreamOffset += cropStartOffset;
-                return cropLength;
-            }
-        };
-        Compressor.prototype.logStatisticsToConsole = function (bytesRead) {
-            var usedBucketCount = this.prefixHashTable.getUsedBucketCount();
-            var totalHashtableElementCount = this.prefixHashTable.getTotalElementCount();
-            console.log("Compressed size: " + this.outputBufferPosition + "/" + bytesRead + " (" + (this.outputBufferPosition / bytesRead * 100).toFixed(2) + "%)");
-            console.log("Occupied bucket count: " + usedBucketCount + "/" + this.PrefixHashTableSize);
-            console.log("Total hashtable element count: " + totalHashtableElementCount + " (" + (totalHashtableElementCount / usedBucketCount).toFixed(2) + " elements per occupied bucket on average)");
-            console.log("");
-        };
-        return Compressor;
+        return Timer;
     })();
-    LZUTF8.Compressor = Compressor;
+    LZUTF8.Timer = Timer;
 })(LZUTF8 || (LZUTF8 = {}));
 var LZUTF8;
 (function (LZUTF8) {
@@ -907,64 +814,6 @@ var LZUTF8;
 })(LZUTF8 || (LZUTF8 = {}));
 var LZUTF8;
 (function (LZUTF8) {
-    var Timer = (function () {
-        function Timer(timestampFunc) {
-            if (timestampFunc)
-                this.getTimestamp = timestampFunc;
-            else
-                this.getTimestamp = Timer.getHighResolutionTimestampFunction();
-            this.restart();
-        }
-        Timer.prototype.restart = function () {
-            this.startTime = this.getTimestamp();
-        };
-        Timer.prototype.getElapsedTime = function () {
-            return this.getTimestamp() - this.startTime;
-        };
-        Timer.prototype.getElapsedTimeAndRestart = function () {
-            var elapsedTime = this.getElapsedTime();
-            this.restart();
-            return elapsedTime;
-        };
-        Timer.prototype.logAndRestart = function (title, logToDocument) {
-            if (logToDocument === void 0) { logToDocument = false; }
-            var message = title + ": " + this.getElapsedTime().toFixed(3);
-            console.log(message);
-            if (logToDocument && typeof document == "object")
-                document.body.innerHTML += message + "<br/>";
-            this.restart();
-        };
-        Timer.prototype.getTimestamp = function () {
-            return undefined;
-        };
-        Timer.getHighResolutionTimestampFunction = function () {
-            if (typeof chrome == "object" && chrome.Interval) {
-                var chromeIntervalObject = new chrome.Interval();
-                chromeIntervalObject.start();
-                return function () { return chromeIntervalObject.microseconds() / 1000; };
-            }
-            else if (typeof window == "object" && window.performance && window.performance.now) {
-                return function () { return window.performance.now(); };
-            }
-            else if (typeof process == "object" && process.hrtime) {
-                return function () {
-                    var timeStamp = process.hrtime();
-                    return (timeStamp[0] * 1000) + (timeStamp[1] / 1000000);
-                };
-            }
-            else if (Date.now) {
-                return function () { return Date.now(); };
-            }
-            else {
-                return function () { return (new Date()).getTime(); };
-            }
-        };
-        return Timer;
-    })();
-    LZUTF8.Timer = Timer;
-})(LZUTF8 || (LZUTF8 = {}));
-var LZUTF8;
-(function (LZUTF8) {
     var CompressionBenchmarks = (function () {
         function CompressionBenchmarks() {
         }
@@ -996,6 +845,157 @@ var LZUTF8;
         return CompressionBenchmarks;
     })();
     LZUTF8.CompressionBenchmarks = CompressionBenchmarks;
+})(LZUTF8 || (LZUTF8 = {}));
+var LZUTF8;
+(function (LZUTF8) {
+    var Compressor = (function () {
+        function Compressor(useCustomPrefixHashTable) {
+            if (useCustomPrefixHashTable === void 0) { useCustomPrefixHashTable = true; }
+            this.MinimumSequenceLength = 4;
+            this.MaximumSequenceLength = 31;
+            this.MaximumMatchDistance = 32767;
+            this.PrefixHashTableSize = 65537;
+            this.inputBufferStreamOffset = 1;
+            this.reusableArraySegmentObject = new LZUTF8.ArraySegment();
+            if (useCustomPrefixHashTable && typeof Uint32Array == "function")
+                this.prefixHashTable = new LZUTF8.CompressorCustomHashTable(this.PrefixHashTableSize);
+            else
+                this.prefixHashTable = new LZUTF8.CompressorSimpleHashTable(this.PrefixHashTableSize);
+        }
+        Compressor.prototype.compressBlock = function (input) {
+            if (input === undefined || input === null)
+                throw "compressBlock: undefined or null input received";
+            if (typeof input == "string")
+                input = LZUTF8.encodeUTF8(input);
+            return this.compressByteArrayBlock(input);
+        };
+        Compressor.prototype.compressByteArrayBlock = function (utf8Bytes) {
+            if (!utf8Bytes || utf8Bytes.length == 0)
+                return LZUTF8.newByteArray(0);
+            utf8Bytes = LZUTF8.convertToByteArray(utf8Bytes);
+            var bufferStartingReadOffset = this.cropAndAddNewBytesToInputBuffer(utf8Bytes);
+            var inputBuffer = this.inputBuffer;
+            var inputBufferLength = this.inputBuffer.length;
+            this.outputBuffer = LZUTF8.newByteArray(utf8Bytes.length);
+            this.outputBufferPosition = 0;
+            var latestMatchEndPosition = 0;
+            for (var readPosition = bufferStartingReadOffset; readPosition < inputBufferLength; readPosition++) {
+                var inputValue = inputBuffer[readPosition];
+                var withinAMatchedRange = readPosition < latestMatchEndPosition;
+                // Last 3 bytes are not matched
+                if (readPosition > inputBufferLength - this.MinimumSequenceLength) {
+                    if (!withinAMatchedRange)
+                        this.outputRawByte(inputValue);
+                    continue;
+                }
+                // Find the target bucket index
+                var targetBucketIndex = this.getBucketIndexForPrefix(readPosition);
+                if (!withinAMatchedRange) {
+                    // Try to find the longest match for the sequence starting at the current position
+                    var matchLocator = this.findLongestMatch(readPosition, targetBucketIndex);
+                    // If match found
+                    if (matchLocator !== null) {
+                        // Output a pointer to the match
+                        this.outputPointerBytes(matchLocator.length, matchLocator.distance);
+                        // Keep the end position of the match
+                        latestMatchEndPosition = readPosition + matchLocator.length;
+                        withinAMatchedRange = true;
+                    }
+                }
+                // If not in a range of a match, output the literal byte
+                if (!withinAMatchedRange)
+                    this.outputRawByte(inputValue);
+                // Add the current 4 byte sequence to the hash table 
+                // (note that input stream offset starts at 1, so it will never equal 0, thus the hash
+                // table can safely use 0 as an empty bucket slot indicator - this property is critical for the custom hash table implementation).
+                var inputStreamPosition = this.inputBufferStreamOffset + readPosition;
+                this.prefixHashTable.addValueToBucket(targetBucketIndex, inputStreamPosition);
+            }
+            //this.logStatisticsToConsole(readPosition - bufferStartingReadOffset);
+            return this.outputBuffer.subarray(0, this.outputBufferPosition);
+        };
+        Compressor.prototype.findLongestMatch = function (matchedSequencePosition, bucketIndex) {
+            var bucket = this.prefixHashTable.getArraySegmentForBucketIndex(bucketIndex, this.reusableArraySegmentObject);
+            if (bucket == null)
+                return null;
+            var input = this.inputBuffer;
+            var longestMatchDistance;
+            var longestMatchLength;
+            for (var i = 0; i < bucket.length; i++) {
+                // Adjust to the actual buffer position. Note: position might be negative (not in the current buffer)
+                var testedSequencePosition = bucket.getInReversedOrder(i) - this.inputBufferStreamOffset;
+                var testedSequenceDistance = matchedSequencePosition - testedSequencePosition;
+                // Find the length to surpass for this match
+                if (longestMatchDistance === undefined)
+                    var lengthToSurpass = this.MinimumSequenceLength - 1;
+                else if (longestMatchDistance < 128 && testedSequenceDistance >= 128)
+                    var lengthToSurpass = longestMatchLength + (longestMatchLength >>> 1); // floor(l * 1.5)
+                else
+                    var lengthToSurpass = longestMatchLength;
+                // Break if any of the conditions occur
+                if (testedSequenceDistance > this.MaximumMatchDistance || lengthToSurpass >= this.MaximumSequenceLength || matchedSequencePosition + lengthToSurpass >= input.length)
+                    break;
+                // Quick check to see if there's any point comparing all the bytes.
+                if (input[testedSequencePosition + lengthToSurpass] !== input[matchedSequencePosition + lengthToSurpass])
+                    continue;
+                for (var offset = 0;; offset++) {
+                    if (matchedSequencePosition + offset === input.length || input[testedSequencePosition + offset] !== input[matchedSequencePosition + offset]) {
+                        if (offset > lengthToSurpass) {
+                            longestMatchDistance = testedSequenceDistance;
+                            longestMatchLength = offset;
+                        }
+                        break;
+                    }
+                    else if (offset === this.MaximumSequenceLength)
+                        return { distance: testedSequenceDistance, length: this.MaximumSequenceLength };
+                }
+            }
+            if (longestMatchDistance !== undefined)
+                return { distance: longestMatchDistance, length: longestMatchLength };
+            else
+                return null;
+        };
+        Compressor.prototype.getBucketIndexForPrefix = function (startPosition) {
+            return (this.inputBuffer[startPosition] * 7880599 + this.inputBuffer[startPosition + 1] * 39601 + this.inputBuffer[startPosition + 2] * 199 + this.inputBuffer[startPosition + 3]) % this.PrefixHashTableSize;
+        };
+        Compressor.prototype.outputPointerBytes = function (length, distance) {
+            if (distance < 128) {
+                this.outputRawByte(192 | length);
+                this.outputRawByte(distance);
+            }
+            else {
+                this.outputRawByte(224 | length);
+                this.outputRawByte(distance >>> 8);
+                this.outputRawByte(distance & 255);
+            }
+        };
+        Compressor.prototype.outputRawByte = function (value) {
+            this.outputBuffer[this.outputBufferPosition++] = value;
+        };
+        Compressor.prototype.cropAndAddNewBytesToInputBuffer = function (newInput) {
+            if (this.inputBuffer === undefined) {
+                this.inputBuffer = newInput;
+                return 0;
+            }
+            else {
+                var cropLength = Math.min(this.inputBuffer.length, this.MaximumMatchDistance);
+                var cropStartOffset = this.inputBuffer.length - cropLength;
+                this.inputBuffer = LZUTF8.CompressionCommon.getCroppedAndAppendedBuffer(this.inputBuffer, cropStartOffset, cropLength, newInput);
+                this.inputBufferStreamOffset += cropStartOffset;
+                return cropLength;
+            }
+        };
+        Compressor.prototype.logStatisticsToConsole = function (bytesRead) {
+            var usedBucketCount = this.prefixHashTable.getUsedBucketCount();
+            var totalHashtableElementCount = this.prefixHashTable.getTotalElementCount();
+            console.log("Compressed size: " + this.outputBufferPosition + "/" + bytesRead + " (" + (this.outputBufferPosition / bytesRead * 100).toFixed(2) + "%)");
+            console.log("Occupied bucket count: " + usedBucketCount + "/" + this.PrefixHashTableSize);
+            console.log("Total hashtable element count: " + totalHashtableElementCount + " (" + (totalHashtableElementCount / usedBucketCount).toFixed(2) + " elements per occupied bucket on average)");
+            console.log("");
+        };
+        return Compressor;
+    })();
+    LZUTF8.Compressor = Compressor;
 })(LZUTF8 || (LZUTF8 = {}));
 var LZUTF8;
 (function (LZUTF8) {
@@ -2316,45 +2316,10 @@ var LZUTF8;
         });
     });
 })(LZUTF8 || (LZUTF8 = {}));
-/// <reference path="./Library/Dependencies/node-internal.d.ts"/>
-/// <reference path="./Tests/Dependencies/jasmine.d.ts"/>
-/// <reference path="./Library/Common/Globals.ext.ts"/>
-/// <reference path="./Library/Compression/Compressor.ts"/>
-/// <reference path="./CLI/CLI.ts"/>
-/// <reference path="./Library/Async/AsyncCompressor.ts"/>
-/// <reference path="./Library/Async/AsyncDecompressor.ts"/>
-/// <reference path="./Library/Async/WebWorker.ts"/>
-/// <reference path="./Library/Common/ArraySegment.ts"/>
-/// <reference path="./Library/Common/ArrayTools.ts"/>
-/// <reference path="./Library/Common/ByteArray.ts"/>
-/// <reference path="./Library/Common/CompressionCommon.ts"/>
-/// <reference path="./Library/Common/EventLoop.ts"/>
-/// <reference path="./Library/Common/GlobalInterfaces.ts"/>
-/// <reference path="./Benchmarks/BenchmarkSuites/AsyncBenchmarks.ts"/>
-/// <reference path="./Library/Common/ObjectTools.ts"/>
-/// <reference path="./Library/Common/StringBuilder.ts"/>
-/// <reference path="./Library/Common/Timer.ts"/>
-/// <reference path="./Benchmarks/BenchmarkSuites/CompressionBenchmarks.ts"/>
-/// <reference path="./Library/Compression/CompressorCustomHashTable.ts"/>
-/// <reference path="./Library/Compression/CompressorSimpleHashTable.ts"/>
-/// <reference path="./Library/Decompression/Decompressor.ts"/>
-/// <reference path="./Benchmarks/BenchmarkSuites/EncodingBenchmarks.ts"/>
-/// <reference path="./Library/Encoding/Base64.ts"/>
-/// <reference path="./Library/Encoding/BinaryString.ts"/>
-/// <reference path="./Library/Encoding/Misc.ts"/>
-/// <reference path="./Library/Encoding/UTF8.ts"/>
-/// <reference path="./Library/Exports/Exports.ts"/>
-/// <reference path="./Tests/Common/JasmineFiller.ts"/>
-/// <reference path="./Tests/Common/Random.ts"/>
-/// <reference path="./Tests/Common/TestData.ts"/>
-/// <reference path="./Tests/Common/TestingTools.ts"/>
-/// <reference path="./Benchmarks/Common/Benchmark.ts"/>
-/// <reference path="./Tests/TestSuites/CompressionTests.spec.ts"/>
-/// <reference path="./Tests/TestSuites/EncodingTests.spec.ts"/>
 /// <reference path="./LZUTF8/Library/Dependencies/node-internal.d.ts"/>
 /// <reference path="./LZUTF8/Tests/Dependencies/jasmine.d.ts"/>
 /// <reference path="./LZUTF8/Library/Common/Globals.ext.ts"/>
-/// <reference path="./LZUTF8/Library/Compression/Compressor.ts"/>
+/// <reference path="./LZUTF8/Library/Common/Timer.ts"/>
 /// <reference path="./LZUTF8/CLI/CLI.ts"/>
 /// <reference path="./LZUTF8/Library/Async/AsyncCompressor.ts"/>
 /// <reference path="./LZUTF8/Library/Async/AsyncDecompressor.ts"/>
@@ -2368,8 +2333,8 @@ var LZUTF8;
 /// <reference path="./LZUTF8/Benchmarks/BenchmarkSuites/AsyncBenchmarks.ts"/>
 /// <reference path="./LZUTF8/Library/Common/ObjectTools.ts"/>
 /// <reference path="./LZUTF8/Library/Common/StringBuilder.ts"/>
-/// <reference path="./LZUTF8/Library/Common/Timer.ts"/>
 /// <reference path="./LZUTF8/Benchmarks/BenchmarkSuites/CompressionBenchmarks.ts"/>
+/// <reference path="./LZUTF8/Library/Compression/Compressor.ts"/>
 /// <reference path="./LZUTF8/Library/Compression/CompressorCustomHashTable.ts"/>
 /// <reference path="./LZUTF8/Library/Compression/CompressorSimpleHashTable.ts"/>
 /// <reference path="./LZUTF8/Library/Decompression/Decompressor.ts"/>
@@ -2384,7 +2349,6 @@ var LZUTF8;
 /// <reference path="./LZUTF8/Tests/Common/TestData.ts"/>
 /// <reference path="./LZUTF8/Tests/Common/TestingTools.ts"/>
 /// <reference path="./LZUTF8/Benchmarks/Common/Benchmark.ts"/>
-/// <reference path="./LZUTF8/_references.ts"/>
 /// <reference path="./LZUTF8/Tests/TestSuites/CompressionTests.spec.ts"/>
 /// <reference path="./LZUTF8/Tests/TestSuites/EncodingTests.spec.ts"/>
 //# sourceMappingURL=lzutf8.js.map
