@@ -17,7 +17,7 @@
 			else if (param instanceof Array)
 				return convertToByteArray(param.slice(0));
 			else
-				throw "ByteArray.create: Invalid parameter";
+				throw new Error("ByteArray.create: Invalid parameter");
 		}
 	}
 
@@ -51,7 +51,7 @@
 				return new Uint8Array(array);
 			}
 			else
-				throw "ByteArray.convertToPlatformByteArray: invalid array type";
+				throw new Error("ByteArray.convertToPlatformByteArray: invalid array type");
 		}
 		else if (array instanceof Array)
 		{
@@ -61,7 +61,7 @@
 			return array;
 		}
 		else
-			throw "ByteArray.convertToPlatformByteArray: invalid array type";
+			throw new Error("ByteArray.convertToPlatformByteArray: invalid array type");
 	}
 	
 	//
@@ -79,7 +79,7 @@
 			genericArraySetFunctionPolyfill(source, offset);
 		}
 		else
-			throw "ByteArray.set() polyfill: Invalid source";
+			throw new Error("ByteArray.set() polyfill: Invalid source");
 	}
 
 	function genericArraySetFunctionPolyfill(source: any, offset: number = 0)

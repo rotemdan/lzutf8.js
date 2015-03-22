@@ -2,7 +2,7 @@
 {
 	export class AsyncCompressor
 	{
-		static compressAsync(input: any, options: CompressionOptions, callback: (result: any) => void)
+		static compressAsync(input: any, options: CompressionOptions, callback: (result: any, error?: Error) => void)
 		{
 			var timer = new Timer();
 			var compressor = new Compressor();
@@ -18,7 +18,16 @@
 			{
 				if (index < sourceBlocks.length)
 				{
-					var compressedBlock = compressor.compressBlock(sourceBlocks[index]);
+					try
+					{
+						var compressedBlock = compressor.compressBlock(sourceBlocks[index]);
+					}
+					catch (e)
+					{
+						callback(undefined, e);
+						return;
+					}
+
 					compressedBlocks.push(compressedBlock);
 
 					if (timer.getElapsedTime() <= 20)
@@ -55,7 +64,16 @@
 
 			compressionStream._transform = (data: Buffer, encoding: string, done: Function) =>
 			{
-				var buffer = compressor.compressBlock(convertToByteArray(data));
+				try
+				{
+					var buffer = compressor.compressBlock(convertToByteArray(data));
+				}
+				catch (e)
+				{
+					compressionStream.emit("error", e);
+					return;
+				}
+
 				compressionStream.push(buffer);
 
 				done();

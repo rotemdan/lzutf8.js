@@ -2,7 +2,7 @@
 {
 	export class WebWorker
 	{
-		static compressAsync(input: any, options: CompressionOptions, callback: (result: any) => void)
+		static compressAsync(input: any, options: CompressionOptions, callback: (result: any, error?: Error) => void)
 		{
 			var requestInputEncoding = options.inputEncoding;
 			var requestOutputEncoding = options.outputEncoding;
@@ -53,9 +53,10 @@
 			}
 
 			WebWorker.globalWorker.addEventListener("message", responseListener);
+			WebWorker.globalWorker.addEventListener("error",(e) => { callback(undefined, <any> e) });
 		}
 
-		static decompressAsync(input: any, options: CompressionOptions, callback: (result: any) => void)
+		static decompressAsync(input: any, options: CompressionOptions, callback: (result: any, error?: Error) => void)
 		{
 			var requestInputEncoding = options.inputEncoding;
 			var requestOutputEncoding = options.outputEncoding;
@@ -106,6 +107,7 @@
 			};
 
 			WebWorker.globalWorker.addEventListener("message", responseListener);
+			WebWorker.globalWorker.addEventListener("error",(e) => { callback(undefined, <any> e) });
 		}
 
 		static workerMessageHandler(e: MessageEvent)
@@ -167,7 +169,7 @@
 				return;
 
 			if (!WebWorker.isSupported())
-				throw "Web workers are not supported or script source is not available";
+				throw new Error("createGlobalWorkerIfItDoesntExist: Web workers are not supported or script source is not available");
 
 			if (!WebWorker.scriptURI)
 				WebWorker.scriptURI = document.getElementById("lzutf8").getAttribute("src");
@@ -206,7 +208,7 @@
 				return false;
 
 			if (!WebWorker.globalWorker)
-				throw "No global worker created";
+				throw new Error("testSupportForTransferableObjects: No global worker created");
 
 			// Test if web worker implementation support transferable objects (Chrome 21+, Firefox 18+, Safari 6+)
 			var testArrayBuffer = new ArrayBuffer(1);

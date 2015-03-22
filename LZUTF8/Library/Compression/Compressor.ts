@@ -26,7 +26,7 @@
 		compressBlock(input: any): ByteArray
 		{
 			if (input === undefined || input === null)
-				throw "compressBlock: undefined or null input received";
+				throw new Error("compressBlock: undefined or null input received");
 
 			if (typeof input == "string")
 				input = encodeUTF8(input);

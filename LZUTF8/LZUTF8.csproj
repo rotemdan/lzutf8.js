@@ -90,7 +90,7 @@
     <TypeScriptCompile Include="Library\Encoding\BinaryString.ts" />
     <TypeScriptCompile Include="Library\Encoding\Misc.ts" />
     <TypeScriptCompile Include="Library\Encoding\UTF8.ts" />
-    <TypeScriptCompile Include="Tests\Common\JasmineFiller.ts" />
+    <TypeScriptCompile Include="Tests\Common\JasmineGlobals.ts" />
     <TypeScriptCompile Include="Tests\Common\Random.ts" />
     <TypeScriptCompile Include="Tests\Common\TestData.ts" />
     <TypeScriptCompile Include="Tests\Dependencies\jasmine.d.ts" />

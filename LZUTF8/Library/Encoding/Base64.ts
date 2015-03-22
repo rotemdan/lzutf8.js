@@ -67,7 +67,7 @@
 				var lengthModulo4 = base64String.length % 4;
 
 				if (lengthModulo4 === 1)
-					throw "Invalid Base64 string: length % 4 == 1";
+					throw new Error("Invalid Base64 string: length % 4 == 1");
 				else if (lengthModulo4 === 2)
 					base64String += Encoding.Base64.paddingCharacter + Encoding.Base64.paddingCharacter;
 				else if (lengthModulo4 === 3)

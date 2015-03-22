@@ -4,7 +4,7 @@
 	export function compress(input: any, options?: CompressionOptions): any
 	{
 		if (input === undefined || input === null)
-			throw "compress: undefined or null input received";
+			throw new Error("compress: undefined or null input received");
 
 		options = ObjectTools.extendObject({ outputEncoding: "ByteArray" }, options);
 
@@ -17,7 +17,7 @@
 	export function decompress(input: any, options?: CompressionOptions): any
 	{
 		if (input === undefined || input === null)
-			throw "decompress: undefined or null input received";
+			throw new Error("decompress: undefined or null input received");
 
 		options = ObjectTools.extendObject({ inputEncoding: "ByteArray", outputEncoding: "String" }, options);
 
@@ -30,14 +30,13 @@
 	}
 
 	// Async
-	export function compressAsync(input: any, options: CompressionOptions, callback: (result: any) => void)
+	export function compressAsync(input: any, options: CompressionOptions, callback: (result: any, error?: Error) => void)
 	{
-		if (input === undefined || input === null)
-			throw "compressAsync: undefined or null input received";
-
 		if (callback == null)
 			callback = () => { };
 
+		if (input === undefined || input === null)
+			callback(undefined, new Error("compressAsync: undefined or null input received"));
 
 		var defaultOptions: CompressionOptions =
 			{
@@ -49,21 +48,24 @@
 
 		options = ObjectTools.extendObject(defaultOptions, options);
 
-		if (options.useWebWorker === true && WebWorker.isSupported())
+		EventLoop.enqueueImmediate(() =>
 		{
-			WebWorker.createGlobalWorkerIfItDoesntExist();
-			WebWorker.compressAsync(input, options, callback);
-		}
-		else
-		{
-			AsyncCompressor.compressAsync(input, options, callback);
-		}
+			if (options.useWebWorker === true && WebWorker.isSupported())
+			{
+				WebWorker.createGlobalWorkerIfItDoesntExist();
+				WebWorker.compressAsync(input, options, callback);
+			}
+			else
+			{
+				AsyncCompressor.compressAsync(input, options, callback);
+			}
+		});
 	}
 
-	export function decompressAsync(input: any, options: CompressionOptions, callback: (result: any) => void)
+	export function decompressAsync(input: any, options: CompressionOptions, callback: (result: any, error?: Error) => void)
 	{
 		if (input === undefined || input === null)
-			throw "decompressAsync: undefined or null input received";
+			throw new Error("decompressAsync: undefined or null input received");
 
 		if (callback == null)
 			callback = () => { };
@@ -78,15 +80,18 @@
 
 		options = ObjectTools.extendObject(defaultOptions, options);
 
-		if (options.useWebWorker === true && WebWorker.isSupported())
+		EventLoop.enqueueImmediate(() =>
 		{
-			WebWorker.createGlobalWorkerIfItDoesntExist();
-			WebWorker.decompressAsync(input, options, callback);
-		}
-		else
-		{
-			AsyncDecompressor.decompressAsync(input, options, callback);
-		}
+			if (options.useWebWorker === true && WebWorker.isSupported())
+			{
+				WebWorker.createGlobalWorkerIfItDoesntExist();
+				WebWorker.decompressAsync(input, options, callback);
+			}
+			else
+			{
+				AsyncDecompressor.decompressAsync(input, options, callback);
+			}
+		});
 	}
 
 	// Node.js streams

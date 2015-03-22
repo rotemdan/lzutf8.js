@@ -59,7 +59,7 @@
 		static truncateStartingElements(array: Array<any>, truncatedLength: number)
 		{
 			if (array.length <= truncatedLength)
-				throw "Requested length should be smaller than array length";
+				throw new Error("truncateStartingElements: Requested length should be smaller than array length");
 
 			var sourcePosition = array.length - truncatedLength;
 

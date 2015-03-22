@@ -1,10 +1,10 @@
 /*
- LZ-UTF8 v0.1.14
+ LZ-UTF8 v0.2.0
 
  Copyright (c) 2014-2015, Rotem Dan <rotemdan@gmail.com> 
  Released under the MIT license.
 
- Build date: 2015-03-13 
+ Build date: 2015-03-23 
 */
 var LZUTF8;
 (function (LZUTF8) {
@@ -38,7 +38,7 @@ var LZUTF8;
                 this.append(0xDC00 + ((codePoint - 0x10000) & 1023));
             }
             else
-                throw "appendCodePoint: A code point of " + codePoint + " cannot be encoded in UTF-16";
+                throw new Error("appendCodePoint: A code point of " + codePoint + " cannot be encoded in UTF-16");
         };
         StringBuilder.prototype.toString = function () {
             this.flushBufferToOutputString();
@@ -116,7 +116,7 @@ var LZUTF8;
         };
         ArrayTools.truncateStartingElements = function (array, truncatedLength) {
             if (array.length <= truncatedLength)
-                throw "Requested length should be smaller than array length";
+                throw new Error("truncateStartingElements: Requested length should be smaller than array length");
             var sourcePosition = array.length - truncatedLength;
             for (var i = 0; i < truncatedLength; i++)
                 array[i] = array[sourcePosition + i];
@@ -168,7 +168,7 @@ var LZUTF8;
             else if (param instanceof Array)
                 return convertToByteArray(param.slice(0));
             else
-                throw "ByteArray.create: Invalid parameter";
+                throw new Error("ByteArray.create: Invalid parameter");
         }
     }
     LZUTF8.newByteArray = newByteArray;
@@ -193,7 +193,7 @@ var LZUTF8;
                 return new Uint8Array(array);
             }
             else
-                throw "ByteArray.convertToPlatformByteArray: invalid array type";
+                throw new Error("ByteArray.convertToPlatformByteArray: invalid array type");
         }
         else if (array instanceof Array) {
             array["set"] = genericArraySetFunctionPolyfill;
@@ -201,7 +201,7 @@ var LZUTF8;
             return array;
         }
         else
-            throw "ByteArray.convertToPlatformByteArray: invalid array type";
+            throw new Error("ByteArray.convertToPlatformByteArray: invalid array type");
     }
     LZUTF8.convertToByteArray = convertToByteArray;
     function bufferSetFunctionPolyfill(source, offset) {
@@ -214,7 +214,7 @@ var LZUTF8;
             genericArraySetFunctionPolyfill(source, offset);
         }
         else
-            throw "ByteArray.set() polyfill: Invalid source";
+            throw new Error("ByteArray.set() polyfill: Invalid source");
     }
     function genericArraySetFunctionPolyfill(source, offset) {
         if (offset === void 0) { offset = 0; }
@@ -256,12 +256,12 @@ var LZUTF8;
                 case "Base64":
                     return LZUTF8.encodeBase64(compressedBytes);
                 default:
-                    throw "encodeCompressedBytes: Invalid output encoding requested";
+                    throw new Error("encodeCompressedBytes: Invalid output encoding requested");
             }
         };
         CompressionCommon.decodeCompressedData = function (compressedData, inputEncoding) {
             if (inputEncoding == "ByteArray" && typeof compressedData == "string")
-                throw "decodeCompressedData: receieved input was string when encoding was set to a ByteArray";
+                throw new Error("decodeCompressedData: receieved input was string when encoding was set to a ByteArray");
             switch (inputEncoding) {
                 case "ByteArray":
                     return compressedData;
@@ -270,7 +270,7 @@ var LZUTF8;
                 case "Base64":
                     return LZUTF8.decodeBase64(compressedData);
                 default:
-                    throw "decodeCompressedData: Invalid input encoding requested";
+                    throw new Error("decodeCompressedData: Invalid input encoding requested");
             }
         };
         CompressionCommon.encodeDecompressedBytes = function (decompressedBytes, outputEncoding) {
@@ -280,7 +280,7 @@ var LZUTF8;
                 case "String":
                     return LZUTF8.decodeUTF8(decompressedBytes);
                 default:
-                    throw "encodeDecompressedBytes: Invalid output encoding requested";
+                    throw new Error("encodeDecompressedBytes: Invalid output encoding requested");
             }
         };
         return CompressionCommon;
@@ -345,7 +345,13 @@ var LZUTF8;
             var compressedBlocks = [];
             var compressBlocksStartingAt = function (index) {
                 if (index < sourceBlocks.length) {
-                    var compressedBlock = compressor.compressBlock(sourceBlocks[index]);
+                    try {
+                        var compressedBlock = compressor.compressBlock(sourceBlocks[index]);
+                    }
+                    catch (e) {
+                        callback(undefined, e);
+                        return;
+                    }
                     compressedBlocks.push(compressedBlock);
                     if (timer.getElapsedTime() <= 20) {
                         compressBlocksStartingAt(index + 1);
@@ -370,7 +376,13 @@ var LZUTF8;
             var NodeStream = require("stream");
             var compressionStream = new NodeStream.Transform({ decodeStrings: true, highWaterMark: 65536 });
             compressionStream._transform = function (data, encoding, done) {
-                var buffer = compressor.compressBlock(LZUTF8.convertToByteArray(data));
+                try {
+                    var buffer = compressor.compressBlock(LZUTF8.convertToByteArray(data));
+                }
+                catch (e) {
+                    compressionStream.emit("error", e);
+                    return;
+                }
                 compressionStream.push(buffer);
                 done();
             };
@@ -409,13 +421,25 @@ var LZUTF8;
         }
         AsyncDecompressor.decompressAsync = function (input, options, callback) {
             var timer = new LZUTF8.Timer();
-            input = LZUTF8.CompressionCommon.decodeCompressedData(input, options.inputEncoding);
+            try {
+                input = LZUTF8.CompressionCommon.decodeCompressedData(input, options.inputEncoding);
+            }
+            catch (e) {
+                callback(undefined, e);
+                return;
+            }
             var decompressor = new LZUTF8.Decompressor();
             var sourceBlocks = LZUTF8.ArrayTools.splitByteArray(input, options.blockSize);
             var decompressedBlocks = [];
             var decompressBlocksStartingAt = function (index) {
                 if (index < sourceBlocks.length) {
-                    var decompressedBlock = decompressor.decompressBlock(sourceBlocks[index]);
+                    try {
+                        var decompressedBlock = decompressor.decompressBlock(sourceBlocks[index]);
+                    }
+                    catch (e) {
+                        callback(undefined, e);
+                        return;
+                    }
                     decompressedBlocks.push(decompressedBlock);
                     if (timer.getElapsedTime() <= 20) {
                         decompressBlocksStartingAt(index + 1);
@@ -428,7 +452,13 @@ var LZUTF8;
                 else {
                     var joinedDecompressedBlocks = LZUTF8.ArrayTools.joinByteArrays(decompressedBlocks);
                     LZUTF8.enqueueImmediate(function () {
-                        var result = LZUTF8.CompressionCommon.encodeDecompressedBytes(joinedDecompressedBlocks, options.outputEncoding);
+                        try {
+                            var result = LZUTF8.CompressionCommon.encodeDecompressedBytes(joinedDecompressedBlocks, options.outputEncoding);
+                        }
+                        catch (e) {
+                            callback(undefined, e);
+                            return;
+                        }
                         LZUTF8.enqueueImmediate(function () { return callback(result); });
                     });
                 }
@@ -440,7 +470,13 @@ var LZUTF8;
             var NodeStream = require("stream");
             var decompressionStream = new NodeStream.Transform({ decodeStrings: true, highWaterMark: 65536 });
             decompressionStream._transform = function (data, encoding, done) {
-                var buffer = decompressor.decompressBlock(LZUTF8.convertToByteArray(data));
+                try {
+                    var buffer = decompressor.decompressBlock(LZUTF8.convertToByteArray(data));
+                }
+                catch (e) {
+                    decompressionStream.emit("error", e);
+                    return;
+                }
                 decompressionStream.push(buffer);
                 done();
             };
@@ -526,7 +562,7 @@ var LZUTF8;
         }
         Compressor.prototype.compressBlock = function (input) {
             if (input === undefined || input === null)
-                throw "compressBlock: undefined or null input received";
+                throw new Error("compressBlock: undefined or null input received");
             if (typeof input == "string")
                 input = LZUTF8.encodeUTF8(input);
             return this.compressByteArrayBlock(input);
@@ -797,7 +833,7 @@ var LZUTF8;
         };
         Decompressor.prototype.decompressBlock = function (input) {
             if (input === undefined || input === null)
-                throw "decompressBlock: undefined or null input received";
+                throw new Error("decompressBlock: undefined or null input received");
             input = LZUTF8.convertToByteArray(input);
             if (this.inputBufferRemainder) {
                 input = LZUTF8.ArrayTools.joinByteArrays([this.inputBufferRemainder, input]);
@@ -909,6 +945,9 @@ var LZUTF8;
                 LZUTF8.enqueueImmediate(function () { return callback(response.data); });
             };
             WebWorker.globalWorker.addEventListener("message", responseListener);
+            WebWorker.globalWorker.addEventListener("error", function (e) {
+                callback(undefined, e);
+            });
         };
         WebWorker.decompressAsync = function (input, options, callback) {
             var requestInputEncoding = options.inputEncoding;
@@ -943,6 +982,9 @@ var LZUTF8;
                 LZUTF8.enqueueImmediate(function () { return callback(response.data); });
             };
             WebWorker.globalWorker.addEventListener("message", responseListener);
+            WebWorker.globalWorker.addEventListener("error", function (e) {
+                callback(undefined, e);
+            });
         };
         WebWorker.workerMessageHandler = function (e) {
             var request = e.data;
@@ -985,7 +1027,7 @@ var LZUTF8;
             if (WebWorker.globalWorker)
                 return;
             if (!WebWorker.isSupported())
-                throw "Web workers are not supported or script source is not available";
+                throw new Error("createGlobalWorkerIfItDoesntExist: Web workers are not supported or script source is not available");
             if (!WebWorker.scriptURI)
                 WebWorker.scriptURI = document.getElementById("lzutf8").getAttribute("src");
             WebWorker.globalWorker = new Worker(WebWorker.scriptURI);
@@ -1009,7 +1051,7 @@ var LZUTF8;
             if (typeof Uint8Array == "undefined")
                 return false;
             if (!WebWorker.globalWorker)
-                throw "No global worker created";
+                throw new Error("testSupportForTransferableObjects: No global worker created");
             var testArrayBuffer = new ArrayBuffer(1);
             var result;
             try {
@@ -1079,7 +1121,7 @@ var LZUTF8;
                     return LZUTF8.newByteArray(0);
                 var lengthModulo4 = base64String.length % 4;
                 if (lengthModulo4 === 1)
-                    throw "Invalid Base64 string: length % 4 == 1";
+                    throw new Error("Invalid Base64 string: length % 4 == 1");
                 else if (lengthModulo4 === 2)
                     base64String += Encoding.Base64.paddingCharacter + Encoding.Base64.paddingCharacter;
                 else if (lengthModulo4 === 3)
@@ -1236,7 +1278,7 @@ var LZUTF8;
                         readIndex++;
                     }
                     else
-                        throw "UTF8.encode: Invalid UTF-16 string: Encountered a character unsupported by UTF-8/16 (RFC 3629)";
+                        throw new Error("UTF8.encode: Invalid UTF-16 string: Encountered a character unsupported by UTF-8/16 (RFC 3629)");
                 }
                 return outputArray.subarray(0, writeIndex);
             };
@@ -1253,24 +1295,24 @@ var LZUTF8;
                     }
                     else if ((leadByte >>> 5) === 6) {
                         if (readIndex + 1 >= length)
-                            throw "UTF8.decode: Invalid UTF-8 stream: Truncated codepoint sequence encountered at position " + readIndex;
+                            throw new Error("UTF8.decode: Invalid UTF-8 stream: Truncated codepoint sequence encountered at position " + readIndex);
                         outputCodePoint = ((leadByte & 31) << 6) | (utf8Bytes[readIndex + 1] & 63);
                         readIndex += 2;
                     }
                     else if ((leadByte >>> 4) === 14) {
                         if (readIndex + 2 >= length)
-                            throw "UTF8.decode: Invalid UTF-8 stream: Truncated codepoint sequence encountered at position " + readIndex;
+                            throw new Error("UTF8.decode: Invalid UTF-8 stream: Truncated codepoint sequence encountered at position " + readIndex);
                         outputCodePoint = ((leadByte & 15) << 12) | ((utf8Bytes[readIndex + 1] & 63) << 6) | (utf8Bytes[readIndex + 2] & 63);
                         readIndex += 3;
                     }
                     else if ((leadByte >>> 3) === 30) {
                         if (readIndex + 3 >= length)
-                            throw "UTF8.decode: Invalid UTF-8 stream: Truncated codepoint sequence encountered at position " + readIndex;
+                            throw new Error("UTF8.decode: Invalid UTF-8 stream: Truncated codepoint sequence encountered at position " + readIndex);
                         outputCodePoint = ((leadByte & 7) << 18) | ((utf8Bytes[readIndex + 1] & 63) << 12) | ((utf8Bytes[readIndex + 2] & 63) << 6) | (utf8Bytes[readIndex + 3] & 63);
                         readIndex += 4;
                     }
                     else
-                        throw "UTF8.decode: Invalid UTF-8 stream: An invalid lead byte value encountered at position " + readIndex;
+                        throw new Error("UTF8.decode: Invalid UTF-8 stream: An invalid lead byte value encountered at position " + readIndex);
                     output.appendCodePoint(outputCodePoint);
                 }
                 return output.toString();
@@ -1284,7 +1326,7 @@ var LZUTF8;
                     if (nextCharCode >= 0xDC00 && nextCharCode <= 0xDFFF)
                         return 0x10000 + (((charCode - 0xD800) << 10) + (nextCharCode - 0xDC00));
                     else
-                        throw "getUnicodeCodePoint: Received a lead surrogate character not followed by a trailing one";
+                        throw new Error("getUnicodeCodePoint: Received a lead surrogate character not followed by a trailing one");
                 }
             };
             UTF8.getStringFromUnicodeCodePoint = function (codePoint) {
@@ -1293,7 +1335,7 @@ var LZUTF8;
                 else if (codePoint <= 0x10FFFF)
                     return String.fromCharCode(0xD800 + ((codePoint - 0x10000) >>> 10), 0xDC00 + ((codePoint - 0x10000) & 1023));
                 else
-                    throw "getStringFromUnicodeCodePoint: A code point of " + codePoint + " cannot be encoded in UTF-16";
+                    throw new Error("getStringFromUnicodeCodePoint: A code point of " + codePoint + " cannot be encoded in UTF-16");
             };
             return UTF8;
         })();
@@ -1304,7 +1346,7 @@ var LZUTF8;
 (function (LZUTF8) {
     function compress(input, options) {
         if (input === undefined || input === null)
-            throw "compress: undefined or null input received";
+            throw new Error("compress: undefined or null input received");
         options = LZUTF8.ObjectTools.extendObject({ outputEncoding: "ByteArray" }, options);
         var compressor = new LZUTF8.Compressor();
         var compressedBytes = compressor.compressBlock(input);
@@ -1313,7 +1355,7 @@ var LZUTF8;
     LZUTF8.compress = compress;
     function decompress(input, options) {
         if (input === undefined || input === null)
-            throw "decompress: undefined or null input received";
+            throw new Error("decompress: undefined or null input received");
         options = LZUTF8.ObjectTools.extendObject({ inputEncoding: "ByteArray", outputEncoding: "String" }, options);
         input = LZUTF8.CompressionCommon.decodeCompressedData(input, options.inputEncoding);
         var decompressor = new LZUTF8.Decompressor();
@@ -1322,11 +1364,11 @@ var LZUTF8;
     }
     LZUTF8.decompress = decompress;
     function compressAsync(input, options, callback) {
-        if (input === undefined || input === null)
-            throw "compressAsync: undefined or null input received";
         if (callback == null)
             callback = function () {
             };
+        if (input === undefined || input === null)
+            callback(undefined, new Error("compressAsync: undefined or null input received"));
         var defaultOptions = {
             inputEncoding: LZUTF8.CompressionCommon.detectCompressionSourceEncoding(input),
             outputEncoding: "ByteArray",
@@ -1334,18 +1376,20 @@ var LZUTF8;
             blockSize: 65536
         };
         options = LZUTF8.ObjectTools.extendObject(defaultOptions, options);
-        if (options.useWebWorker === true && LZUTF8.WebWorker.isSupported()) {
-            LZUTF8.WebWorker.createGlobalWorkerIfItDoesntExist();
-            LZUTF8.WebWorker.compressAsync(input, options, callback);
-        }
-        else {
-            LZUTF8.AsyncCompressor.compressAsync(input, options, callback);
-        }
+        LZUTF8.EventLoop.enqueueImmediate(function () {
+            if (options.useWebWorker === true && LZUTF8.WebWorker.isSupported()) {
+                LZUTF8.WebWorker.createGlobalWorkerIfItDoesntExist();
+                LZUTF8.WebWorker.compressAsync(input, options, callback);
+            }
+            else {
+                LZUTF8.AsyncCompressor.compressAsync(input, options, callback);
+            }
+        });
     }
     LZUTF8.compressAsync = compressAsync;
     function decompressAsync(input, options, callback) {
         if (input === undefined || input === null)
-            throw "decompressAsync: undefined or null input received";
+            throw new Error("decompressAsync: undefined or null input received");
         if (callback == null)
             callback = function () {
             };
@@ -1356,13 +1400,15 @@ var LZUTF8;
             blockSize: 65536
         };
         options = LZUTF8.ObjectTools.extendObject(defaultOptions, options);
-        if (options.useWebWorker === true && LZUTF8.WebWorker.isSupported()) {
-            LZUTF8.WebWorker.createGlobalWorkerIfItDoesntExist();
-            LZUTF8.WebWorker.decompressAsync(input, options, callback);
-        }
-        else {
-            LZUTF8.AsyncDecompressor.decompressAsync(input, options, callback);
-        }
+        LZUTF8.EventLoop.enqueueImmediate(function () {
+            if (options.useWebWorker === true && LZUTF8.WebWorker.isSupported()) {
+                LZUTF8.WebWorker.createGlobalWorkerIfItDoesntExist();
+                LZUTF8.WebWorker.decompressAsync(input, options, callback);
+            }
+            else {
+                LZUTF8.AsyncDecompressor.decompressAsync(input, options, callback);
+            }
+        });
     }
     LZUTF8.decompressAsync = decompressAsync;
     function createCompressionStream() {

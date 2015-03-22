@@ -43,7 +43,7 @@
 						readIndex++; // A character outside the BMP had to be made from two surrogate characters
 					}
 					else
-						throw "UTF8.encode: Invalid UTF-16 string: Encountered a character unsupported by UTF-8/16 (RFC 3629)";
+						throw new Error("UTF8.encode: Invalid UTF-16 string: Encountered a character unsupported by UTF-8/16 (RFC 3629)");
 				}
 
 				return outputArray.subarray(0, writeIndex);
@@ -69,7 +69,7 @@
 					else if ((leadByte >>> 5) === 6)
 					{
 						if (readIndex + 1 >= length)
-							throw "UTF8.decode: Invalid UTF-8 stream: Truncated codepoint sequence encountered at position " + readIndex;
+							throw new Error("UTF8.decode: Invalid UTF-8 stream: Truncated codepoint sequence encountered at position " + readIndex);
 
 						outputCodePoint = ((leadByte & 31) << 6) | (utf8Bytes[readIndex + 1] & 63);
 						readIndex += 2;
@@ -77,7 +77,7 @@
 					else if ((leadByte >>> 4) === 14)
 					{
 						if (readIndex + 2 >= length)
-							throw "UTF8.decode: Invalid UTF-8 stream: Truncated codepoint sequence encountered at position " + readIndex;
+							throw new Error("UTF8.decode: Invalid UTF-8 stream: Truncated codepoint sequence encountered at position " + readIndex);
 
 						outputCodePoint = ((leadByte & 15) << 12) | ((utf8Bytes[readIndex + 1] & 63) << 6) | (utf8Bytes[readIndex + 2] & 63);
 						readIndex += 3;
@@ -85,13 +85,13 @@
 					else if ((leadByte >>> 3) === 30)
 					{
 						if (readIndex + 3 >= length)
-							throw "UTF8.decode: Invalid UTF-8 stream: Truncated codepoint sequence encountered at position " + readIndex;
+							throw new Error("UTF8.decode: Invalid UTF-8 stream: Truncated codepoint sequence encountered at position " + readIndex);
 
 						outputCodePoint = ((leadByte & 7) << 18) | ((utf8Bytes[readIndex + 1] & 63) << 12) | ((utf8Bytes[readIndex + 2] & 63) << 6) | (utf8Bytes[readIndex + 3] & 63);
 						readIndex += 4;
 					}
 					else
-						throw "UTF8.decode: Invalid UTF-8 stream: An invalid lead byte value encountered at position " + readIndex;
+						throw new Error("UTF8.decode: Invalid UTF-8 stream: An invalid lead byte value encountered at position " + readIndex);
 
 					output.appendCodePoint(outputCodePoint);
 				}
@@ -112,7 +112,7 @@
 					if (nextCharCode >= 0xDC00 && nextCharCode <= 0xDFFF)
 						return 0x10000 + (((charCode - 0xD800) << 10) + (nextCharCode - 0xDC00));
 					else
-						throw "getUnicodeCodePoint: Received a lead surrogate character not followed by a trailing one";
+						throw new Error("getUnicodeCodePoint: Received a lead surrogate character not followed by a trailing one");
 				}
 			}
 
@@ -125,7 +125,7 @@
 						0xD800 + ((codePoint - 0x10000) >>> 10),
 						0xDC00 + ((codePoint - 0x10000) & 1023));
 				else
-					throw "getStringFromUnicodeCodePoint: A code point of " + codePoint + " cannot be encoded in UTF-16";
+					throw new Error("getStringFromUnicodeCodePoint: A code point of " + codePoint + " cannot be encoded in UTF-16");
 			}
 		}
 	}

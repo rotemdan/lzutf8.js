@@ -2,10 +2,18 @@
 {
 	export class AsyncDecompressor
 	{
-		static decompressAsync(input: any, options: CompressionOptions, callback: (result: any) => void)
+		static decompressAsync(input: any, options: CompressionOptions, callback: (result: any, error?: Error) => void)
 		{
 			var timer = new Timer();
-			input = CompressionCommon.decodeCompressedData(input, options.inputEncoding);
+			try
+			{
+				input = CompressionCommon.decodeCompressedData(input, options.inputEncoding);
+			}
+			catch (e)
+			{
+				callback(undefined, e);
+				return;
+			}
 
 			var decompressor = new Decompressor();
 			var sourceBlocks = ArrayTools.splitByteArray(input, options.blockSize);
@@ -16,9 +24,17 @@
 			{
 				if (index < sourceBlocks.length)
 				{
-					var decompressedBlock = decompressor.decompressBlock(sourceBlocks[index]);
-					decompressedBlocks.push(decompressedBlock);
+					try
+					{
+						var decompressedBlock = decompressor.decompressBlock(sourceBlocks[index]);
+					}
+					catch (e)
+					{
+						callback(undefined, e);
+						return;
+					}
 
+					decompressedBlocks.push(decompressedBlock);
 
 					if (timer.getElapsedTime() <= 20)
 					{
@@ -37,7 +53,16 @@
 
 					enqueueImmediate(() =>
 					{
-						var result = CompressionCommon.encodeDecompressedBytes(joinedDecompressedBlocks, options.outputEncoding);
+						try
+						{
+							var result = CompressionCommon.encodeDecompressedBytes(joinedDecompressedBlocks, options.outputEncoding);
+						}
+						catch (e)
+						{
+							callback(undefined, e);
+							return;
+						}
+
 						enqueueImmediate(() => callback(result));
 					});
 				}
@@ -55,7 +80,16 @@
 
 			decompressionStream._transform = (data: Buffer, encoding: string, done: Function) =>
 			{
-				var buffer = decompressor.decompressBlock(convertToByteArray(data));
+				try
+				{
+					var buffer = decompressor.decompressBlock(convertToByteArray(data));
+				}
+				catch (e)
+				{
+					decompressionStream.emit("error", e);
+					return;
+				}
+
 				decompressionStream.push(buffer);
 
 				done();
