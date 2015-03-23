@@ -164,7 +164,7 @@ Asynchronously compresses the given input data.
 * `outputEncoding`: `"ByteArray"` (default), `"BinaryString"` or `"Base64"`
 * `useWebWorker`: `true` (default) would use a web worker if available. `false` would use iterated yielding instead.
 
-*`callback`*: a user-defined callback function accepting a first argument containing the resulting compressed data as specified by `outputEncoding` (or `ByteArray` if not specified) and a possible second parameter containing an Error object.
+*`callback`*: a user-defined callback function accepting a first argument containing the resulting compressed data as specified by `outputEncoding` (or `ByteArray` if not specified) and a possible second parameter containing an ```Error``` object.
 
 *On error*: invokes the callback with a first argument of ```undefined``` and a second one containing the ```Error``` object.
 
@@ -193,7 +193,7 @@ Asynchronously decompresses the given compressed input.
 * `outputEncoding`: `"String"` (default), `"ByteArray"` to return UTF-8 bytes.
 * `useWebWorker`: `true` (default) would use a web worker if available. `false` would use incremental yielding instead. 
  
-*`callback`*: a user-defined callback function accepting a first argument containing the resulting decompressed data as specified by `outputEncoding` and a possible second parameter containing an Error object.
+*`callback`*: a user-defined callback function accepting a first argument containing the resulting decompressed data as specified by `outputEncoding` and a possible second parameter containing an ```Error``` object.
 
 *On error*: invokes the callback with a first argument of ```undefined``` and a second one containing the ```Error``` object.
 
