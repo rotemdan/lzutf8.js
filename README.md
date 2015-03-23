@@ -165,7 +165,8 @@ Asynchronously compresses the given input data.
 * `useWebWorker`: `true` (default) would use a web worker if available. `false` would use iterated yielding instead.
 
 *`callback`*: a user-defined callback function accepting a first argument containing the resulting compressed data as specified by `outputEncoding` (or `ByteArray` if not specified) and a possible second parameter containing an Error object.
-*on error*: invokes the callback with a first argument of ```undefined``` and a second one containing the ```Error``` object.
+
+*On error*: invokes the callback with a first argument of ```undefined``` and a second one containing the ```Error``` object.
 
 *Example:*
 ```js
@@ -193,7 +194,8 @@ Asynchronously decompresses the given compressed input.
 * `useWebWorker`: `true` (default) would use a web worker if available. `false` would use incremental yielding instead. 
  
 *`callback`*: a user-defined callback function accepting a first argument containing the resulting decompressed data as specified by `outputEncoding` and a possible second parameter containing an Error object.
-*on error*: invokes the callback with a first argument of ```undefined``` and a second one containing the ```Error``` object.
+
+*On error*: invokes the callback with a first argument of ```undefined``` and a second one containing the ```Error``` object.
 
 *Example:*
 ```js
