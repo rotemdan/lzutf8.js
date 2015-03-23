@@ -203,7 +203,7 @@ var LZUTF8;
             return array;
         }
         else
-            throw new TypeError("convertToByteArray: invalid array type");
+            throw new TypeError("convertToByteArray: invalid input array type");
     }
     LZUTF8.convertToByteArray = convertToByteArray;
     function bufferSetFunctionPolyfill(source, offset) {
@@ -935,11 +935,28 @@ var LZUTF8;
             var requestOutputEncoding = options.outputEncoding;
             if (!WebWorker.supportsTransferableObjects) {
                 if (options.inputEncoding == "ByteArray") {
-                    input = LZUTF8.decodeUTF8(input);
+                    try {
+                        input = LZUTF8.decodeUTF8(input);
+                    }
+                    catch (e) {
+                        callback(undefined, e);
+                        return;
+                    }
                     requestInputEncoding = "String";
                 }
                 if (options.outputEncoding == "ByteArray") {
                     requestOutputEncoding = "BinaryString";
+                }
+            }
+            else {
+                if (options.inputEncoding == "ByteArray") {
+                    try {
+                        input = LZUTF8.convertToByteArray(input);
+                    }
+                    catch (e) {
+                        callback(undefined, e);
+                        return;
+                    }
                 }
             }
             var request = {
@@ -972,7 +989,13 @@ var LZUTF8;
             var requestOutputEncoding = options.outputEncoding;
             if (!WebWorker.supportsTransferableObjects) {
                 if (options.inputEncoding == "ByteArray") {
-                    input = LZUTF8.encodeBinaryString(input);
+                    try {
+                        input = LZUTF8.encodeBinaryString(input);
+                    }
+                    catch (e) {
+                        callback(undefined, e);
+                        return;
+                    }
                     requestInputEncoding = "BinaryString";
                 }
                 if (options.outputEncoding == "ByteArray") {
@@ -1453,26 +1476,42 @@ var LZUTF8;
         return LZUTF8.AsyncDecompressor.createDecompressionStream();
     }
     LZUTF8.createDecompressionStream = createDecompressionStream;
+    var globalUTF8TextEncoder;
+    var globalUTF8TextDecoder;
     function encodeUTF8(str) {
-        if (LZUTF8.runningInNodeJS())
+        if (typeof str !== "string")
+            throw new TypeError("encodeUTF8: null, undefined or invalid input type received");
+        if (LZUTF8.runningInNodeJS()) {
             return LZUTF8.convertToByteArray(new Buffer(str, "utf8"));
+        }
+        if (typeof TextEncoder === "function") {
+            if (globalUTF8TextEncoder === undefined)
+                globalUTF8TextEncoder = new TextEncoder("utf-8");
+            return LZUTF8.convertToByteArray(globalUTF8TextEncoder.encode(str));
+        }
         else
             return LZUTF8.Encoding.UTF8.encode(str);
     }
     LZUTF8.encodeUTF8 = encodeUTF8;
     function decodeUTF8(input) {
         input = LZUTF8.convertToByteArray(input);
-        if (LZUTF8.runningInNodeJS())
+        if (LZUTF8.runningInNodeJS()) {
             return input.toString("utf8");
+        }
+        else if (typeof TextDecoder === "function") {
+            if (globalUTF8TextDecoder === undefined)
+                globalUTF8TextDecoder = new TextDecoder("utf-8");
+            return globalUTF8TextDecoder.decode(input);
+        }
         else
             return LZUTF8.Encoding.UTF8.decode(input);
     }
     LZUTF8.decodeUTF8 = decodeUTF8;
     function encodeBase64(input) {
+        if (input == null)
+            throw new TypeError("decodeBase64: undefined or null input received");
         input = LZUTF8.convertToByteArray(input);
         if (LZUTF8.runningInNodeJS()) {
-            if (!(input instanceof Buffer))
-                throw new TypeError("encodeBase64: invalid input type");
             var result = input.toString("base64");
             if (result == null)
                 throw new Error("encodeBase64: failed encdoing Base64");
@@ -1484,7 +1523,7 @@ var LZUTF8;
     LZUTF8.encodeBase64 = encodeBase64;
     function decodeBase64(str) {
         if (typeof str !== "string")
-            throw new TypeError("decodeBase64: invalid input type");
+            throw new TypeError("decodeBase64: invalid input type received");
         if (LZUTF8.runningInNodeJS()) {
             var result = LZUTF8.convertToByteArray(new Buffer(str, "base64"));
             if (result === null)

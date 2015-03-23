@@ -63,7 +63,7 @@
 			return array;
 		}
 		else
-			throw new TypeError("convertToByteArray: invalid array type");
+			throw new TypeError("convertToByteArray: invalid input array type");
 	}
 	
 	//

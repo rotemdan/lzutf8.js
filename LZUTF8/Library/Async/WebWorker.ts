@@ -11,13 +11,37 @@
 			{
 				if (options.inputEncoding == "ByteArray")
 				{
-					input = decodeUTF8(input);
+					try
+					{
+						input = decodeUTF8(input);
+					}
+					catch (e)
+					{
+						callback(undefined, e);
+						return;
+					}
+
 					requestInputEncoding = "String";
 				}
 
 				if (options.outputEncoding == "ByteArray")
 				{
 					requestOutputEncoding = "BinaryString";
+				}
+			}
+			else
+			{
+				if (options.inputEncoding == "ByteArray")
+				{
+					try
+					{
+						input = convertToByteArray(input);
+					}
+					catch (e)
+					{
+						callback(undefined, e);
+						return;
+					}
 				}
 			}
 
@@ -65,7 +89,16 @@
 			{
 				if (options.inputEncoding == "ByteArray")
 				{
-					input = encodeBinaryString(input);
+					try
+					{
+						input = encodeBinaryString(input);
+					}
+					catch (e)
+					{
+						callback(undefined, e);
+						return;
+					}
+
 					requestInputEncoding = "BinaryString";
 				}
 
@@ -109,7 +142,8 @@
 			WebWorker.globalWorker.addEventListener("message", responseListener);
 			WebWorker.globalWorker.addEventListener("error",(e) => { callback(undefined, <any> e) });
 		}
-
+		
+		// Worker internal handler
 		static workerMessageHandler(e: MessageEvent)
 		{
 			var request: WebWorkerMessage = e.data;
