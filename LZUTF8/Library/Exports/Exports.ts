@@ -4,7 +4,7 @@
 	export function compress(input: any, options?: CompressionOptions): any
 	{
 		if (input === undefined || input === null)
-			throw new Error("compress: undefined or null input received");
+			throw new TypeError("compress: undefined or null input received");
 
 		options = ObjectTools.extendObject({ outputEncoding: "ByteArray" }, options);
 
@@ -17,7 +17,7 @@
 	export function decompress(input: any, options?: CompressionOptions): any
 	{
 		if (input === undefined || input === null)
-			throw new Error("decompress: undefined or null input received");
+			throw new TypeError("decompress: undefined or null input received");
 
 		options = ObjectTools.extendObject({ inputEncoding: "ByteArray", outputEncoding: "String" }, options);
 
@@ -36,7 +36,7 @@
 			callback = () => { };
 
 		if (input === undefined || input === null)
-			callback(undefined, new Error("compressAsync: undefined or null input received"));
+			callback(undefined, new TypeError("compressAsync: undefined or null input received"));
 
 		var defaultOptions: CompressionOptions =
 			{
@@ -64,11 +64,11 @@
 
 	export function decompressAsync(input: any, options: CompressionOptions, callback: (result: any, error?: Error) => void)
 	{
-		if (input === undefined || input === null)
-			throw new Error("decompressAsync: undefined or null input received");
-
 		if (callback == null)
 			callback = () => { };
+
+		if (input === undefined || input === null)
+			callback(undefined, new TypeError("decompressAsync: undefined or null input received"));
 
 		var defaultOptions: CompressionOptions =
 			{

@@ -18,7 +18,7 @@
 		decompressBlock(input: ByteArray): ByteArray
 		{
 			if (input === undefined || input === null)
-				throw new Error("decompressBlock: undefined or null input received");
+				throw new TypeError("decompressBlock: undefined or null input received");
 
 			input = convertToByteArray(input);
 

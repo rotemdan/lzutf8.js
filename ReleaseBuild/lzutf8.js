@@ -38,7 +38,7 @@ var LZUTF8;
                 this.append(0xDC00 + ((codePoint - 0x10000) & 1023));
             }
             else
-                throw new Error("appendCodePoint: A code point of " + codePoint + " cannot be encoded in UTF-16");
+                throw new RangeError("appendCodePoint: A code point of " + codePoint + " cannot be encoded in UTF-16");
         };
         StringBuilder.prototype.toString = function () {
             this.flushBufferToOutputString();
@@ -116,7 +116,7 @@ var LZUTF8;
         };
         ArrayTools.truncateStartingElements = function (array, truncatedLength) {
             if (array.length <= truncatedLength)
-                throw new Error("truncateStartingElements: Requested length should be smaller than array length");
+                throw new RangeError("truncateStartingElements: Requested length should be smaller than array length");
             var sourcePosition = array.length - truncatedLength;
             for (var i = 0; i < truncatedLength; i++)
                 array[i] = array[sourcePosition + i];
@@ -168,7 +168,7 @@ var LZUTF8;
             else if (param instanceof Array)
                 return convertToByteArray(param.slice(0));
             else
-                throw new Error("ByteArray.create: Invalid parameter");
+                throw new TypeError("ByteArray.create: Invalid parameter");
         }
     }
     LZUTF8.newByteArray = newByteArray;
@@ -193,7 +193,7 @@ var LZUTF8;
                 return new Uint8Array(array);
             }
             else
-                throw new Error("ByteArray.convertToPlatformByteArray: invalid array type");
+                throw new TypeError("ByteArray.convertToPlatformByteArray: invalid array type");
         }
         else if (array instanceof Array) {
             array["set"] = genericArraySetFunctionPolyfill;
@@ -201,7 +201,7 @@ var LZUTF8;
             return array;
         }
         else
-            throw new Error("ByteArray.convertToPlatformByteArray: invalid array type");
+            throw new TypeError("ByteArray.convertToPlatformByteArray: invalid array type");
     }
     LZUTF8.convertToByteArray = convertToByteArray;
     function bufferSetFunctionPolyfill(source, offset) {
@@ -214,7 +214,7 @@ var LZUTF8;
             genericArraySetFunctionPolyfill(source, offset);
         }
         else
-            throw new Error("ByteArray.set() polyfill: Invalid source");
+            throw new TypeError("ByteArray.set() polyfill: Invalid source");
     }
     function genericArraySetFunctionPolyfill(source, offset) {
         if (offset === void 0) { offset = 0; }
@@ -256,12 +256,12 @@ var LZUTF8;
                 case "Base64":
                     return LZUTF8.encodeBase64(compressedBytes);
                 default:
-                    throw new Error("encodeCompressedBytes: Invalid output encoding requested");
+                    throw new TypeError("encodeCompressedBytes: Invalid output encoding requested");
             }
         };
         CompressionCommon.decodeCompressedData = function (compressedData, inputEncoding) {
             if (inputEncoding == "ByteArray" && typeof compressedData == "string")
-                throw new Error("decodeCompressedData: receieved input was string when encoding was set to a ByteArray");
+                throw new TypeError("decodeCompressedData: receieved input was string when encoding was set to a ByteArray");
             switch (inputEncoding) {
                 case "ByteArray":
                     return compressedData;
@@ -270,7 +270,7 @@ var LZUTF8;
                 case "Base64":
                     return LZUTF8.decodeBase64(compressedData);
                 default:
-                    throw new Error("decodeCompressedData: Invalid input encoding requested");
+                    throw new TypeError("decodeCompressedData: Invalid input encoding requested");
             }
         };
         CompressionCommon.encodeDecompressedBytes = function (decompressedBytes, outputEncoding) {
@@ -280,7 +280,7 @@ var LZUTF8;
                 case "String":
                     return LZUTF8.decodeUTF8(decompressedBytes);
                 default:
-                    throw new Error("encodeDecompressedBytes: Invalid output encoding requested");
+                    throw new TypeError("encodeDecompressedBytes: Invalid output encoding requested");
             }
         };
         return CompressionCommon;
@@ -364,7 +364,13 @@ var LZUTF8;
                 else {
                     var joinedCompressedBlocks = LZUTF8.ArrayTools.joinByteArrays(compressedBlocks);
                     LZUTF8.enqueueImmediate(function () {
-                        var result = LZUTF8.CompressionCommon.encodeCompressedBytes(joinedCompressedBlocks, options.outputEncoding);
+                        try {
+                            var result = LZUTF8.CompressionCommon.encodeCompressedBytes(joinedCompressedBlocks, options.outputEncoding);
+                        }
+                        catch (e) {
+                            callback(undefined, e);
+                            return;
+                        }
                         LZUTF8.enqueueImmediate(function () { return callback(result); });
                     });
                 }
@@ -562,7 +568,7 @@ var LZUTF8;
         }
         Compressor.prototype.compressBlock = function (input) {
             if (input === undefined || input === null)
-                throw new Error("compressBlock: undefined or null input received");
+                throw new TypeError("compressBlock: undefined or null input received");
             if (typeof input == "string")
                 input = LZUTF8.encodeUTF8(input);
             return this.compressByteArrayBlock(input);
@@ -833,7 +839,7 @@ var LZUTF8;
         };
         Decompressor.prototype.decompressBlock = function (input) {
             if (input === undefined || input === null)
-                throw new Error("decompressBlock: undefined or null input received");
+                throw new TypeError("decompressBlock: undefined or null input received");
             input = LZUTF8.convertToByteArray(input);
             if (this.inputBufferRemainder) {
                 input = LZUTF8.ArrayTools.joinByteArrays([this.inputBufferRemainder, input]);
@@ -1346,7 +1352,7 @@ var LZUTF8;
 (function (LZUTF8) {
     function compress(input, options) {
         if (input === undefined || input === null)
-            throw new Error("compress: undefined or null input received");
+            throw new TypeError("compress: undefined or null input received");
         options = LZUTF8.ObjectTools.extendObject({ outputEncoding: "ByteArray" }, options);
         var compressor = new LZUTF8.Compressor();
         var compressedBytes = compressor.compressBlock(input);
@@ -1355,7 +1361,7 @@ var LZUTF8;
     LZUTF8.compress = compress;
     function decompress(input, options) {
         if (input === undefined || input === null)
-            throw new Error("decompress: undefined or null input received");
+            throw new TypeError("decompress: undefined or null input received");
         options = LZUTF8.ObjectTools.extendObject({ inputEncoding: "ByteArray", outputEncoding: "String" }, options);
         input = LZUTF8.CompressionCommon.decodeCompressedData(input, options.inputEncoding);
         var decompressor = new LZUTF8.Decompressor();
@@ -1368,7 +1374,7 @@ var LZUTF8;
             callback = function () {
             };
         if (input === undefined || input === null)
-            callback(undefined, new Error("compressAsync: undefined or null input received"));
+            callback(undefined, new TypeError("compressAsync: undefined or null input received"));
         var defaultOptions = {
             inputEncoding: LZUTF8.CompressionCommon.detectCompressionSourceEncoding(input),
             outputEncoding: "ByteArray",
@@ -1388,11 +1394,11 @@ var LZUTF8;
     }
     LZUTF8.compressAsync = compressAsync;
     function decompressAsync(input, options, callback) {
-        if (input === undefined || input === null)
-            throw new Error("decompressAsync: undefined or null input received");
         if (callback == null)
             callback = function () {
             };
+        if (input === undefined || input === null)
+            callback(undefined, new TypeError("decompressAsync: undefined or null input received"));
         var defaultOptions = {
             inputEncoding: "ByteArray",
             outputEncoding: "String",

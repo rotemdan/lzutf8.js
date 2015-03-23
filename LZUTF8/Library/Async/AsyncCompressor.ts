@@ -46,7 +46,16 @@
 
 					enqueueImmediate(() =>
 					{
-						var result = CompressionCommon.encodeCompressedBytes(joinedCompressedBlocks, options.outputEncoding);
+						try
+						{
+							var result = CompressionCommon.encodeCompressedBytes(joinedCompressedBlocks, options.outputEncoding);
+						}
+						catch (e)
+						{
+							callback(undefined, e);
+							return;
+						}
+
 						enqueueImmediate(() => callback(result));
 					});
 				}
