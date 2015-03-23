@@ -356,9 +356,9 @@ module LZUTF8
 			});
 		});
 
-		describe("Trivial cases:", () =>
+		describe("Error handling:",() =>
 		{
-			it("Throws on undefined or null input for compression and decompression", () =>
+			it("Throws on undefined or null input for synchronous compression and decompression",() =>
 			{
 				expect(() => compress(undefined)).toThrow();
 				expect(() => compress(null)).toThrow();
@@ -373,12 +373,93 @@ module LZUTF8
 				expect(() => decompressor.decompressBlock(undefined)).toThrow();
 				expect(() => decompressor.decompressBlock(null)).toThrow();
 
-				//expect(() => compressAsync(undefined, undefined, () => { })).toThrow();
-				//expect(() => compressAsync(null, undefined, () => { })).toThrow();
-				//expect(() => decompressAsync(undefined, undefined, () => { })).toThrow();
-				//expect(() => decompressAsync(null, undefined, () => { })).toThrow();
 			});
 
+			// Async with web workers
+			it("Invokes callback with error for undefined input in asynchronous compression (with web workers)",(done) =>
+			{
+				compressAsync(undefined, { useWebWorker: true },(result, error) =>
+				{
+					expect(result).toBe(undefined);
+					expect(error).toBeDefined();
+					done();
+				});
+			});
+
+			it("Invokes callback with error for invalid input in asynchronous compression (with web workers)",(done) =>
+			{
+				compressAsync(new Date(), { useWebWorker: true },(result, error) =>
+				{
+					expect(result).toBe(undefined);
+					expect(error).toBeDefined();
+					done();
+				});
+			});
+
+			it("Invokes callback with error for undefined input in asynchronous decompression (with web workers)",(done) =>
+			{
+				decompressAsync(undefined, { useWebWorker: true },(result, error) =>
+				{
+					expect(result).toBe(undefined);
+					expect(error).toBeDefined();
+					done();
+				});
+			});
+
+			it("Invokes callback with error for invalid input in asynchronous decompression (with web workers)",(done) =>
+			{
+				decompressAsync(new Date(), { inputEncoding: "Base64", useWebWorker: true },(result, error) =>
+				{
+					expect(result).toBe(undefined);
+					expect(error).toBeDefined();
+					done();
+				});
+			});
+
+			// Async without web workers
+			it("Invokes callback with error for undefined input in asynchronous compression (without web workers)",(done) =>
+			{
+				compressAsync(undefined, { useWebWorker: false },(result, error) =>
+				{
+					expect(result).toBe(undefined);
+					expect(error).toBeDefined();
+					done();
+				});
+			});
+
+			it("Invokes callback with error for invalid input in asynchronous compression (without web workers)",(done) =>
+			{
+				compressAsync(new Date(), { useWebWorker: false },(result, error) =>
+				{
+					expect(result).toBe(undefined);
+					expect(error).toBeDefined();
+					done();
+				});
+			});
+
+			it("Invokes callback with error for undefined input in asynchronous decompression (without web workers)",(done) =>
+			{
+				decompressAsync(undefined, { useWebWorker: false },(result, error) =>
+				{
+					expect(result).toBe(undefined);
+					expect(error).toBeDefined();
+					done();
+				});
+			});
+
+			it("Invokes callback with error for invalid input in asynchronous decompression (without web workers)",(done) =>
+			{
+				decompressAsync(new Date(), { inputEncoding: "Base64", useWebWorker: false },(result, error) =>
+				{
+					expect(result).toBe(undefined);
+					expect(error).toBeDefined();
+					done();
+				});
+			});
+		});
+
+		describe("Trivial cases:",() =>
+		{
 			it("Handles zero length input for compression and decompression", () =>
 			{
 				expect(compress(newByteArray(0))).toEqual(newByteArray(0));

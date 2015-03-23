@@ -6,7 +6,6 @@
 		{
 			if (runningInNodeJS())
 			{
-
 				it("Correctly encodes and decodes UTF8 strings, with output identical to the Node.js library", () =>
 				{
 					var charCount = 30000;
@@ -25,20 +24,19 @@
 				});
 			}
 
-			it("Accepts undefined, null or empty strings (encoding)", () =>
+			it("Handles undefined, null or empty strings (encoding)", () =>
 			{
 				var emptyByteArray = newByteArray(0);
 
-				expect(Encoding.UTF8.encode(undefined)).toEqual(emptyByteArray);
-				expect(Encoding.UTF8.encode(null)).toEqual(emptyByteArray);
+				expect(() => Encoding.UTF8.encode(undefined)).toThrow();
+				expect(() => Encoding.UTF8.encode(null)).toThrow();
 				expect(Encoding.UTF8.encode("")).toEqual(emptyByteArray);
 			});
 
-			it("Accepts undefined, null or empty arrays (decoding)", () =>
+			it("Handles undefined, null or empty arrays (decoding)", () =>
 			{
-
-				expect(Encoding.UTF8.decode(undefined)).toEqual("");
-				expect(Encoding.UTF8.decode(null)).toEqual("");
+				expect(() => Encoding.UTF8.decode(undefined)).toThrow();
+				expect(() => Encoding.UTF8.decode(null)).toThrow();
 				expect(Encoding.UTF8.decode(newByteArray(0))).toEqual("");
 			});
 		});
@@ -69,21 +67,21 @@
 				expect(compareSequences(Encoding.Base64.decode(base64), data)).toBe(true);
 			});
 
-			it("Accepts undefined, null or empty arrays (encoding)", () =>
+			it("Handles undefined, null or empty arrays (encoding)", () =>
 			{
 				var emptyByteArray = newByteArray(0);
 
-				expect(Encoding.Base64.encode(undefined)).toEqual("");
-				expect(Encoding.Base64.encode(null)).toEqual("");
+				expect(() => Encoding.Base64.encode(undefined)).toThrow();
+				expect(() => Encoding.Base64.encode(null)).toThrow();
 				expect(Encoding.Base64.encode(newByteArray(0))).toEqual("");
 			});
 
-			it("Accepts undefined, null or empty strings (decoding)", () =>
+			it("Handles undefined, null or empty strings (decoding)", () =>
 			{
 				var emptyByteArray = newByteArray(0);
 
-				expect(Encoding.Base64.decode(undefined)).toEqual(emptyByteArray);
-				expect(Encoding.Base64.decode(null)).toEqual(emptyByteArray);
+				expect(() => Encoding.Base64.decode(undefined)).toThrow();
+				expect(() => Encoding.Base64.decode(null)).toThrow();
 				expect(Encoding.Base64.decode("")).toEqual(emptyByteArray);
 			});
 
@@ -103,6 +101,7 @@
 				});
 			}
 
+			/*
 			it("Correctly decodes concatenated base64 strings", () =>
 			{
 				for (var j = 0; j < 10; j++)
@@ -129,6 +128,7 @@
 					}
 				}
 			});
+			*/
 		});
 
 		describe("BinaryString", () =>
@@ -176,59 +176,19 @@
 				}
 			});
 
-			it("Accepts undefined, null or empty arrays (encoding)", () =>
+			it("Handles undefined, null or empty arrays (encoding)", () =>
 			{
-				expect(encodeBinaryString(undefined)).toEqual("");
-				expect(encodeBinaryString(null)).toEqual("");
+				expect(() => encodeBinaryString(undefined)).toThrow();
+				expect(() => encodeBinaryString(null)).toThrow();
 				expect(encodeBinaryString(newByteArray(0))).toEqual("");
 			});
 
-			it("Accepts undefined, null or empty strings (decoding)", () =>
+			it("Handles undefined, null or empty strings (decoding)", () =>
 			{
-				expect(decodeBinaryString(undefined)).toEqual(newByteArray(0));
-				expect(decodeBinaryString(null)).toEqual(newByteArray(0));
+				expect(() => decodeBinaryString(undefined)).toThrow();
+				expect(() => decodeBinaryString(null)).toThrow();
 				expect(decodeBinaryString("")).toEqual(newByteArray(0));
 			});
 		});
 	});
-
-	/*
-	describe("CRC32:", () =>
-	{
-		it("Correctly calculates CRC32 for uint8 arrays", () =>
-		{
-			var checksum = CRC32.getChecksum(Encoding.decodeHex("22404c7bd311a5fd"))
-			expect(checksum).toEqual(1436274127);
-
-			var checksum = CRC32.getChecksum(Encoding.decodeHex("2b7e151628aed2a6abf7158809cf4f3c"))
-			expect(checksum).toEqual(4142484572);
-
-			var checksum = CRC32.getChecksum(Encoding.encodeUTF8("The quick brown fox jumps over the lazy dog"));
-			expect(checksum).toEqual(1095738169);
-		});
-	});
-
-	describe("Hex:", () =>
-	{
-		it("Correctly encodes and decodes to hex", () =>
-		{
-			var data = [34, 64, 76, 123, 211, 17];
-			var hex = Encoding.encodeHex(new Uint8Array(data));
-			expect(hex).toEqual("22404c7bd311");
-			expect(ArrayTools.compareArrays(Encoding.decodeHex(hex), data)).toBe(true);
-		});
-		
-		if (runningInNodeJS())
-		{
-			it("Produces output equivalent to node.js library", () =>
-			{
-				for (var i = 0; i < 100; i++)
-				{
-					var randomBytes = JSRandomGenerator.getRandomIntegerArrayOfLength(i, 0, 256);
-					expect(Encoding.encodeHex(new Uint8Array(randomBytes))).toEqual((new Buffer(randomBytes)).toString("hex"));
-				}
-			});
-		}
-	});
-	*/
 }

@@ -36,7 +36,10 @@
 			callback = () => { };
 
 		if (input === undefined || input === null)
+		{
 			callback(undefined, new TypeError("compressAsync: undefined or null input received"));
+			return;
+		}
 
 		var defaultOptions: CompressionOptions =
 			{
@@ -68,7 +71,10 @@
 			callback = () => { };
 
 		if (input === undefined || input === null)
+		{
 			callback(undefined, new TypeError("decompressAsync: undefined or null input received"));
+			return;
+		}
 
 		var defaultOptions: CompressionOptions =
 			{
@@ -129,19 +135,40 @@
 		input = convertToByteArray(input);
 
 		if (runningInNodeJS())
-			return input.toString("base64");
+		{
+			if (!(input instanceof Buffer))
+				throw new TypeError("encodeBase64: invalid input type");
+
+			var result = input.toString("base64");
+
+			if (result == null)
+				throw new Error("encodeBase64: failed encdoing Base64");
+
+			return result;
+		}
 		else
 			return Encoding.Base64.encode(input);
 	}
 
 	export function decodeBase64(str: string): ByteArray
 	{
+		if (typeof str !== "string")
+			throw new TypeError("decodeBase64: invalid input type");
+
 		if (runningInNodeJS())
-			return convertToByteArray(new Buffer(str, "base64"));
+		{
+			var result = convertToByteArray(new Buffer(str, "base64"));
+
+			if (result === null)
+				throw new Error("decodeBase64: failed decoding Base64");
+
+			return result;
+		}
 		else
 			return Encoding.Base64.decode(str);
 	}
 
+	/*
 	export function decodeConcatenatedBase64(concatBase64Strings: string): ByteArray
 	{
 		var base64Strings: string[] = [];
@@ -176,6 +203,7 @@
 
 		return ArrayTools.joinByteArrays(decodedByteArrays);
 	}
+	*/
 
 	export function encodeBinaryString(input: any): string
 	{

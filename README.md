@@ -321,7 +321,7 @@ var compressionStream = LZUTF8.createCompressionStream();
 sourceReadStrem.pipe(compressionStream).pipe(destWriteStream);
 ```
 
-*on error*: emits an ```error``` event with the ```Error```` as a parameter.
+*On error*: emits an ```error``` event with the ```Error```` as a parameter.
 
 ### LZUTF8.createDecompressionStream()
 
@@ -330,7 +330,8 @@ var decompressionStream = LZUTF8.createDecompressionStream();
 ```
 
 Creates a decompression stream. The stream will accept and return Buffers.
-*on error*: emits an ```error``` event with the ```Error```` as a parameter.
+
+*On error*: emits an ```error``` event with the ```Error```` as a parameter.
 
 ## Character encoding methods
 

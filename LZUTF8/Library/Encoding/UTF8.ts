@@ -6,7 +6,10 @@
 		{
 			static encode(str: string, outputArray?: ByteArray): ByteArray
 			{
-				if (!str || str.length == 0)
+				if (typeof str !== "string")
+					throw new TypeError("UTF8.encode: null, undefined or invalid input type");
+
+				if (str.length == 0)
 					return newByteArray(0);
 
 				if (!outputArray)
@@ -51,7 +54,10 @@
 
 			static decode(utf8Bytes: ByteArray): string
 			{
-				if (!utf8Bytes || utf8Bytes.length == 0)
+				if (utf8Bytes == null)
+					throw new TypeError("UTF8.decode: null or undefined input type recieved");
+
+				if (utf8Bytes.length == 0)
 					return "";
 
 				var output = new StringBuilder();

@@ -15,9 +15,9 @@
 
 		prefixHashTable: CompressorHashTable;
 
-		constructor(useCustomPrefixHashTable = true)
+		constructor(useCustomHashTable = true)
 		{
-			if (useCustomPrefixHashTable && typeof Uint32Array == "function")
+			if (useCustomHashTable && typeof Uint32Array == "function")
 				this.prefixHashTable = new CompressorCustomHashTable(this.PrefixHashTableSize);
 			else
 				this.prefixHashTable = new CompressorSimpleHashTable(this.PrefixHashTableSize);

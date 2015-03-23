@@ -8,7 +8,21 @@
 			var compressor = new Compressor();
 
 			if (typeof input == "string")
+			{
 				input = encodeUTF8(input);
+			}
+			else
+			{
+				try
+				{
+					input = convertToByteArray(input);
+				}
+				catch (e)
+				{
+					callback(undefined, e);
+					return;
+				}
+			}
 
 			var sourceBlocks = ArrayTools.splitByteArray(input, options.blockSize);
 

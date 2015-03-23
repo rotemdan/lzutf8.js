@@ -34,7 +34,7 @@
 				case "Base64":
 					return encodeBase64(compressedBytes);
 				default:
-					throw new TypeError("encodeCompressedBytes: Invalid output encoding requested");
+					throw new TypeError("encodeCompressedBytes: invalid output encoding requested");
 			}
 		}
 
@@ -46,13 +46,13 @@
 			switch (inputEncoding)
 			{
 				case "ByteArray":
-					return compressedData;
+					return convertToByteArray(compressedData);
 				case "BinaryString":
 					return decodeBinaryString(compressedData);
 				case "Base64":
 					return decodeBase64(compressedData);
 				default:
-					throw new TypeError("decodeCompressedData: Invalid input encoding requested");
+					throw new TypeError("decodeCompressedData: invalid input encoding requested");
 			}
 		}
 
@@ -65,7 +65,7 @@
 				case "String":
 					return decodeUTF8(decompressedBytes);
 				default:
-					throw new TypeError("encodeDecompressedBytes: Invalid output encoding requested");
+					throw new TypeError("encodeDecompressedBytes: invalid output encoding requested");
 			}
 		}
 	}

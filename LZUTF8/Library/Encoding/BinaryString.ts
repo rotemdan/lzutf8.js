@@ -6,7 +6,10 @@
 		{
 			static encode(input: ByteArray): string
 			{
-				if (!input || input.length === 0)
+				if (input == null)
+					throw new TypeError("BinaryString.encode: undefined or null input received");
+
+				if (input.length === 0)
 					return "";
 
 				var inputLength = input.length;
@@ -48,7 +51,10 @@
 
 			static decode(input: string): ByteArray
 			{
-				if (!input || input == "")
+				if (typeof input !== "string")
+					throw new TypeError("BinaryString.decode: invalid input type");
+
+				if (input == "")
 					return newByteArray(0);
 
 				var output = newByteArray(input.length * 3);

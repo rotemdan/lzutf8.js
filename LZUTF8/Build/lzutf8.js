@@ -171,8 +171,18 @@ var LZUTF8;
         AsyncCompressor.compressAsync = function (input, options, callback) {
             var timer = new LZUTF8.Timer();
             var compressor = new LZUTF8.Compressor();
-            if (typeof input == "string")
+            if (typeof input == "string") {
                 input = LZUTF8.encodeUTF8(input);
+            }
+            else {
+                try {
+                    input = LZUTF8.convertToByteArray(input);
+                }
+                catch (e) {
+                    callback(undefined, e);
+                    return;
+                }
+            }
             var sourceBlocks = LZUTF8.ArrayTools.splitByteArray(input, options.blockSize);
             var compressedBlocks = [];
             var compressBlocksStartingAt = function (index) {
@@ -590,12 +600,12 @@ var LZUTF8;
             else if (param instanceof Array)
                 return convertToByteArray(param.slice(0));
             else
-                throw new TypeError("ByteArray.create: Invalid parameter");
+                throw new TypeError("newByteArray: Invalid parameter");
         }
     }
     LZUTF8.newByteArray = newByteArray;
     function convertToByteArray(array) {
-        if (!array)
+        if (array == null)
             return array;
         if (LZUTF8.runningInNodeJS()) {
             if (array instanceof Buffer) {
@@ -606,6 +616,8 @@ var LZUTF8;
             else if (array instanceof Uint8Array || array instanceof Array) {
                 return newByteArray(array);
             }
+            else
+                throw new TypeError("convertToByteArray: invalid input array type");
         }
         else if (typeof Uint8Array == "function") {
             if (array instanceof Uint8Array) {
@@ -615,7 +627,7 @@ var LZUTF8;
                 return new Uint8Array(array);
             }
             else
-                throw new TypeError("ByteArray.convertToPlatformByteArray: invalid array type");
+                throw new TypeError("convertToByteArray: invalid input array type");
         }
         else if (array instanceof Array) {
             array["set"] = genericArraySetFunctionPolyfill;
@@ -623,7 +635,7 @@ var LZUTF8;
             return array;
         }
         else
-            throw new TypeError("ByteArray.convertToPlatformByteArray: invalid array type");
+            throw new TypeError("convertToByteArray: invalid array type");
     }
     LZUTF8.convertToByteArray = convertToByteArray;
     //
@@ -639,7 +651,7 @@ var LZUTF8;
             genericArraySetFunctionPolyfill(source, offset);
         }
         else
-            throw new TypeError("ByteArray.set() polyfill: Invalid source");
+            throw new TypeError("ByteArray set() polyfill: Invalid source");
     }
     function genericArraySetFunctionPolyfill(source, offset) {
         if (offset === void 0) { offset = 0; }
@@ -681,7 +693,7 @@ var LZUTF8;
                 case "Base64":
                     return LZUTF8.encodeBase64(compressedBytes);
                 default:
-                    throw new TypeError("encodeCompressedBytes: Invalid output encoding requested");
+                    throw new TypeError("encodeCompressedBytes: invalid output encoding requested");
             }
         };
         CompressionCommon.decodeCompressedData = function (compressedData, inputEncoding) {
@@ -689,13 +701,13 @@ var LZUTF8;
                 throw new TypeError("decodeCompressedData: receieved input was string when encoding was set to a ByteArray");
             switch (inputEncoding) {
                 case "ByteArray":
-                    return compressedData;
+                    return LZUTF8.convertToByteArray(compressedData);
                 case "BinaryString":
                     return LZUTF8.decodeBinaryString(compressedData);
                 case "Base64":
                     return LZUTF8.decodeBase64(compressedData);
                 default:
-                    throw new TypeError("decodeCompressedData: Invalid input encoding requested");
+                    throw new TypeError("decodeCompressedData: invalid input encoding requested");
             }
         };
         CompressionCommon.encodeDecompressedBytes = function (decompressedBytes, outputEncoding) {
@@ -705,7 +717,7 @@ var LZUTF8;
                 case "String":
                     return LZUTF8.decodeUTF8(decompressedBytes);
                 default:
-                    throw new TypeError("encodeDecompressedBytes: Invalid output encoding requested");
+                    throw new TypeError("encodeDecompressedBytes: invalid output encoding requested");
             }
         };
         return CompressionCommon;
@@ -837,7 +849,7 @@ var LZUTF8;
                 this.append(0xDC00 + ((codePoint - 0x10000) & 1023));
             }
             else
-                throw new RangeError("appendCodePoint: A code point of " + codePoint + " cannot be encoded in UTF-16");
+                throw new RangeError("StringBuilder.appendCodePoint: A code point of " + codePoint + " cannot be encoded in UTF-16");
         };
         StringBuilder.prototype.toString = function () {
             this.flushBufferToOutputString();
@@ -891,15 +903,15 @@ var LZUTF8;
 var LZUTF8;
 (function (LZUTF8) {
     var Compressor = (function () {
-        function Compressor(useCustomPrefixHashTable) {
-            if (useCustomPrefixHashTable === void 0) { useCustomPrefixHashTable = true; }
+        function Compressor(useCustomHashTable) {
+            if (useCustomHashTable === void 0) { useCustomHashTable = true; }
             this.MinimumSequenceLength = 4;
             this.MaximumSequenceLength = 31;
             this.MaximumMatchDistance = 32767;
             this.PrefixHashTableSize = 65537;
             this.inputBufferStreamOffset = 1;
             this.reusableArraySegmentObject = new LZUTF8.ArraySegment();
-            if (useCustomPrefixHashTable && typeof Uint32Array == "function")
+            if (useCustomHashTable && typeof Uint32Array == "function")
                 this.prefixHashTable = new LZUTF8.CompressorCustomHashTable(this.PrefixHashTableSize);
             else
                 this.prefixHashTable = new LZUTF8.CompressorSimpleHashTable(this.PrefixHashTableSize);
@@ -1332,7 +1344,9 @@ var LZUTF8;
             }
             Base64.encode = function (inputArray, addPadding) {
                 if (addPadding === void 0) { addPadding = true; }
-                if (!inputArray || inputArray.length == 0)
+                if (inputArray == null)
+                    throw new TypeError("Base64.encode: invalid input type");
+                if (inputArray.length == 0)
                     return "";
                 var map = Encoding.Base64.charCodeMap;
                 var output = new LZUTF8.StringBuilder();
@@ -1367,7 +1381,9 @@ var LZUTF8;
                 return output.toString();
             };
             Base64.decode = function (base64String, outputBuffer) {
-                if (!base64String || base64String.length == 0)
+                if (typeof base64String !== "string")
+                    throw new TypeError("Base64.decode: invalid input type");
+                if (base64String.length === 0)
                     return LZUTF8.newByteArray(0);
                 // Add padding if omitted
                 var lengthModulo4 = base64String.length % 4;
@@ -1411,7 +1427,9 @@ var LZUTF8;
             function BinaryString() {
             }
             BinaryString.encode = function (input) {
-                if (!input || input.length === 0)
+                if (input == null)
+                    throw new TypeError("BinaryString.encode: undefined or null input received");
+                if (input.length === 0)
                     return "";
                 var inputLength = input.length;
                 var outputStringBuilder = new LZUTF8.StringBuilder();
@@ -1439,7 +1457,9 @@ var LZUTF8;
                 return outputStringBuilder.toString();
             };
             BinaryString.decode = function (input) {
-                if (!input || input == "")
+                if (typeof input !== "string")
+                    throw new TypeError("BinaryString.decode: invalid input type");
+                if (input == "")
                     return LZUTF8.newByteArray(0);
                 var output = LZUTF8.newByteArray(input.length * 3);
                 var outputPosition = 0;
@@ -1504,7 +1524,9 @@ var LZUTF8;
             function UTF8() {
             }
             UTF8.encode = function (str, outputArray) {
-                if (!str || str.length == 0)
+                if (typeof str !== "string")
+                    throw new TypeError("UTF8.encode: null, undefined or invalid input type");
+                if (str.length == 0)
                     return LZUTF8.newByteArray(0);
                 if (!outputArray)
                     outputArray = LZUTF8.newByteArray(str.length * 4);
@@ -1536,7 +1558,9 @@ var LZUTF8;
                 return outputArray.subarray(0, writeIndex);
             };
             UTF8.decode = function (utf8Bytes) {
-                if (!utf8Bytes || utf8Bytes.length == 0)
+                if (utf8Bytes == null)
+                    throw new TypeError("UTF8.decode: null or undefined input type recieved");
+                if (utf8Bytes.length == 0)
                     return "";
                 var output = new LZUTF8.StringBuilder();
                 var outputCodePoint, leadByte;
@@ -1622,8 +1646,10 @@ var LZUTF8;
         if (callback == null)
             callback = function () {
             };
-        if (input === undefined || input === null)
+        if (input === undefined || input === null) {
             callback(undefined, new TypeError("compressAsync: undefined or null input received"));
+            return;
+        }
         var defaultOptions = {
             inputEncoding: LZUTF8.CompressionCommon.detectCompressionSourceEncoding(input),
             outputEncoding: "ByteArray",
@@ -1646,8 +1672,10 @@ var LZUTF8;
         if (callback == null)
             callback = function () {
             };
-        if (input === undefined || input === null)
+        if (input === undefined || input === null) {
             callback(undefined, new TypeError("decompressAsync: undefined or null input received"));
+            return;
+        }
         var defaultOptions = {
             inputEncoding: "ByteArray",
             outputEncoding: "String",
@@ -1693,42 +1721,67 @@ var LZUTF8;
     LZUTF8.decodeUTF8 = decodeUTF8;
     function encodeBase64(input) {
         input = LZUTF8.convertToByteArray(input);
-        if (LZUTF8.runningInNodeJS())
-            return input.toString("base64");
+        if (LZUTF8.runningInNodeJS()) {
+            if (!(input instanceof Buffer))
+                throw new TypeError("encodeBase64: invalid input type");
+            var result = input.toString("base64");
+            if (result == null)
+                throw new Error("encodeBase64: failed encdoing Base64");
+            return result;
+        }
         else
             return LZUTF8.Encoding.Base64.encode(input);
     }
     LZUTF8.encodeBase64 = encodeBase64;
     function decodeBase64(str) {
-        if (LZUTF8.runningInNodeJS())
-            return LZUTF8.convertToByteArray(new Buffer(str, "base64"));
+        if (typeof str !== "string")
+            throw new TypeError("decodeBase64: invalid input type");
+        if (LZUTF8.runningInNodeJS()) {
+            var result = LZUTF8.convertToByteArray(new Buffer(str, "base64"));
+            if (result === null)
+                throw new Error("decodeBase64: failed decoding Base64");
+            return result;
+        }
         else
             return LZUTF8.Encoding.Base64.decode(str);
     }
     LZUTF8.decodeBase64 = decodeBase64;
-    function decodeConcatenatedBase64(concatBase64Strings) {
-        var base64Strings = [];
-        for (var offset = 0; offset < concatBase64Strings.length;) {
+    /*
+    export function decodeConcatenatedBase64(concatBase64Strings: string): ByteArray
+    {
+        var base64Strings: string[] = [];
+
+        for (var offset = 0; offset < concatBase64Strings.length; )
+        {
             var endPosition = concatBase64Strings.indexOf("=", offset);
-            if (endPosition == -1) {
+
+            if (endPosition == -1)
+            {
                 endPosition = concatBase64Strings.length;
             }
-            else {
+            else
+            {
                 if (concatBase64Strings[endPosition] == "=")
                     endPosition++;
-                if (concatBase64Strings[endPosition] == "=")
+
+                if (concatBase64Strings[endPosition] == "=") // Note: if endPosition equals string length the char would be undefined
                     endPosition++;
             }
+
             base64Strings.push(concatBase64Strings.substring(offset, endPosition));
             offset = endPosition;
         }
-        var decodedByteArrays = [];
-        for (var i = 0; i < base64Strings.length; i++) {
+
+        var decodedByteArrays: ByteArray[] = [];
+
+        for (var i = 0; i < base64Strings.length; i++)
+        {
             decodedByteArrays.push(decodeBase64(base64Strings[i]));
         }
-        return LZUTF8.ArrayTools.joinByteArrays(decodedByteArrays);
+
+        return ArrayTools.joinByteArrays(decodedByteArrays);
     }
-    LZUTF8.decodeConcatenatedBase64 = decodeConcatenatedBase64;
+    */
     function encodeBinaryString(input) {
         input = LZUTF8.convertToByteArray(input);
         return LZUTF8.Encoding.BinaryString.encode(input);
@@ -2172,8 +2225,8 @@ var LZUTF8;
                 }
             });
         });
-        describe("Trivial cases:", function () {
-            it("Throws on undefined or null input for compression and decompression", function () {
+        describe("Error handling:", function () {
+            it("Throws on undefined or null input for synchronous compression and decompression", function () {
                 expect(function () { return LZUTF8.compress(undefined); }).toThrow();
                 expect(function () { return LZUTF8.compress(null); }).toThrow();
                 expect(function () { return LZUTF8.decompress(undefined); }).toThrow();
@@ -2184,11 +2237,67 @@ var LZUTF8;
                 var decompressor = new LZUTF8.Decompressor();
                 expect(function () { return decompressor.decompressBlock(undefined); }).toThrow();
                 expect(function () { return decompressor.decompressBlock(null); }).toThrow();
-                //expect(() => compressAsync(undefined, undefined, () => { })).toThrow();
-                //expect(() => compressAsync(null, undefined, () => { })).toThrow();
-                //expect(() => decompressAsync(undefined, undefined, () => { })).toThrow();
-                //expect(() => decompressAsync(null, undefined, () => { })).toThrow();
             });
+            // Async with web workers
+            it("Invokes callback with error for undefined input in asynchronous compression (with web workers)", function (done) {
+                LZUTF8.compressAsync(undefined, { useWebWorker: true }, function (result, error) {
+                    expect(result).toBe(undefined);
+                    expect(error).toBeDefined();
+                    done();
+                });
+            });
+            it("Invokes callback with error for invalid input in asynchronous compression (with web workers)", function (done) {
+                LZUTF8.compressAsync(new Date(), { useWebWorker: true }, function (result, error) {
+                    expect(result).toBe(undefined);
+                    expect(error).toBeDefined();
+                    done();
+                });
+            });
+            it("Invokes callback with error for undefined input in asynchronous decompression (with web workers)", function (done) {
+                LZUTF8.decompressAsync(undefined, { useWebWorker: true }, function (result, error) {
+                    expect(result).toBe(undefined);
+                    expect(error).toBeDefined();
+                    done();
+                });
+            });
+            it("Invokes callback with error for invalid input in asynchronous decompression (with web workers)", function (done) {
+                LZUTF8.decompressAsync(new Date(), { inputEncoding: "Base64", useWebWorker: true }, function (result, error) {
+                    expect(result).toBe(undefined);
+                    expect(error).toBeDefined();
+                    done();
+                });
+            });
+            // Async without web workers
+            it("Invokes callback with error for undefined input in asynchronous compression (without web workers)", function (done) {
+                LZUTF8.compressAsync(undefined, { useWebWorker: false }, function (result, error) {
+                    expect(result).toBe(undefined);
+                    expect(error).toBeDefined();
+                    done();
+                });
+            });
+            it("Invokes callback with error for invalid input in asynchronous compression (without web workers)", function (done) {
+                LZUTF8.compressAsync(new Date(), { useWebWorker: false }, function (result, error) {
+                    expect(result).toBe(undefined);
+                    expect(error).toBeDefined();
+                    done();
+                });
+            });
+            it("Invokes callback with error for undefined input in asynchronous decompression (without web workers)", function (done) {
+                LZUTF8.decompressAsync(undefined, { useWebWorker: false }, function (result, error) {
+                    expect(result).toBe(undefined);
+                    expect(error).toBeDefined();
+                    done();
+                });
+            });
+            it("Invokes callback with error for invalid input in asynchronous decompression (without web workers)", function (done) {
+                LZUTF8.decompressAsync(new Date(), { inputEncoding: "Base64", useWebWorker: false }, function (result, error) {
+                    expect(result).toBe(undefined);
+                    expect(error).toBeDefined();
+                    done();
+                });
+            });
+        });
+        describe("Trivial cases:", function () {
             it("Handles zero length input for compression and decompression", function () {
                 expect(LZUTF8.compress(LZUTF8.newByteArray(0))).toEqual(LZUTF8.newByteArray(0));
                 expect(LZUTF8.decompress(LZUTF8.newByteArray(0))).toEqual("");
@@ -2245,15 +2354,15 @@ var LZUTF8;
                     expect(libraryDecoding).toEqual(randomUTF16String);
                 });
             }
-            it("Accepts undefined, null or empty strings (encoding)", function () {
+            it("Handles undefined, null or empty strings (encoding)", function () {
                 var emptyByteArray = LZUTF8.newByteArray(0);
-                expect(LZUTF8.Encoding.UTF8.encode(undefined)).toEqual(emptyByteArray);
-                expect(LZUTF8.Encoding.UTF8.encode(null)).toEqual(emptyByteArray);
+                expect(function () { return LZUTF8.Encoding.UTF8.encode(undefined); }).toThrow();
+                expect(function () { return LZUTF8.Encoding.UTF8.encode(null); }).toThrow();
                 expect(LZUTF8.Encoding.UTF8.encode("")).toEqual(emptyByteArray);
             });
-            it("Accepts undefined, null or empty arrays (decoding)", function () {
-                expect(LZUTF8.Encoding.UTF8.decode(undefined)).toEqual("");
-                expect(LZUTF8.Encoding.UTF8.decode(null)).toEqual("");
+            it("Handles undefined, null or empty arrays (decoding)", function () {
+                expect(function () { return LZUTF8.Encoding.UTF8.decode(undefined); }).toThrow();
+                expect(function () { return LZUTF8.Encoding.UTF8.decode(null); }).toThrow();
                 expect(LZUTF8.Encoding.UTF8.decode(LZUTF8.newByteArray(0))).toEqual("");
             });
         });
@@ -2276,16 +2385,16 @@ var LZUTF8;
                 expect(base64).toEqual("kZljQpcn5NNYpw8");
                 expect(LZUTF8.compareSequences(LZUTF8.Encoding.Base64.decode(base64), data)).toBe(true);
             });
-            it("Accepts undefined, null or empty arrays (encoding)", function () {
+            it("Handles undefined, null or empty arrays (encoding)", function () {
                 var emptyByteArray = LZUTF8.newByteArray(0);
-                expect(LZUTF8.Encoding.Base64.encode(undefined)).toEqual("");
-                expect(LZUTF8.Encoding.Base64.encode(null)).toEqual("");
+                expect(function () { return LZUTF8.Encoding.Base64.encode(undefined); }).toThrow();
+                expect(function () { return LZUTF8.Encoding.Base64.encode(null); }).toThrow();
                 expect(LZUTF8.Encoding.Base64.encode(LZUTF8.newByteArray(0))).toEqual("");
             });
-            it("Accepts undefined, null or empty strings (decoding)", function () {
+            it("Handles undefined, null or empty strings (decoding)", function () {
                 var emptyByteArray = LZUTF8.newByteArray(0);
-                expect(LZUTF8.Encoding.Base64.decode(undefined)).toEqual(emptyByteArray);
-                expect(LZUTF8.Encoding.Base64.decode(null)).toEqual(emptyByteArray);
+                expect(function () { return LZUTF8.Encoding.Base64.decode(undefined); }).toThrow();
+                expect(function () { return LZUTF8.Encoding.Base64.decode(null); }).toThrow();
                 expect(LZUTF8.Encoding.Base64.decode("")).toEqual(emptyByteArray);
             });
             if (LZUTF8.runningInNodeJS()) {
@@ -2299,25 +2408,34 @@ var LZUTF8;
                     }
                 });
             }
-            it("Correctly decodes concatenated base64 strings", function () {
-                for (var j = 0; j < 10; j++) {
-                    for (var i = 0; i < 100; i++) {
-                        var randomValues1 = LZUTF8.convertToByteArray(LZUTF8.Random.getRandomIntegerArrayOfLength(LZUTF8.Random.getRandomIntegerInRange(0, i), 0, 256));
-                        var randomValues2 = LZUTF8.convertToByteArray(LZUTF8.Random.getRandomIntegerArrayOfLength(LZUTF8.Random.getRandomIntegerInRange(0, i), 0, 256));
-                        var randomValues3 = LZUTF8.convertToByteArray(LZUTF8.Random.getRandomIntegerArrayOfLength(LZUTF8.Random.getRandomIntegerInRange(0, i), 0, 256));
-                        var randomValues4 = LZUTF8.convertToByteArray(LZUTF8.Random.getRandomIntegerArrayOfLength(LZUTF8.Random.getRandomIntegerInRange(0, i), 0, 256));
-                        var randomValues5 = LZUTF8.convertToByteArray(LZUTF8.Random.getRandomIntegerArrayOfLength(LZUTF8.Random.getRandomIntegerInRange(0, i), 0, 256));
-                        var encodedString1 = LZUTF8.encodeBase64(randomValues1);
-                        var encodedString2 = LZUTF8.encodeBase64(randomValues2);
-                        var encodedString3 = LZUTF8.encodeBase64(randomValues3);
-                        var encodedString4 = LZUTF8.encodeBase64(randomValues4);
-                        var encodedString5 = LZUTF8.encodeBase64(randomValues5);
-                        var decodedConcatenatedStrings = LZUTF8.decodeConcatenatedBase64(encodedString1 + encodedString2 + encodedString3 + encodedString4 + encodedString5);
-                        var joinedRandomValues = LZUTF8.ArrayTools.joinByteArrays([randomValues1, randomValues2, randomValues3, randomValues4, randomValues5]);
-                        expect(LZUTF8.compareSequences(decodedConcatenatedStrings, joinedRandomValues)).toBe(true);
+            /*
+            it("Correctly decodes concatenated base64 strings", () =>
+            {
+                for (var j = 0; j < 10; j++)
+                {
+                    for (var i = 0; i < 100; i++)
+                    {
+                        var randomValues1 = convertToByteArray(Random.getRandomIntegerArrayOfLength(Random.getRandomIntegerInRange(0, i), 0, 256));
+                        var randomValues2 = convertToByteArray(Random.getRandomIntegerArrayOfLength(Random.getRandomIntegerInRange(0, i), 0, 256));
+                        var randomValues3 = convertToByteArray(Random.getRandomIntegerArrayOfLength(Random.getRandomIntegerInRange(0, i), 0, 256));
+                        var randomValues4 = convertToByteArray(Random.getRandomIntegerArrayOfLength(Random.getRandomIntegerInRange(0, i), 0, 256));
+                        var randomValues5 = convertToByteArray(Random.getRandomIntegerArrayOfLength(Random.getRandomIntegerInRange(0, i), 0, 256));
+
+                        var encodedString1: string = encodeBase64(randomValues1);
+                        var encodedString2: string = encodeBase64(randomValues2);
+                        var encodedString3: string = encodeBase64(randomValues3);
+                        var encodedString4: string = encodeBase64(randomValues4);
+                        var encodedString5: string = encodeBase64(randomValues5);
+
+                        var decodedConcatenatedStrings = decodeConcatenatedBase64(encodedString1 + encodedString2 + encodedString3 + encodedString4 + encodedString5);
+
+                        var joinedRandomValues = ArrayTools.joinByteArrays([randomValues1, randomValues2, randomValues3, randomValues4, randomValues5]);
+
+                        expect(compareSequences(decodedConcatenatedStrings, joinedRandomValues)).toBe(true);
                     }
                 }
             });
+            */
         });
         describe("BinaryString", function () {
             it("Encodes and decodes random bytes correctly", function () {
@@ -2350,14 +2468,14 @@ var LZUTF8;
                     }
                 }
             });
-            it("Accepts undefined, null or empty arrays (encoding)", function () {
-                expect(LZUTF8.encodeBinaryString(undefined)).toEqual("");
-                expect(LZUTF8.encodeBinaryString(null)).toEqual("");
+            it("Handles undefined, null or empty arrays (encoding)", function () {
+                expect(function () { return LZUTF8.encodeBinaryString(undefined); }).toThrow();
+                expect(function () { return LZUTF8.encodeBinaryString(null); }).toThrow();
                 expect(LZUTF8.encodeBinaryString(LZUTF8.newByteArray(0))).toEqual("");
             });
-            it("Accepts undefined, null or empty strings (decoding)", function () {
-                expect(LZUTF8.decodeBinaryString(undefined)).toEqual(LZUTF8.newByteArray(0));
-                expect(LZUTF8.decodeBinaryString(null)).toEqual(LZUTF8.newByteArray(0));
+            it("Handles undefined, null or empty strings (decoding)", function () {
+                expect(function () { return LZUTF8.decodeBinaryString(undefined); }).toThrow();
+                expect(function () { return LZUTF8.decodeBinaryString(null); }).toThrow();
                 expect(LZUTF8.decodeBinaryString("")).toEqual(LZUTF8.newByteArray(0));
             });
         });

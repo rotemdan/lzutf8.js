@@ -6,7 +6,10 @@
 		{
 			static encode(inputArray: ByteArray, addPadding = true): string
 			{
-				if (!inputArray || inputArray.length == 0)
+				if (inputArray == null)
+					throw new TypeError("Base64.encode: invalid input type");
+
+				if (inputArray.length == 0)
 					return "";
 
 				var map = Encoding.Base64.charCodeMap;
@@ -60,7 +63,10 @@
 
 			static decode(base64String: string, outputBuffer?: ByteArray): ByteArray
 			{
-				if (!base64String || base64String.length == 0)
+				if (typeof base64String !== "string")
+					throw new TypeError("Base64.decode: invalid input type");
+
+				if (base64String.length === 0)
 					return newByteArray(0);
 
 				// Add padding if omitted

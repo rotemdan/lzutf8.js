@@ -17,13 +17,13 @@
 			else if (param instanceof Array)
 				return convertToByteArray(param.slice(0));
 			else
-				throw new TypeError("ByteArray.create: Invalid parameter");
+				throw new TypeError("newByteArray: Invalid parameter");
 		}
 	}
 
 	export function convertToByteArray(array: any): ByteArray
 	{
-		if (!array)
+		if (array == null)
 			return array;
 
 		if (runningInNodeJS())
@@ -39,6 +39,8 @@
 			{
 				return newByteArray(array);
 			}
+			else
+				throw new TypeError("convertToByteArray: invalid input array type");
 		}
 		else if (typeof Uint8Array == "function")
 		{
@@ -51,7 +53,7 @@
 				return new Uint8Array(array);
 			}
 			else
-				throw new TypeError("ByteArray.convertToPlatformByteArray: invalid array type");
+				throw new TypeError("convertToByteArray: invalid input array type");
 		}
 		else if (array instanceof Array)
 		{
@@ -61,7 +63,7 @@
 			return array;
 		}
 		else
-			throw new TypeError("ByteArray.convertToPlatformByteArray: invalid array type");
+			throw new TypeError("convertToByteArray: invalid array type");
 	}
 	
 	//
@@ -79,7 +81,7 @@
 			genericArraySetFunctionPolyfill(source, offset);
 		}
 		else
-			throw new TypeError("ByteArray.set() polyfill: Invalid source");
+			throw new TypeError("ByteArray set() polyfill: Invalid source");
 	}
 
 	function genericArraySetFunctionPolyfill(source: any, offset: number = 0)
