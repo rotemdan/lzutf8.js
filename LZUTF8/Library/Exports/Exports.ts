@@ -110,35 +110,61 @@
 	{
 		return AsyncDecompressor.createDecompressionStream();
 	}
+
+	declare var TextDecoder;
+	declare var TextEncoder;
+	var globalUTF8TextEncoder;
+	var globalUTF8TextDecoder;
 	
 	// Encodings
 	export function encodeUTF8(str: string): ByteArray
 	{
+		if (typeof str !== "string")
+			throw new TypeError("encodeUTF8: null, undefined or invalid input type received");
+
 		if (runningInNodeJS())
+		{
 			return convertToByteArray(new Buffer(str, "utf8"));
+		}
+		if (typeof TextEncoder === "function")
+		{
+			if (globalUTF8TextEncoder === undefined)
+				globalUTF8TextEncoder = new TextEncoder("utf-8");
+
+			return convertToByteArray(globalUTF8TextEncoder.encode(str));
+		}
 		else
-			return LZUTF8.Encoding.UTF8.encode(str);
+			return Encoding.UTF8.encode(str);
 	}
 
-	export function decodeUTF8(input: any): string
+	export function decodeUTF8(input: ByteArray): string
 	{
 		input = convertToByteArray(input);
 
 		if (runningInNodeJS())
-			return input.toString("utf8");
+		{
+			return (<any>input).toString("utf8");
+		}
+		else if (typeof TextDecoder === "function")
+		{
+			if (globalUTF8TextDecoder === undefined)
+				globalUTF8TextDecoder = new TextDecoder("utf-8");
+
+			return globalUTF8TextDecoder.decode(input);
+		}
 		else
 			return Encoding.UTF8.decode(input);
 	}
 
 	export function encodeBase64(input: any): string
 	{
+		if (input == null)
+			throw new TypeError("decodeBase64: undefined or null input received");
+
 		input = convertToByteArray(input);
 
 		if (runningInNodeJS())
 		{
-			if (!(input instanceof Buffer))
-				throw new TypeError("encodeBase64: invalid input type");
-
 			var result = input.toString("base64");
 
 			if (result == null)
@@ -153,7 +179,7 @@
 	export function decodeBase64(str: string): ByteArray
 	{
 		if (typeof str !== "string")
-			throw new TypeError("decodeBase64: invalid input type");
+			throw new TypeError("decodeBase64: invalid input type received");
 
 		if (runningInNodeJS())
 		{
