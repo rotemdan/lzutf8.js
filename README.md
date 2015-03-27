@@ -413,6 +413,11 @@ Decodes a binary string.
 *remarks:* Multiple binary strings may be freely concatenated and decoded as a single string. This is made possible by ending every sequence with special marker (char code 32768 for an even-length sequence and 32769 for a an odd-length sequence).
 
 
+# Release history
+
+0.2.0: Added async error handling. Added support for TextEncoder and TextDecoder when available.
+0.1.0 - 0.1.14: Initial release and updates.
+
 # License
 
 Copyright (c) 2014-2015, Rotem Dan &lt;rotemdan@gmail.com&gt;.
