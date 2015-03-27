@@ -2286,7 +2286,7 @@ var LZUTF8;
                     done();
                 });
             });
-            it("Invokes callback with error for invalid input in asynchronous compression (with web workers)", function (done) {
+            it("Invokes callback with error for invalid input type in asynchronous compression (with web workers)", function (done) {
                 LZUTF8.compressAsync(new Date(), { useWebWorker: true }, function (result, error) {
                     expect(result).toBe(undefined);
                     expect(error).toBeDefined();
@@ -2300,7 +2300,7 @@ var LZUTF8;
                     done();
                 });
             });
-            it("Invokes callback with error for invalid input in asynchronous decompression (with web workers)", function (done) {
+            it("Invokes callback with error for invalid input type in asynchronous decompression (with web workers)", function (done) {
                 LZUTF8.decompressAsync(new Date(), { inputEncoding: "Base64", useWebWorker: true }, function (result, error) {
                     expect(result).toBe(undefined);
                     expect(error).toBeDefined();
@@ -2315,7 +2315,7 @@ var LZUTF8;
                     done();
                 });
             });
-            it("Invokes callback with error for invalid input in asynchronous compression (without web workers)", function (done) {
+            it("Invokes callback with error for invalid input type in asynchronous compression (without web workers)", function (done) {
                 LZUTF8.compressAsync(new Date(), { useWebWorker: false }, function (result, error) {
                     expect(result).toBe(undefined);
                     expect(error).toBeDefined();
@@ -2329,7 +2329,7 @@ var LZUTF8;
                     done();
                 });
             });
-            it("Invokes callback with error for invalid input in asynchronous decompression (without web workers)", function (done) {
+            it("Invokes callback with error for invalid input type in asynchronous decompression (without web workers)", function (done) {
                 LZUTF8.decompressAsync(new Date(), { inputEncoding: "Base64", useWebWorker: false }, function (result, error) {
                     expect(result).toBe(undefined);
                     expect(error).toBeDefined();

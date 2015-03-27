@@ -386,7 +386,7 @@ module LZUTF8
 				});
 			});
 
-			it("Invokes callback with error for invalid input in asynchronous compression (with web workers)",(done) =>
+			it("Invokes callback with error for invalid input type in asynchronous compression (with web workers)",(done) =>
 			{
 				compressAsync(new Date(), { useWebWorker: true },(result, error) =>
 				{
@@ -406,7 +406,7 @@ module LZUTF8
 				});
 			});
 
-			it("Invokes callback with error for invalid input in asynchronous decompression (with web workers)",(done) =>
+			it("Invokes callback with error for invalid input type in asynchronous decompression (with web workers)",(done) =>
 			{
 				decompressAsync(new Date(), { inputEncoding: "Base64", useWebWorker: true },(result, error) =>
 				{
@@ -427,7 +427,7 @@ module LZUTF8
 				});
 			});
 
-			it("Invokes callback with error for invalid input in asynchronous compression (without web workers)",(done) =>
+			it("Invokes callback with error for invalid input type in asynchronous compression (without web workers)",(done) =>
 			{
 				compressAsync(new Date(), { useWebWorker: false },(result, error) =>
 				{
@@ -447,7 +447,7 @@ module LZUTF8
 				});
 			});
 
-			it("Invokes callback with error for invalid input in asynchronous decompression (without web workers)",(done) =>
+			it("Invokes callback with error for invalid input type in asynchronous decompression (without web workers)",(done) =>
 			{
 				decompressAsync(new Date(), { inputEncoding: "Base64", useWebWorker: false },(result, error) =>
 				{
