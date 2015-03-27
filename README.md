@@ -78,7 +78,7 @@ A high-performance string compression library and stream format:
     - [LZUTF8.decodeBase64(..)](#lzutf8decodebase64)
     - [LZUTF8.encodeBinaryString(..)](#lzutf8encodebinarystring)
     - [LZUTF8.decodeBinaryString(..)](#lzutf8decodebinarystring)
-- [Release history](#Release-history)
+- [Release history](#release-history)
 - [License](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
