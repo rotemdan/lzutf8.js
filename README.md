@@ -203,7 +203,7 @@ LZUTF8.decompressAsync(input, {inputEncoding: "BinaryString", outputEncoding: "B
 	if (result !== undefined)
 		console.log("Data successfully decompressed to " + result.length + " UTF-8 bytes");
 	else
-		console.log("Deompression error: " + e.message);
+		console.log("Decompression error: " + e.message);
 });
 ```
 
