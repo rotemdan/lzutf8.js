@@ -416,8 +416,8 @@ Decodes a binary string.
 
 # Release history
 
-```0.2.0```: Added async error handling. Added support for TextEncoder and TextDecoder when available.
-```0.1.0 - 0.1.14```: Initial release and updates.
+* ```0.2.0```: Added async error handling. Added support for TextEncoder and TextDecoder when available.
+* ```0.1.0 - 0.1.14```: Initial release and updates.
 
 # License
 

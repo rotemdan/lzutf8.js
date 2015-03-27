@@ -78,6 +78,7 @@ A high-performance string compression library and stream format:
     - [LZUTF8.decodeBase64(..)](#lzutf8decodebase64)
     - [LZUTF8.encodeBinaryString(..)](#lzutf8encodebinarystring)
     - [LZUTF8.decodeBinaryString(..)](#lzutf8decodebinarystring)
+- [Release history](#release-history)
 - [License](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -203,7 +204,7 @@ LZUTF8.decompressAsync(input, {inputEncoding: "BinaryString", outputEncoding: "B
 	if (result !== undefined)
 		console.log("Data successfully decompressed to " + result.length + " UTF-8 bytes");
 	else
-		console.log("Deompression error: " + e.message);
+		console.log("Decompression error: " + e.message);
 });
 ```
 
@@ -412,6 +413,11 @@ Decodes a binary string.
 
 *remarks:* Multiple binary strings may be freely concatenated and decoded as a single string. This is made possible by ending every sequence with special marker (char code 32768 for an even-length sequence and 32769 for a an odd-length sequence).
 
+
+# Release history
+
+* ```0.2.0```: Added async error handling. Added support for TextEncoder and TextDecoder when available.
+* ```0.1.0 - 0.1.14```: Initial release and updates.
 
 # License
 
