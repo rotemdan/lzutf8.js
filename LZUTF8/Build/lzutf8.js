@@ -1,7 +1,7 @@
 var LZUTF8;
 (function (LZUTF8) {
     function runningInNodeJS() {
-        return (typeof require === "function") && (typeof module === "object");
+        return (typeof require === "function") && (typeof module === "object") && (process && process.versions && process.versions.node);
     }
     LZUTF8.runningInNodeJS = runningInNodeJS;
     if (runningInNodeJS()) {
