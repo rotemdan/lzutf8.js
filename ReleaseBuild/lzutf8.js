@@ -4,12 +4,12 @@
  Copyright (c) 2014-2015, Rotem Dan <rotemdan@gmail.com> 
  Released under the MIT license.
 
- Build date: 2015-03-27 
+ Build date: 2015-07-18 
 */
 var LZUTF8;
 (function (LZUTF8) {
     function runningInNodeJS() {
-        return (typeof require === "function") && (typeof module === "object");
+        return (typeof require === "function") && (typeof module === "object") && (process && process.versions && process.versions.node);
     }
     LZUTF8.runningInNodeJS = runningInNodeJS;
     if (runningInNodeJS()) {
