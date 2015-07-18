@@ -81,7 +81,7 @@
 			genericArraySetFunctionPolyfill(source, offset);
 		}
 		else
-			throw new TypeError("ByteArray set() polyfill: Invalid source");
+			throw new TypeError("bufferSetFunctionPolyfill polyfill: Invalid source");
 	}
 
 	function genericArraySetFunctionPolyfill(source: any, offset: number = 0)

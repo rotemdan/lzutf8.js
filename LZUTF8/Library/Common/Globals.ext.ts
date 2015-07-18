@@ -2,7 +2,7 @@
 {
 	export function runningInNodeJS()
 	{
-		return (typeof require === "function") && (typeof module === "object")
+		return ((typeof process === "object") && (typeof process.versions === "object") && (typeof process.versions.node === "string"));
 	}
 
 	if (runningInNodeJS())

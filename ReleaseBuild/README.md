@@ -172,10 +172,10 @@ Asynchronously compresses the given input data.
 *Example:*
 ```js
 LZUTF8.compressAsync(input, {outputEncoding: "BinaryString"}, function (result, error) {
-	if (result !== undefined)
+	if (error === undefined)
 		console.log("Data successfully compressed and encoded to " + result.length + " characters");
 	else
-		console.log("Compression error: " + e.message);
+		console.log("Compression error: " + error.message);
 });
 ```
 
@@ -201,10 +201,10 @@ Asynchronously decompresses the given compressed input.
 *Example:*
 ```js
 LZUTF8.decompressAsync(input, {inputEncoding: "BinaryString", outputEncoding: "ByteArray"}, function (result, error) {
-	if (result !== undefined)
+	if (error === undefined)
 		console.log("Data successfully decompressed to " + result.length + " UTF-8 bytes");
 	else
-		console.log("Decompression error: " + e.message);
+		console.log("Decompression error: " + error.message);
 });
 ```
 

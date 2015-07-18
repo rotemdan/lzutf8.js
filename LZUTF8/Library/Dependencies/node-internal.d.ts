@@ -204,7 +204,7 @@ declare module NodeJS
         hrtime(time?: number[]): number[];
 
         // Worker
-        send? (message: any, sendHandle?: any): void;
+        send?(message: any, sendHandle?: any): void;
     }
 
     export interface Timer
@@ -1106,10 +1106,11 @@ declare module tls
     export function connect(options: TlsOptions, secureConnectionListener?: () => void): ClearTextStream;
     export function connect(port: number, host?: string, options?: ConnectionOptions, secureConnectListener?: () => void): ClearTextStream;
     export function connect(port: number, options?: ConnectionOptions, secureConnectListener?: () => void): ClearTextStream;
-    export function createSecurePair(credentials?: crypto.Credentials, isServer?: boolean, requestCert?: boolean, rejectUnauthorized?: boolean): SecurePair;
+    export function createSecurePair(credentials?: nodecrypto.Credentials, isServer?: boolean, requestCert?: boolean, rejectUnauthorized?: boolean): SecurePair;
 }
 
-declare module crypto
+//declare module crypto
+declare module nodecrypto // Renamed to 'nodecrypto' because it conflicts with window.crypto
 {
     export interface CredentialDetails
 	{
@@ -1142,7 +1143,7 @@ declare module crypto
     }
     export function createCipher(algorithm: string, password: any): Cipher;
     export function createCipheriv(algorithm: string, key: any, iv: any): Cipher;
-    interface Cipher
+    interface Cipher // extends stream.Transform // Modified to extend a transform stream
 	{
         update(data: Buffer): Buffer;
         update(data: any, input_encoding?: string, output_encoding?: string): string;
@@ -1152,7 +1153,7 @@ declare module crypto
     }
     export function createDecipher(algorithm: string, password: any): Decipher;
     export function createDecipheriv(algorithm: string, key: any, iv: any): Decipher;
-    interface Decipher
+    interface Decipher // extends stream.Transform // Modified to extend a transform stream
 	{
         update(data: Buffer): Buffer;
         update(data: any, input_encoding?: string, output_encoding?: string): string;

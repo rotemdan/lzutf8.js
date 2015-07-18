@@ -30,12 +30,12 @@
 				return NodeFS.statSync(filePath).size;
 			}
 
-			var arguments = process.argv.slice(2);
-			var command: string = arguments[0];
-			var sourceFilePath: string = arguments[1];
-			var destinationFilePath: string = arguments[2];
+			var cmdArguments = process.argv.slice(2);
+			var command: string = cmdArguments[0];
+			var sourceFilePath: string = cmdArguments[1];
+			var destinationFilePath: string = cmdArguments[2];
 
-			if (arguments.length == 0)
+			if (cmdArguments.length == 0)
 			{
 				console.log("Usage: node lz-utf8-cli [command] [source] [destination?]")
 				console.log();

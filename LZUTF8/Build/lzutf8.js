@@ -1,7 +1,7 @@
 var LZUTF8;
 (function (LZUTF8) {
     function runningInNodeJS() {
-        return (typeof require === "function") && (typeof module === "object");
+        return ((typeof process === "object") && (typeof process.versions === "object") && (typeof process.versions.node === "string"));
     }
     LZUTF8.runningInNodeJS = runningInNodeJS;
     if (runningInNodeJS()) {
@@ -88,11 +88,11 @@ var LZUTF8;
             function getFileSize(filePath) {
                 return NodeFS.statSync(filePath).size;
             }
-            var arguments = process.argv.slice(2);
-            var command = arguments[0];
-            var sourceFilePath = arguments[1];
-            var destinationFilePath = arguments[2];
-            if (arguments.length == 0) {
+            var cmdArguments = process.argv.slice(2);
+            var command = cmdArguments[0];
+            var sourceFilePath = cmdArguments[1];
+            var destinationFilePath = cmdArguments[2];
+            if (cmdArguments.length == 0) {
                 console.log("Usage: node lz-utf8-cli [command] [source] [destination?]");
                 console.log();
                 console.log("Commands:");
@@ -368,9 +368,7 @@ var LZUTF8;
                 LZUTF8.enqueueImmediate(function () { return callback(response.data); });
             };
             WebWorker.globalWorker.addEventListener("message", responseListener);
-            WebWorker.globalWorker.addEventListener("error", function (e) {
-                callback(undefined, e);
-            });
+            WebWorker.globalWorker.addEventListener("error", function (e) { callback(undefined, e); });
         };
         WebWorker.decompressAsync = function (input, options, callback) {
             var requestInputEncoding = options.inputEncoding;
@@ -413,9 +411,7 @@ var LZUTF8;
                 LZUTF8.enqueueImmediate(function () { return callback(response.data); });
             };
             WebWorker.globalWorker.addEventListener("message", responseListener);
-            WebWorker.globalWorker.addEventListener("error", function (e) {
-                callback(undefined, e);
-            });
+            WebWorker.globalWorker.addEventListener("error", function (e) { callback(undefined, e); });
         };
         // Worker internal handler
         WebWorker.workerMessageHandler = function (e) {
@@ -675,7 +671,7 @@ var LZUTF8;
             genericArraySetFunctionPolyfill(source, offset);
         }
         else
-            throw new TypeError("ByteArray set() polyfill: Invalid source");
+            throw new TypeError("bufferSetFunctionPolyfill polyfill: Invalid source");
     }
     function genericArraySetFunctionPolyfill(source, offset) {
         if (offset === void 0) { offset = 0; }
@@ -764,18 +760,17 @@ var LZUTF8;
                 window.postMessage(EventLoop.instanceToken, window.location.href);
             }
             else {
-                window.setTimeout(func, 0);
+                setTimeout(func, 0);
             }
         };
         EventLoop.registerWindowMessageHandler = function () {
+            var _this = this;
             EventLoop.instanceToken = "EventLoop.enqueueImmediate-" + Math.random();
             EventLoop.queuedFunctions = [];
             window.addEventListener("message", function (event) {
-                if (event.data != EventLoop.instanceToken)
+                if (event.data != EventLoop.instanceToken || _this.queuedFunctions.length === 0)
                     return;
                 var queuedFunction = EventLoop.queuedFunctions.shift();
-                if (!queuedFunction)
-                    return;
                 try {
                     queuedFunction.call(undefined);
                 }
@@ -820,8 +815,7 @@ var LZUTF8;
                 //document.write("<br/>Without web worker:<br/>");
                 AsyncBenchmarks.benchmark(testData, "BinaryString", "String", false, function () {
                     //document.write("<br/>With web worker:<br/>");
-                    AsyncBenchmarks.benchmark(testData, "BinaryString", "String", true, function () {
-                    });
+                    AsyncBenchmarks.benchmark(testData, "BinaryString", "String", true, function () { });
                 });
             });
         };
@@ -1011,13 +1005,16 @@ var LZUTF8;
                 else
                     var lengthToSurpass = longestMatchLength;
                 // Break if any of the conditions occur
-                if (testedSequenceDistance > this.MaximumMatchDistance || lengthToSurpass >= this.MaximumSequenceLength || matchedSequencePosition + lengthToSurpass >= input.length)
+                if (testedSequenceDistance > this.MaximumMatchDistance ||
+                    lengthToSurpass >= this.MaximumSequenceLength ||
+                    matchedSequencePosition + lengthToSurpass >= input.length)
                     break;
                 // Quick check to see if there's any point comparing all the bytes.
                 if (input[testedSequencePosition + lengthToSurpass] !== input[matchedSequencePosition + lengthToSurpass])
                     continue;
                 for (var offset = 0;; offset++) {
-                    if (matchedSequencePosition + offset === input.length || input[testedSequencePosition + offset] !== input[matchedSequencePosition + offset]) {
+                    if (matchedSequencePosition + offset === input.length ||
+                        input[testedSequencePosition + offset] !== input[matchedSequencePosition + offset]) {
                         if (offset > lengthToSurpass) {
                             longestMatchDistance = testedSequenceDistance;
                             longestMatchLength = offset;
@@ -1034,7 +1031,10 @@ var LZUTF8;
                 return null;
         };
         Compressor.prototype.getBucketIndexForPrefix = function (startPosition) {
-            return (this.inputBuffer[startPosition] * 7880599 + this.inputBuffer[startPosition + 1] * 39601 + this.inputBuffer[startPosition + 2] * 199 + this.inputBuffer[startPosition + 3]) % this.PrefixHashTableSize;
+            return (this.inputBuffer[startPosition] * 7880599 +
+                this.inputBuffer[startPosition + 1] * 39601 +
+                this.inputBuffer[startPosition + 2] * 199 +
+                this.inputBuffer[startPosition + 3]) % this.PrefixHashTableSize;
         };
         Compressor.prototype.outputPointerBytes = function (length, distance) {
             if (distance < 128) {
@@ -1129,6 +1129,7 @@ var LZUTF8;
             var oldStorage = this.storage;
             this.bucketLocators = new Uint32Array(this.bucketLocators.length);
             this.storageIndex = 1;
+            // First pass: Scan and create the new bucket locators
             for (var bucketIndex = 0; bucketIndex < oldBucketLocators.length; bucketIndex += 2) {
                 var length = oldBucketLocators[bucketIndex + 1];
                 if (length === 0)
@@ -1139,6 +1140,8 @@ var LZUTF8;
             }
             //
             this.storage = new Uint32Array(this.storageIndex * 8);
+            //
+            // Second pass: After storage was allocated, copy the old data to the new buckets
             for (var bucketIndex = 0; bucketIndex < oldBucketLocators.length; bucketIndex += 2) {
                 var sourcePosition = oldBucketLocators[bucketIndex];
                 if (sourcePosition === 0)
@@ -1248,7 +1251,8 @@ var LZUTF8;
                 var sequenceLengthIdentifier = inputValue >>> 5; // 6 for 2 bytes, 7 for at least 3 bytes
                 // If bytes in read position imply the start of a truncated input sequence (either a literal codepoint or a pointer)
                 // keep the remainder to be decoded with the next buffer
-                if (readPosition == inputLength - 1 || (readPosition == inputLength - 2 && sequenceLengthIdentifier == 7)) {
+                if (readPosition == inputLength - 1 ||
+                    (readPosition == inputLength - 2 && sequenceLengthIdentifier == 7)) {
                     this.inputBufferRemainder = LZUTF8.newByteArray(input.subarray(readPosition));
                     break;
                 }
@@ -1270,6 +1274,7 @@ var LZUTF8;
                         readPosition += 2;
                     }
                     var matchPosition = this.outputPosition - matchDistance;
+                    // Copy the match bytes to output
                     for (var offset = 0; offset < matchLength; offset++)
                         this.outputByte(this.outputBuffer[matchPosition + offset]);
                 }
@@ -1300,7 +1305,9 @@ var LZUTF8;
         Decompressor.prototype.rollBackIfOutputBufferEndsWithATruncatedMultibyteSequence = function () {
             for (var offset = 1; offset <= 4 && this.outputPosition - offset >= 0; offset++) {
                 var value = this.outputBuffer[this.outputPosition - offset];
-                if ((offset < 4 && (value >>> 3) === 30) || (offset < 3 && (value >>> 4) === 14) || (offset < 2 && (value >>> 5) === 6)) {
+                if ((offset < 4 && (value >>> 3) === 30) ||
+                    (offset < 3 && (value >>> 4) === 14) ||
+                    (offset < 2 && (value >>> 5) === 6)) {
                     this.outputBufferRemainder = LZUTF8.newByteArray(this.outputBuffer.subarray(this.outputPosition - offset, this.outputPosition));
                     this.outputPosition -= offset;
                     return;
@@ -1384,7 +1391,9 @@ var LZUTF8;
                         output.append(map[(uint24) & 63]);
                         uint24 = 0;
                     }
-                    else if (readPosition === length - 2) {
+                    else if (readPosition === length - 2) 
+                    // If two bytes are left, output 3 encoded characters and one padding character
+                    {
                         uint24 = inputArray[readPosition] << 16 | inputArray[readPosition + 1] << 8;
                         output.append(map[(uint24 >>> 18) & 63]);
                         output.append(map[(uint24 >>> 12) & 63]);
@@ -1392,7 +1401,9 @@ var LZUTF8;
                         if (addPadding)
                             output.append(Encoding.Base64.paddingCharCode);
                     }
-                    else if (readPosition === length - 1) {
+                    else if (readPosition === length - 1) 
+                    // Arrived at last byte at a position that did not complete a full 3 byte set
+                    {
                         uint24 = inputArray[readPosition] << 16;
                         output.append(map[(uint24 >>> 18) & 63]);
                         output.append(map[(uint24 >>> 12) & 63]);
@@ -1422,7 +1433,10 @@ var LZUTF8;
                     outputBuffer = LZUTF8.newByteArray(base64String.length);
                 var outputPosition = 0;
                 for (var i = 0, length = base64String.length; i < length; i += 4) {
-                    var uint24 = (reverseCharCodeMap[base64String.charCodeAt(i)] << 18) | (reverseCharCodeMap[base64String.charCodeAt(i + 1)] << 12) | (reverseCharCodeMap[base64String.charCodeAt(i + 2)] << 6) | (reverseCharCodeMap[base64String.charCodeAt(i + 3)]);
+                    var uint24 = (reverseCharCodeMap[base64String.charCodeAt(i)] << 18) |
+                        (reverseCharCodeMap[base64String.charCodeAt(i + 1)] << 12) |
+                        (reverseCharCodeMap[base64String.charCodeAt(i + 2)] << 6) |
+                        (reverseCharCodeMap[base64String.charCodeAt(i + 3)]);
                     outputBuffer[outputPosition++] = (uint24 >>> 16) & 255;
                     outputBuffer[outputPosition++] = (uint24 >>> 8) & 255;
                     outputBuffer[outputPosition++] = (uint24) & 255;
@@ -1668,8 +1682,7 @@ var LZUTF8;
     // Async
     function compressAsync(input, options, callback) {
         if (callback == null)
-            callback = function () {
-            };
+            callback = function () { };
         if (input === undefined || input === null) {
             callback(undefined, new TypeError("compressAsync: undefined or null input received"));
             return;
@@ -1694,8 +1707,7 @@ var LZUTF8;
     LZUTF8.compressAsync = compressAsync;
     function decompressAsync(input, options, callback) {
         if (callback == null)
-            callback = function () {
-            };
+            callback = function () { };
         if (input === undefined || input === null) {
             callback(undefined, new TypeError("decompressAsync: undefined or null input received"));
             return;
@@ -1842,8 +1854,7 @@ var LZUTF8;
             globalObject = self;
         else
             globalObject = window;
-        globalObject["describe"] = function () {
-        };
+        globalObject["describe"] = function () { };
     }
     if (LZUTF8.runningInNodeJS()) {
         process.on('uncaughtException', function (e) {
@@ -1992,7 +2003,9 @@ var LZUTF8;
             var excludedFunctions = ["beforeEach", "afterEach", "constructor"];
             excludedFunctions = excludedFunctions.concat(excludeList);
             for (var property in this.benchmarkContext)
-                if ((typeof this.benchmarkContext[property] === "function") && LZUTF8.ArrayTools.find(excludedFunctions, property) === -1 && LZUTF8.ArrayTools.find(excludedFunctions, this.benchmarkContext[property]) === -1) {
+                if ((typeof this.benchmarkContext[property] === "function") &&
+                    LZUTF8.ArrayTools.find(excludedFunctions, property) === -1 &&
+                    LZUTF8.ArrayTools.find(excludedFunctions, this.benchmarkContext[property]) === -1) {
                     this.run(this.benchmarkContext[property]);
                 }
         };

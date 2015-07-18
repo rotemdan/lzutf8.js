@@ -21,7 +21,7 @@
 			}
 			else
 			{
-				window.setTimeout(func, 0);
+				setTimeout(func, 0);
 			}
 		}
 
@@ -32,12 +32,10 @@
 
 			window.addEventListener("message", (event) =>
 			{
-				if (event.data != EventLoop.instanceToken)
+				if (event.data != EventLoop.instanceToken || this.queuedFunctions.length === 0)
 					return;
 
 				var queuedFunction = EventLoop.queuedFunctions.shift();
-				if (!queuedFunction)
-					return;
 
 				try
 				{
