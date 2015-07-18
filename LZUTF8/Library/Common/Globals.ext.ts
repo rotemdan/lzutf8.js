@@ -5,7 +5,7 @@
 		return ((typeof process === "object") && (typeof process.versions === "object") && (typeof process.versions.node === "string"));
 	}
 
-	if (runningInNodeJS())
+	if (module && module.exports)
 	{
 		module.exports = LZUTF8;
 	}
