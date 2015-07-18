@@ -37,7 +37,7 @@
 
 			if (cmdArguments.length == 0)
 			{
-				console.log("Usage: node lz-utf8-cli [command] [source] [destination?]")
+				console.log("Usage: node lzutf8-cli [command] [source] [destination?]")
 				console.log();
 				console.log("Commands:");
 				console.log("  c   Compress [source] to [destination]");

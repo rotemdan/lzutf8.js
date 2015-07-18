@@ -4,7 +4,7 @@ var LZUTF8;
         return ((typeof process === "object") && (typeof process.versions === "object") && (typeof process.versions.node === "string"));
     }
     LZUTF8.runningInNodeJS = runningInNodeJS;
-    if (runningInNodeJS()) {
+    if (typeof module === "object" && typeof module.exports === "object") {
         module.exports = LZUTF8;
     }
 })(LZUTF8 || (LZUTF8 = {}));
@@ -93,7 +93,7 @@ var LZUTF8;
             var sourceFilePath = cmdArguments[1];
             var destinationFilePath = cmdArguments[2];
             if (cmdArguments.length == 0) {
-                console.log("Usage: node lz-utf8-cli [command] [source] [destination?]");
+                console.log("Usage: node lzutf8-cli [command] [source] [destination?]");
                 console.log();
                 console.log("Commands:");
                 console.log("  c   Compress [source] to [destination]");
