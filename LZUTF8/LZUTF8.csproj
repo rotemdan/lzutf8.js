@@ -10,13 +10,14 @@
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <TypeScriptToolsVersion>1.5</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>1.6</TypeScriptToolsVersion>
     <UseIISExpress>false</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
     <TypeScriptEnabled>false</TypeScriptEnabled>
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Benchmarks\index.html" />
@@ -76,7 +77,6 @@
     <TypeScriptCompile Include="CLI\CLI.ts" />
     <TypeScriptCompile Include="Library\Common\ArraySegment.ts" />
     <TypeScriptCompile Include="Library\Common\ArrayTools.ts" />
-    <TypeScriptCompile Include="Library\Common\ByteArray.ts" />
     <TypeScriptCompile Include="Library\Common\CompressionCommon.ts" />
     <TypeScriptCompile Include="Library\Exports\Exports.ts" />
     <TypeScriptCompile Include="Library\Common\StringBuilder.ts" />
@@ -139,7 +139,8 @@
     <TypeScriptOutFile>Build/lzutf8.js</TypeScriptOutFile>
     <TypeScriptCompileOnSaveEnabled>False</TypeScriptCompileOnSaveEnabled>
   </PropertyGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
+  <!--<Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />-->
+  <Import Project="$(SolutionDir)\node_modules\grunt-ts\custom.TypeScript.targets" Condition="Exists('$(SolutionDir)\node_modules\grunt-ts\custom.TypeScript.targets')" />
   <PropertyGroup>
     <PostBuildEvent>
     </PostBuildEvent>

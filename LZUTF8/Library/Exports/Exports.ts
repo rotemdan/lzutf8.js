@@ -117,33 +117,31 @@
 	var globalUTF8TextDecoder;
 	
 	// Encodings
-	export function encodeUTF8(str: string): ByteArray
+	export function encodeUTF8(str: string): Uint8Array
 	{
 		if (typeof str !== "string")
 			throw new TypeError("encodeUTF8: null, undefined or invalid input type received");
 
 		if (runningInNodeJS())
 		{
-			return convertToByteArray(new Buffer(str, "utf8"));
+			return new Uint8Array(new Buffer(str, "utf8"));
 		}
-		if (typeof TextEncoder === "function")
+		else if (typeof TextEncoder === "function")
 		{
 			if (globalUTF8TextEncoder === undefined)
 				globalUTF8TextEncoder = new TextEncoder("utf-8");
 
-			return convertToByteArray(globalUTF8TextEncoder.encode(str));
+			return globalUTF8TextEncoder.encode(str);
 		}
 		else
 			return Encoding.UTF8.encode(str);
 	}
 
-	export function decodeUTF8(input: ByteArray): string
+	export function decodeUTF8(input: Uint8Array): string
 	{
-		input = convertToByteArray(input);
-
 		if (runningInNodeJS())
 		{
-			return (<any>input).toString("utf8");
+			return (new Buffer(input)).toString("utf8");
 		}
 		else if (typeof TextDecoder === "function")
 		{
@@ -156,16 +154,14 @@
 			return Encoding.UTF8.decode(input);
 	}
 
-	export function encodeBase64(input: any): string
+	export function encodeBase64(input: Uint8Array): string
 	{
 		if (input == null)
 			throw new TypeError("decodeBase64: undefined or null input received");
 
-		input = convertToByteArray(input);
-
 		if (runningInNodeJS())
 		{
-			var result = input.toString("base64");
+			var result = (new Buffer(input)).toString("base64");
 
 			if (result == null)
 				throw new Error("encodeBase64: failed encdoing Base64");
@@ -176,14 +172,14 @@
 			return Encoding.Base64.encode(input);
 	}
 
-	export function decodeBase64(str: string): ByteArray
+	export function decodeBase64(str: string): Uint8Array
 	{
 		if (typeof str !== "string")
 			throw new TypeError("decodeBase64: invalid input type received");
-
+		
 		if (runningInNodeJS())
 		{
-			var result = convertToByteArray(new Buffer(str, "base64"));
+			var result = new Uint8Array(new Buffer(str, "base64"));
 
 			if (result === null)
 				throw new Error("decodeBase64: failed decoding Base64");
@@ -231,13 +227,12 @@
 	}
 	*/
 
-	export function encodeBinaryString(input: any): string
+	export function encodeBinaryString(input: Uint8Array): string
 	{
-		input = convertToByteArray(input);
 		return Encoding.BinaryString.encode(input);
 	}
 
-	export function decodeBinaryString(str: string): ByteArray
+	export function decodeBinaryString(str: string): Uint8Array
 	{
 		return Encoding.BinaryString.decode(str);
 	}

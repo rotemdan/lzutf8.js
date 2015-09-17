@@ -2,12 +2,12 @@
 {
 	export class EncodingBenchmarks
 	{
-		randomBytes: ByteArray;
+		randomBytes: Uint8Array;
 		binaryString: string;
 		base64String: string;
 
 		randomUTF16String: string;
-		encodedRandomString: ByteArray;
+		encodedRandomString: Uint8Array;
 
 		constructor()
 		{
@@ -18,32 +18,32 @@
 
 		encodeBase64()
 		{
-			this.base64String = Encoding.Base64.encode(this.randomBytes);
+			this.base64String = encodeBase64(this.randomBytes);
 		}
 
 		decodeBase64()
 		{
-			Encoding.Base64.decode(this.base64String);
+			decodeBase64(this.base64String);
 		}
 
 		encodeBinaryString()
 		{
-			this.binaryString = Encoding.BinaryString.encode(this.randomBytes);
+			this.binaryString = encodeBinaryString(this.randomBytes);
 		}
 
 		decodeBinaryString()
 		{
-			Encoding.BinaryString.decode(this.binaryString);
+			decodeBinaryString(this.binaryString);
 		}
 
 		encodeUTF8()
 		{
-			this.encodedRandomString = Encoding.UTF8.encode(this.randomUTF16String);
+			this.encodedRandomString = encodeUTF8(this.randomUTF16String);
 		}
 
 		decodeUTF8()
 		{
-			Encoding.UTF8.decode(this.encodedRandomString);
+			decodeUTF8(this.encodedRandomString);
 		}
 
 		static getRandomIntegerInRange(low, high)

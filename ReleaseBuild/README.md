@@ -27,7 +27,7 @@ A high-performance string compression library and stream format:
 
 *Javascript implementation:*
 
-  - Thoroughly tested on all popular browsers and platforms - Chrome, Firefox, IE8+, Android 4+, Safari 6+ and Node.js 0.10+.
+  - Thoroughly tested on most popular browsers and platforms - Chrome, Firefox, IE10+, IE8+ (with a [typed array polyfill](https://github.com/inexorabletash/polyfill/blob/master/typedarray.js)), Android 4+, Safari 6+ and Node.js 0.10+.
   - Allows compressed data to be efficiently packed in plain UTF-16 strings (see the "BinaryString" encoding) when binary storage is not available or desired (e.g. when using LocalStorage or older IndexedDB).
   - Can operate asynchronously, both in Node.js and in the browser. Uses web workers when available (and takes full advantage of [transferable objects](http://www.w3.org/html/wg/drafts/html/master/#transferable-objects) if supported) and falls back to async iterations when not.
   - Supports Node.js streams.

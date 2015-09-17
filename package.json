@@ -1,6 +1,6 @@
 {
   "name": "lzutf8-build",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "A high-performance string compression library",
   "author": "Rotem Dan <rotemdan@gmail.com>",
   "homepage": "https://github.com/rotemdan/lzutf8.js",
@@ -14,14 +14,15 @@
     "grunt": "^0.4.5",
     "grunt-contrib-clean": "^0.6.0",
     "grunt-contrib-concat": "^0.5.1",
-    "grunt-contrib-copy": "^0.8.0",
+    "grunt-contrib-copy": "^0.8.1",
     "grunt-contrib-uglify": "^0.9.1",
     "grunt-contrib-watch": "^0.6.1",
-    "grunt-jasmine-nodejs": "^1.4.2",
+    "grunt-jasmine-nodejs": "^1.4.3",
     "grunt-shell": "^1.1.2",
-    "grunt-ts": "^4.2.0-beta",
+    "grunt-ts": "^5.0.0-beta.5",
     "grunt-update-json": "^0.2.1",
-    "load-grunt-tasks": "^3.2.0"
+    "load-grunt-tasks": "^3.2.0",
+    "typescript": "^1.6.2"
   },
   "scripts": {
     "test": "grunt test --verbose"

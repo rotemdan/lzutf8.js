@@ -33,13 +33,9 @@
 			{
 				if (options.inputEncoding == "ByteArray")
 				{
-					try
+					if (!(input instanceof Uint8Array))
 					{
-						input = convertToByteArray(input);
-					}
-					catch (e)
-					{
-						callback(undefined, e);
+						callback(undefined, new TypeError("compressAsync: input is not a Uint8Array"));
 						return;
 					}
 				}

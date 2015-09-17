@@ -4,7 +4,7 @@
 	{
 		export class Misc
 		{
-			static binaryBytesToDecimalString(binaryBytes: ByteArray): string
+			static binaryBytesToDecimalString(binaryBytes: Uint8Array): string
 			{
 				var resultArray = [];
 

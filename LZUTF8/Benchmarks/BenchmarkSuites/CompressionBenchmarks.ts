@@ -2,7 +2,7 @@
 {
 	export class CompressionBenchmarks
 	{
-		compressedString: ByteArray;
+		compressedString: Uint8Array;
 
 		constructor()
 		{

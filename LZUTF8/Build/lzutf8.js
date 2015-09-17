@@ -10,61 +10,195 @@ var LZUTF8;
 })(LZUTF8 || (LZUTF8 = {}));
 var LZUTF8;
 (function (LZUTF8) {
-    var Timer = (function () {
-        function Timer(timestampFunc) {
-            if (timestampFunc)
-                this.getTimestamp = timestampFunc;
-            else
-                this.getTimestamp = Timer.getHighResolutionTimestampFunction();
-            this.restart();
+    var AsyncBenchmarks = (function () {
+        function AsyncBenchmarks() {
         }
-        Timer.prototype.restart = function () {
-            this.startTime = this.getTimestamp();
+        AsyncBenchmarks.benchmark = function (testData, compressedEncoding, decompressedEncoding, useWebWorker, done) {
+            var timer = new LZUTF8.Timer();
+            LZUTF8.compress(testData, { outputEncoding: compressedEncoding });
+            timer.logAndRestart("compress");
+            LZUTF8.compressAsync(testData, { outputEncoding: compressedEncoding, useWebWorker: useWebWorker }, function (result) {
+                timer.logAndRestart("compressAsync");
+                LZUTF8.decompressAsync(result, { inputEncoding: compressedEncoding, outputEncoding: decompressedEncoding, useWebWorker: useWebWorker }, function () {
+                    timer.logAndRestart("decompressAsync");
+                    done();
+                });
+            });
         };
-        Timer.prototype.getElapsedTime = function () {
-            return this.getTimestamp() - this.startTime;
+        AsyncBenchmarks.start = function () {
+            //var testData = TestData.hindiText + TestData.hindiText + TestData.hindiText + TestData.hindiText + TestData.hindiText;
+            var testData = LZUTF8.TestData.loremIpsum;
+            var timer = new LZUTF8.Timer();
+            LZUTF8.WebWorker.createGlobalWorkerIfItDoesntExist();
+            //
+            LZUTF8.compressAsync("", { useWebWorker: true }, function () {
+                timer.logAndRestart("createGlobalWorkerIfItDoesntExist");
+                //document.write("<br/>Without web worker:<br/>");
+                AsyncBenchmarks.benchmark(testData, "BinaryString", "String", false, function () {
+                    //document.write("<br/>With web worker:<br/>");
+                    AsyncBenchmarks.benchmark(testData, "BinaryString", "String", true, function () { });
+                });
+            });
         };
-        Timer.prototype.getElapsedTimeAndRestart = function () {
-            var elapsedTime = this.getElapsedTime();
-            this.restart();
-            return elapsedTime;
+        return AsyncBenchmarks;
+    })();
+    LZUTF8.AsyncBenchmarks = AsyncBenchmarks;
+})(LZUTF8 || (LZUTF8 = {}));
+var LZUTF8;
+(function (LZUTF8) {
+    var CompressionBenchmarks = (function () {
+        function CompressionBenchmarks() {
+        }
+        CompressionBenchmarks.prototype.beforeEach = function () {
         };
-        Timer.prototype.logAndRestart = function (title, logToDocument) {
-            if (logToDocument === void 0) { logToDocument = false; }
-            var message = title + ": " + this.getElapsedTime().toFixed(3);
+        CompressionBenchmarks.prototype.compressHindiText = function () {
+            this.compressedString = LZUTF8.compress(LZUTF8.TestData.hindiText);
+        };
+        CompressionBenchmarks.prototype.decompressHindiText = function () {
+            LZUTF8.decompress(this.compressedString);
+        };
+        CompressionBenchmarks.prototype.compressChineseText = function () {
+            this.compressedString = LZUTF8.compress(LZUTF8.TestData.chineseText);
+        };
+        CompressionBenchmarks.prototype.decompressChineseText = function () {
+            LZUTF8.decompress(this.compressedString);
+        };
+        CompressionBenchmarks.prototype.compressLoremIpsum = function () {
+            this.compressedString = LZUTF8.compress(LZUTF8.TestData.loremIpsum);
+        };
+        CompressionBenchmarks.prototype.decompressLoremIpsum = function () {
+            LZUTF8.decompress(this.compressedString);
+        };
+        CompressionBenchmarks.start = function () {
+            var bench = new CompressionBenchmarks();
+            var benchmark = new LZUTF8.Benchmark(bench, { maximumSamples: 1000, maximumTime: 200, logToDocument: true });
+            benchmark.runAll([]);
+        };
+        return CompressionBenchmarks;
+    })();
+    LZUTF8.CompressionBenchmarks = CompressionBenchmarks;
+})(LZUTF8 || (LZUTF8 = {}));
+var LZUTF8;
+(function (LZUTF8) {
+    var EncodingBenchmarks = (function () {
+        function EncodingBenchmarks() {
+            this.randomUTF16String = EncodingBenchmarks.getRandomUTF16StringOfLength(250000);
+            this.randomBytes = LZUTF8.encodeUTF8(this.randomUTF16String);
+            //console.log(this.randomBytes.length);
+        }
+        EncodingBenchmarks.prototype.encodeBase64 = function () {
+            this.base64String = LZUTF8.encodeBase64(this.randomBytes);
+        };
+        EncodingBenchmarks.prototype.decodeBase64 = function () {
+            LZUTF8.decodeBase64(this.base64String);
+        };
+        EncodingBenchmarks.prototype.encodeBinaryString = function () {
+            this.binaryString = LZUTF8.encodeBinaryString(this.randomBytes);
+        };
+        EncodingBenchmarks.prototype.decodeBinaryString = function () {
+            LZUTF8.decodeBinaryString(this.binaryString);
+        };
+        EncodingBenchmarks.prototype.encodeUTF8 = function () {
+            this.encodedRandomString = LZUTF8.encodeUTF8(this.randomUTF16String);
+        };
+        EncodingBenchmarks.prototype.decodeUTF8 = function () {
+            LZUTF8.decodeUTF8(this.encodedRandomString);
+        };
+        EncodingBenchmarks.getRandomIntegerInRange = function (low, high) {
+            return low + Math.floor(Math.random() * (high - low));
+        };
+        EncodingBenchmarks.getRandomUTF16StringOfLength = function (length) {
+            var randomString = "";
+            for (var i = 0; i < length; i++) {
+                do {
+                    var randomCodePoint = EncodingBenchmarks.getRandomIntegerInRange(0, 0x10FFFF + 1);
+                } while (randomCodePoint >= 0xD800 && randomCodePoint <= 0xDFFF);
+                randomString += LZUTF8.Encoding.UTF8.getStringFromUnicodeCodePoint(randomCodePoint);
+            }
+            return randomString;
+        };
+        EncodingBenchmarks.start = function () {
+            var bench = new EncodingBenchmarks();
+            var benchmark = new LZUTF8.Benchmark(bench, { maximumSamples: 1000, maximumTime: 200, logToDocument: true });
+            benchmark.runAll([]);
+        };
+        return EncodingBenchmarks;
+    })();
+    LZUTF8.EncodingBenchmarks = EncodingBenchmarks;
+})(LZUTF8 || (LZUTF8 = {}));
+var LZUTF8;
+(function (LZUTF8) {
+    var Benchmark = (function () {
+        function Benchmark(benchmarkContext, options) {
+            this.getTimestamp = LZUTF8.Timer.getHighResolutionTimestampFunction();
+            this.benchmarkContext = benchmarkContext;
+            if (options)
+                this.defaultOptions = options;
+            else
+                options = { maximumSamples: 20, maximumTime: 100 };
+            this.sampleResults = [];
+        }
+        Benchmark.prototype.run = function (benchmarkedFunction, options) {
+            this.sampleResults.length = 0;
+            if (!options)
+                options = this.defaultOptions;
+            var sampleCount = 0;
+            var testStartTime = this.getTimestamp();
+            do {
+                // setup
+                if (this.benchmarkContext.beforeEach)
+                    this.benchmarkContext.beforeEach();
+                // actual run
+                var sampleStartTime = this.getTimestamp();
+                benchmarkedFunction.call(this.benchmarkContext);
+                var sampleEndTime = this.getTimestamp();
+                //
+                // teardown
+                if (this.benchmarkContext.afterEach)
+                    this.benchmarkContext.afterEach();
+                // calcs
+                var sampleElapsedTime = sampleEndTime - sampleStartTime;
+                this.sampleResults.push(sampleElapsedTime);
+                //console.log("Iteration " + iterationCount + ": " + iterationElapsedTime.toFixed(3));
+                sampleCount++;
+            } while (sampleCount < options.maximumSamples && this.getTimestamp() - testStartTime < options.maximumTime);
+            // find function name
+            var testName = LZUTF8.ObjectTools.findPropertyInObject(benchmarkedFunction, this.benchmarkContext);
+            if (!testName)
+                testName = "Unknown";
+            // calculate result time
+            var result = this.getResult();
+            var message = testName + ": " + result.toFixed(3) + "ms (" + (1000 / result).toFixed(0) + " runs/s, " + sampleCount + " sampled)";
             console.log(message);
-            if (logToDocument && typeof document == "object")
-                document.body.innerHTML += message + "<br/>";
-            this.restart();
+            if (options.logToDocument && typeof document == "object")
+                document.write(message + "<br/>");
+            return result;
         };
-        Timer.prototype.getTimestamp = function () {
+        Benchmark.prototype.runAll = function (excludeList) {
+            var excludedFunctions = ["beforeEach", "afterEach", "constructor"];
+            excludedFunctions = excludedFunctions.concat(excludeList);
+            for (var property in this.benchmarkContext)
+                if ((typeof this.benchmarkContext[property] === "function") &&
+                    LZUTF8.ArrayTools.find(excludedFunctions, property) === -1 &&
+                    LZUTF8.ArrayTools.find(excludedFunctions, this.benchmarkContext[property]) === -1) {
+                    this.run(this.benchmarkContext[property]);
+                }
+        };
+        Benchmark.prototype.getResult = function () {
+            this.sampleResults.sort(function (num1, num2) { return num1 - num2; });
+            return this.sampleResults[Math.floor(this.sampleResults.length / 2)];
+        };
+        Benchmark.prototype.getTimestamp = function () {
             return undefined;
         };
-        Timer.getHighResolutionTimestampFunction = function () {
-            if (typeof chrome == "object" && chrome.Interval) {
-                var chromeIntervalObject = new chrome.Interval();
-                chromeIntervalObject.start();
-                return function () { return chromeIntervalObject.microseconds() / 1000; };
-            }
-            else if (typeof window == "object" && window.performance && window.performance.now) {
-                return function () { return window.performance.now(); };
-            }
-            else if (typeof process == "object" && process.hrtime) {
-                return function () {
-                    var timeStamp = process.hrtime();
-                    return (timeStamp[0] * 1000) + (timeStamp[1] / 1000000);
-                };
-            }
-            else if (Date.now) {
-                return function () { return Date.now(); };
-            }
-            else {
-                return function () { return (new Date()).getTime(); };
-            }
+        Benchmark.run = function (testFunction, context, options) {
+            if (context === void 0) { context = {}; }
+            var benchmark = new Benchmark(context);
+            return benchmark.run(testFunction, options);
         };
-        return Timer;
+        return Benchmark;
     })();
-    LZUTF8.Timer = Timer;
+    LZUTF8.Benchmark = Benchmark;
 })(LZUTF8 || (LZUTF8 = {}));
 var LZUTF8;
 (function (LZUTF8) {
@@ -171,17 +305,14 @@ var LZUTF8;
         AsyncCompressor.compressAsync = function (input, options, callback) {
             var timer = new LZUTF8.Timer();
             var compressor = new LZUTF8.Compressor();
-            if (typeof input == "string") {
+            if (!callback)
+                throw new TypeError("compressAsync: No callback argument given");
+            if (typeof input === "string") {
                 input = LZUTF8.encodeUTF8(input);
             }
-            else {
-                try {
-                    input = LZUTF8.convertToByteArray(input);
-                }
-                catch (e) {
-                    callback(undefined, e);
-                    return;
-                }
+            else if (input == null || !(input instanceof Uint8Array)) {
+                callback(undefined, new TypeError("compressAsync: Invalid input argument"));
+                return;
             }
             var sourceBlocks = LZUTF8.ArrayTools.splitByteArray(input, options.blockSize);
             var compressedBlocks = [];
@@ -225,7 +356,7 @@ var LZUTF8;
             var compressionStream = new NodeStream.Transform({ decodeStrings: true, highWaterMark: 65536 });
             compressionStream._transform = function (data, encoding, done) {
                 try {
-                    var buffer = compressor.compressBlock(LZUTF8.convertToByteArray(data));
+                    var buffer = new Buffer(compressor.compressBlock(new Uint8Array(data)));
                 }
                 catch (e) {
                     compressionStream.emit("error", e);
@@ -246,6 +377,8 @@ var LZUTF8;
         function AsyncDecompressor() {
         }
         AsyncDecompressor.decompressAsync = function (input, options, callback) {
+            if (!callback)
+                throw new TypeError("compressAsync: No callback argument given");
             var timer = new LZUTF8.Timer();
             try {
                 input = LZUTF8.CompressionCommon.decodeCompressedData(input, options.inputEncoding);
@@ -297,7 +430,7 @@ var LZUTF8;
             var decompressionStream = new NodeStream.Transform({ decodeStrings: true, highWaterMark: 65536 });
             decompressionStream._transform = function (data, encoding, done) {
                 try {
-                    var buffer = decompressor.decompressBlock(LZUTF8.convertToByteArray(data));
+                    var buffer = new Buffer(decompressor.decompressBlock(new Uint8Array(data)));
                 }
                 catch (e) {
                     decompressionStream.emit("error", e);
@@ -337,11 +470,8 @@ var LZUTF8;
             }
             else {
                 if (options.inputEncoding == "ByteArray") {
-                    try {
-                        input = LZUTF8.convertToByteArray(input);
-                    }
-                    catch (e) {
-                        callback(undefined, e);
+                    if (!(input instanceof Uint8Array)) {
+                        callback(undefined, new TypeError("compressAsync: input is not a Uint8Array"));
                         return;
                     }
                 }
@@ -575,7 +705,7 @@ var LZUTF8;
             array.length = truncatedLength;
         };
         ArrayTools.doubleByteArrayCapacity = function (array) {
-            var newArray = LZUTF8.newByteArray(array.length * 2);
+            var newArray = new Uint8Array(array.length * 2);
             newArray.set(array);
             return newArray;
         };
@@ -584,7 +714,7 @@ var LZUTF8;
             for (var i = 0; i < byteArrays.length; i++) {
                 totalLength += byteArrays[i].length;
             }
-            var result = LZUTF8.newByteArray(totalLength);
+            var result = new Uint8Array(totalLength);
             var currentOffset = 0;
             for (var i = 0; i < byteArrays.length; i++) {
                 result.set(byteArrays[i], currentOffset);
@@ -607,91 +737,12 @@ var LZUTF8;
 })(LZUTF8 || (LZUTF8 = {}));
 var LZUTF8;
 (function (LZUTF8) {
-    function newByteArray(param) {
-        if (LZUTF8.runningInNodeJS()) {
-            return convertToByteArray(new Buffer(param));
-        }
-        else if (typeof Uint8Array == "function") {
-            return new Uint8Array(param);
-        }
-        else {
-            if (typeof param == "number")
-                return convertToByteArray(new Array(param));
-            else if (param instanceof Array)
-                return convertToByteArray(param.slice(0));
-            else
-                throw new TypeError("newByteArray: Invalid parameter");
-        }
-    }
-    LZUTF8.newByteArray = newByteArray;
-    function convertToByteArray(array) {
-        if (array == null)
-            return array;
-        if (LZUTF8.runningInNodeJS()) {
-            if (array instanceof Buffer) {
-                array["set"] = bufferSetFunctionPolyfill;
-                array["subarray"] = genericArraySubarrayFunctionPolyfill;
-                return array;
-            }
-            else if (array instanceof Uint8Array || array instanceof Array) {
-                return newByteArray(array);
-            }
-            else
-                throw new TypeError("convertToByteArray: invalid input array type");
-        }
-        else if (typeof Uint8Array == "function") {
-            if (array instanceof Uint8Array) {
-                return array;
-            }
-            else if (array instanceof Array) {
-                return new Uint8Array(array);
-            }
-            else
-                throw new TypeError("convertToByteArray: invalid input array type");
-        }
-        else if (array instanceof Array) {
-            array["set"] = genericArraySetFunctionPolyfill;
-            array["subarray"] = genericArraySubarrayFunctionPolyfill;
-            return array;
-        }
-        else
-            throw new TypeError("convertToByteArray: invalid input array type");
-    }
-    LZUTF8.convertToByteArray = convertToByteArray;
-    //
-    // Polyfills
-    //
-    function bufferSetFunctionPolyfill(source, offset) {
-        if (offset === void 0) { offset = 0; }
-        if (source instanceof Buffer) {
-            var sourceAsBuffer = source;
-            sourceAsBuffer.copy(this, offset);
-        }
-        else if (source instanceof Uint8Array || source instanceof Array) {
-            genericArraySetFunctionPolyfill(source, offset);
-        }
-        else
-            throw new TypeError("bufferSetFunctionPolyfill polyfill: Invalid source");
-    }
-    function genericArraySetFunctionPolyfill(source, offset) {
-        if (offset === void 0) { offset = 0; }
-        for (var i = 0, copyCount = Math.min(this.length - offset, source.length); i < copyCount; i++)
-            this[i + offset] = source[i];
-    }
-    function genericArraySubarrayFunctionPolyfill(start, end) {
-        if (end === undefined)
-            end = this.length;
-        return convertToByteArray(this.slice(start, end));
-    }
-})(LZUTF8 || (LZUTF8 = {}));
-var LZUTF8;
-(function (LZUTF8) {
     var CompressionCommon = (function () {
         function CompressionCommon() {
         }
         CompressionCommon.getCroppedBuffer = function (buffer, cropStartOffset, cropLength, additionalCapacity) {
             if (additionalCapacity === void 0) { additionalCapacity = 0; }
-            var croppedBuffer = LZUTF8.newByteArray(cropLength + additionalCapacity);
+            var croppedBuffer = new Uint8Array(cropLength + additionalCapacity);
             croppedBuffer.set(buffer.subarray(cropStartOffset, cropStartOffset + cropLength));
             return croppedBuffer;
         };
@@ -721,7 +772,7 @@ var LZUTF8;
                 throw new TypeError("decodeCompressedData: receieved input was string when encoding was set to a ByteArray");
             switch (inputEncoding) {
                 case "ByteArray":
-                    return LZUTF8.convertToByteArray(compressedData);
+                    return compressedData;
                 case "BinaryString":
                     return LZUTF8.decodeBinaryString(compressedData);
                 case "Base64":
@@ -789,42 +840,6 @@ var LZUTF8;
 })(LZUTF8 || (LZUTF8 = {}));
 var LZUTF8;
 (function (LZUTF8) {
-    var AsyncBenchmarks = (function () {
-        function AsyncBenchmarks() {
-        }
-        AsyncBenchmarks.benchmark = function (testData, compressedEncoding, decompressedEncoding, useWebWorker, done) {
-            var timer = new LZUTF8.Timer();
-            LZUTF8.compress(testData, { outputEncoding: compressedEncoding });
-            timer.logAndRestart("compress");
-            LZUTF8.compressAsync(testData, { outputEncoding: compressedEncoding, useWebWorker: useWebWorker }, function (result) {
-                timer.logAndRestart("compressAsync");
-                LZUTF8.decompressAsync(result, { inputEncoding: compressedEncoding, outputEncoding: decompressedEncoding, useWebWorker: useWebWorker }, function () {
-                    timer.logAndRestart("decompressAsync");
-                    done();
-                });
-            });
-        };
-        AsyncBenchmarks.start = function () {
-            //var testData = TestData.hindiText + TestData.hindiText + TestData.hindiText + TestData.hindiText + TestData.hindiText;
-            var testData = LZUTF8.TestData.loremIpsum;
-            var timer = new LZUTF8.Timer();
-            LZUTF8.WebWorker.createGlobalWorkerIfItDoesntExist();
-            //
-            LZUTF8.compressAsync("", { useWebWorker: true }, function () {
-                timer.logAndRestart("createGlobalWorkerIfItDoesntExist");
-                //document.write("<br/>Without web worker:<br/>");
-                AsyncBenchmarks.benchmark(testData, "BinaryString", "String", false, function () {
-                    //document.write("<br/>With web worker:<br/>");
-                    AsyncBenchmarks.benchmark(testData, "BinaryString", "String", true, function () { });
-                });
-            });
-        };
-        return AsyncBenchmarks;
-    })();
-    LZUTF8.AsyncBenchmarks = AsyncBenchmarks;
-})(LZUTF8 || (LZUTF8 = {}));
-var LZUTF8;
-(function (LZUTF8) {
     var ObjectTools = (function () {
         function ObjectTools() {
         }
@@ -886,37 +901,61 @@ var LZUTF8;
 })(LZUTF8 || (LZUTF8 = {}));
 var LZUTF8;
 (function (LZUTF8) {
-    var CompressionBenchmarks = (function () {
-        function CompressionBenchmarks() {
+    var Timer = (function () {
+        function Timer(timestampFunc) {
+            if (timestampFunc)
+                this.getTimestamp = timestampFunc;
+            else
+                this.getTimestamp = Timer.getHighResolutionTimestampFunction();
+            this.restart();
         }
-        CompressionBenchmarks.prototype.beforeEach = function () {
+        Timer.prototype.restart = function () {
+            this.startTime = this.getTimestamp();
         };
-        CompressionBenchmarks.prototype.compressHindiText = function () {
-            this.compressedString = LZUTF8.compress(LZUTF8.TestData.hindiText);
+        Timer.prototype.getElapsedTime = function () {
+            return this.getTimestamp() - this.startTime;
         };
-        CompressionBenchmarks.prototype.decompressHindiText = function () {
-            LZUTF8.decompress(this.compressedString);
+        Timer.prototype.getElapsedTimeAndRestart = function () {
+            var elapsedTime = this.getElapsedTime();
+            this.restart();
+            return elapsedTime;
         };
-        CompressionBenchmarks.prototype.compressChineseText = function () {
-            this.compressedString = LZUTF8.compress(LZUTF8.TestData.chineseText);
+        Timer.prototype.logAndRestart = function (title, logToDocument) {
+            if (logToDocument === void 0) { logToDocument = false; }
+            var message = title + ": " + this.getElapsedTime().toFixed(3);
+            console.log(message);
+            if (logToDocument && typeof document == "object")
+                document.body.innerHTML += message + "<br/>";
+            this.restart();
         };
-        CompressionBenchmarks.prototype.decompressChineseText = function () {
-            LZUTF8.decompress(this.compressedString);
+        Timer.prototype.getTimestamp = function () {
+            return undefined;
         };
-        CompressionBenchmarks.prototype.compressLoremIpsum = function () {
-            this.compressedString = LZUTF8.compress(LZUTF8.TestData.loremIpsum);
+        Timer.getHighResolutionTimestampFunction = function () {
+            if (typeof chrome == "object" && chrome.Interval) {
+                var chromeIntervalObject = new chrome.Interval();
+                chromeIntervalObject.start();
+                return function () { return chromeIntervalObject.microseconds() / 1000; };
+            }
+            else if (typeof window == "object" && window.performance && window.performance.now) {
+                return function () { return window.performance.now(); };
+            }
+            else if (typeof process == "object" && process.hrtime) {
+                return function () {
+                    var timeStamp = process.hrtime();
+                    return (timeStamp[0] * 1000) + (timeStamp[1] / 1000000);
+                };
+            }
+            else if (Date.now) {
+                return function () { return Date.now(); };
+            }
+            else {
+                return function () { return (new Date()).getTime(); };
+            }
         };
-        CompressionBenchmarks.prototype.decompressLoremIpsum = function () {
-            LZUTF8.decompress(this.compressedString);
-        };
-        CompressionBenchmarks.start = function () {
-            var bench = new CompressionBenchmarks();
-            var benchmark = new LZUTF8.Benchmark(bench, { maximumSamples: 1000, maximumTime: 200, logToDocument: true });
-            benchmark.runAll([]);
-        };
-        return CompressionBenchmarks;
+        return Timer;
     })();
-    LZUTF8.CompressionBenchmarks = CompressionBenchmarks;
+    LZUTF8.Timer = Timer;
 })(LZUTF8 || (LZUTF8 = {}));
 var LZUTF8;
 (function (LZUTF8) {
@@ -943,12 +982,11 @@ var LZUTF8;
         };
         Compressor.prototype.compressByteArrayBlock = function (utf8Bytes) {
             if (!utf8Bytes || utf8Bytes.length == 0)
-                return LZUTF8.newByteArray(0);
-            utf8Bytes = LZUTF8.convertToByteArray(utf8Bytes);
+                return new Uint8Array(0);
             var bufferStartingReadOffset = this.cropAndAddNewBytesToInputBuffer(utf8Bytes);
             var inputBuffer = this.inputBuffer;
             var inputBufferLength = this.inputBuffer.length;
-            this.outputBuffer = LZUTF8.newByteArray(utf8Bytes.length);
+            this.outputBuffer = new Uint8Array(utf8Bytes.length);
             this.outputBufferPosition = 0;
             var latestMatchEndPosition = 0;
             for (var readPosition = bufferStartingReadOffset; readPosition < inputBufferLength; readPosition++) {
@@ -1234,7 +1272,6 @@ var LZUTF8;
         Decompressor.prototype.decompressBlock = function (input) {
             if (input === undefined || input === null)
                 throw new TypeError("decompressBlock: undefined or null input received");
-            input = LZUTF8.convertToByteArray(input);
             if (this.inputBufferRemainder) {
                 input = LZUTF8.ArrayTools.joinByteArrays([this.inputBufferRemainder, input]);
                 this.inputBufferRemainder = undefined;
@@ -1253,7 +1290,7 @@ var LZUTF8;
                 // keep the remainder to be decoded with the next buffer
                 if (readPosition == inputLength - 1 ||
                     (readPosition == inputLength - 2 && sequenceLengthIdentifier == 7)) {
-                    this.inputBufferRemainder = LZUTF8.newByteArray(input.subarray(readPosition));
+                    this.inputBufferRemainder = input.subarray(readPosition);
                     break;
                 }
                 // If at the leading byte of a UTF-8 codepoint byte sequence
@@ -1289,7 +1326,7 @@ var LZUTF8;
         };
         Decompressor.prototype.cropOutputBufferToWindowAndInitialize = function (initialCapacity) {
             if (!this.outputBuffer) {
-                this.outputBuffer = LZUTF8.newByteArray(initialCapacity);
+                this.outputBuffer = new Uint8Array(initialCapacity);
                 return 0;
             }
             var cropLength = Math.min(this.outputPosition, this.MaximumMatchDistance);
@@ -1308,7 +1345,7 @@ var LZUTF8;
                 if ((offset < 4 && (value >>> 3) === 30) ||
                     (offset < 3 && (value >>> 4) === 14) ||
                     (offset < 2 && (value >>> 5) === 6)) {
-                    this.outputBufferRemainder = LZUTF8.newByteArray(this.outputBuffer.subarray(this.outputPosition - offset, this.outputPosition));
+                    this.outputBufferRemainder = this.outputBuffer.subarray(this.outputPosition - offset, this.outputPosition);
                     this.outputPosition -= offset;
                     return;
                 }
@@ -1317,54 +1354,6 @@ var LZUTF8;
         return Decompressor;
     })();
     LZUTF8.Decompressor = Decompressor;
-})(LZUTF8 || (LZUTF8 = {}));
-var LZUTF8;
-(function (LZUTF8) {
-    var EncodingBenchmarks = (function () {
-        function EncodingBenchmarks() {
-            this.randomUTF16String = EncodingBenchmarks.getRandomUTF16StringOfLength(250000);
-            this.randomBytes = LZUTF8.encodeUTF8(this.randomUTF16String);
-            //console.log(this.randomBytes.length);
-        }
-        EncodingBenchmarks.prototype.encodeBase64 = function () {
-            this.base64String = LZUTF8.Encoding.Base64.encode(this.randomBytes);
-        };
-        EncodingBenchmarks.prototype.decodeBase64 = function () {
-            LZUTF8.Encoding.Base64.decode(this.base64String);
-        };
-        EncodingBenchmarks.prototype.encodeBinaryString = function () {
-            this.binaryString = LZUTF8.Encoding.BinaryString.encode(this.randomBytes);
-        };
-        EncodingBenchmarks.prototype.decodeBinaryString = function () {
-            LZUTF8.Encoding.BinaryString.decode(this.binaryString);
-        };
-        EncodingBenchmarks.prototype.encodeUTF8 = function () {
-            this.encodedRandomString = LZUTF8.Encoding.UTF8.encode(this.randomUTF16String);
-        };
-        EncodingBenchmarks.prototype.decodeUTF8 = function () {
-            LZUTF8.Encoding.UTF8.decode(this.encodedRandomString);
-        };
-        EncodingBenchmarks.getRandomIntegerInRange = function (low, high) {
-            return low + Math.floor(Math.random() * (high - low));
-        };
-        EncodingBenchmarks.getRandomUTF16StringOfLength = function (length) {
-            var randomString = "";
-            for (var i = 0; i < length; i++) {
-                do {
-                    var randomCodePoint = EncodingBenchmarks.getRandomIntegerInRange(0, 0x10FFFF + 1);
-                } while (randomCodePoint >= 0xD800 && randomCodePoint <= 0xDFFF);
-                randomString += LZUTF8.Encoding.UTF8.getStringFromUnicodeCodePoint(randomCodePoint);
-            }
-            return randomString;
-        };
-        EncodingBenchmarks.start = function () {
-            var bench = new EncodingBenchmarks();
-            var benchmark = new LZUTF8.Benchmark(bench, { maximumSamples: 1000, maximumTime: 200, logToDocument: true });
-            benchmark.runAll([]);
-        };
-        return EncodingBenchmarks;
-    })();
-    LZUTF8.EncodingBenchmarks = EncodingBenchmarks;
 })(LZUTF8 || (LZUTF8 = {}));
 var LZUTF8;
 (function (LZUTF8) {
@@ -1419,7 +1408,7 @@ var LZUTF8;
                 if (typeof base64String !== "string")
                     throw new TypeError("Base64.decode: invalid input type");
                 if (base64String.length === 0)
-                    return LZUTF8.newByteArray(0);
+                    return new Uint8Array(0);
                 // Add padding if omitted
                 var lengthModulo4 = base64String.length % 4;
                 if (lengthModulo4 === 1)
@@ -1430,7 +1419,7 @@ var LZUTF8;
                     base64String += Encoding.Base64.paddingCharacter;
                 var reverseCharCodeMap = Encoding.Base64.reverseCharCodeMap;
                 if (!outputBuffer)
-                    outputBuffer = LZUTF8.newByteArray(base64String.length);
+                    outputBuffer = new Uint8Array(base64String.length);
                 var outputPosition = 0;
                 for (var i = 0, length = base64String.length; i < length; i += 4) {
                     var uint24 = (reverseCharCodeMap[base64String.charCodeAt(i)] << 18) |
@@ -1449,9 +1438,9 @@ var LZUTF8;
                 return outputBuffer.subarray(0, outputPosition);
             };
             Base64.paddingCharacter = '=';
-            Base64.charCodeMap = LZUTF8.convertToByteArray([65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 43, 47]);
+            Base64.charCodeMap = new Uint8Array([65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 43, 47]);
             Base64.paddingCharCode = 61;
-            Base64.reverseCharCodeMap = LZUTF8.convertToByteArray([255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 62, 255, 255, 255, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 255, 255, 255, 0, 255, 255, 255, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 255, 255, 255, 255, 255, 255, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 255, 255, 255, 255]);
+            Base64.reverseCharCodeMap = new Uint8Array([255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 62, 255, 255, 255, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 255, 255, 255, 0, 255, 255, 255, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 255, 255, 255, 255, 255, 255, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 255, 255, 255, 255]);
             return Base64;
         })();
         Encoding.Base64 = Base64;
@@ -1498,8 +1487,8 @@ var LZUTF8;
                 if (typeof input !== "string")
                     throw new TypeError("BinaryString.decode: invalid input type");
                 if (input == "")
-                    return LZUTF8.newByteArray(0);
-                var output = LZUTF8.newByteArray(input.length * 3);
+                    return new Uint8Array(0);
+                var output = new Uint8Array(input.length * 3);
                 var outputPosition = 0;
                 var appendToOutput = function (value) {
                     output[outputPosition++] = value >>> 8;
@@ -1565,9 +1554,9 @@ var LZUTF8;
                 if (typeof str !== "string")
                     throw new TypeError("UTF8.encode: null, undefined or invalid input type");
                 if (str.length == 0)
-                    return LZUTF8.newByteArray(0);
+                    return new Uint8Array(0);
                 if (!outputArray)
-                    outputArray = LZUTF8.newByteArray(str.length * 4);
+                    outputArray = new Uint8Array(str.length * 4);
                 var writeIndex = 0;
                 for (var readIndex = 0; readIndex < str.length; readIndex++) {
                     var charCode = Encoding.UTF8.getUnicodeCodePoint(str, readIndex);
@@ -1746,21 +1735,20 @@ var LZUTF8;
         if (typeof str !== "string")
             throw new TypeError("encodeUTF8: null, undefined or invalid input type received");
         if (LZUTF8.runningInNodeJS()) {
-            return LZUTF8.convertToByteArray(new Buffer(str, "utf8"));
+            return new Uint8Array(new Buffer(str, "utf8"));
         }
-        if (typeof TextEncoder === "function") {
+        else if (typeof TextEncoder === "function") {
             if (globalUTF8TextEncoder === undefined)
                 globalUTF8TextEncoder = new TextEncoder("utf-8");
-            return LZUTF8.convertToByteArray(globalUTF8TextEncoder.encode(str));
+            return globalUTF8TextEncoder.encode(str);
         }
         else
             return LZUTF8.Encoding.UTF8.encode(str);
     }
     LZUTF8.encodeUTF8 = encodeUTF8;
     function decodeUTF8(input) {
-        input = LZUTF8.convertToByteArray(input);
         if (LZUTF8.runningInNodeJS()) {
-            return input.toString("utf8");
+            return (new Buffer(input)).toString("utf8");
         }
         else if (typeof TextDecoder === "function") {
             if (globalUTF8TextDecoder === undefined)
@@ -1774,9 +1762,8 @@ var LZUTF8;
     function encodeBase64(input) {
         if (input == null)
             throw new TypeError("decodeBase64: undefined or null input received");
-        input = LZUTF8.convertToByteArray(input);
         if (LZUTF8.runningInNodeJS()) {
-            var result = input.toString("base64");
+            var result = (new Buffer(input)).toString("base64");
             if (result == null)
                 throw new Error("encodeBase64: failed encdoing Base64");
             return result;
@@ -1789,7 +1776,7 @@ var LZUTF8;
         if (typeof str !== "string")
             throw new TypeError("decodeBase64: invalid input type received");
         if (LZUTF8.runningInNodeJS()) {
-            var result = LZUTF8.convertToByteArray(new Buffer(str, "base64"));
+            var result = new Uint8Array(new Buffer(str, "base64"));
             if (result === null)
                 throw new Error("decodeBase64: failed decoding Base64");
             return result;
@@ -1835,7 +1822,6 @@ var LZUTF8;
     }
     */
     function encodeBinaryString(input) {
-        input = LZUTF8.convertToByteArray(input);
         return LZUTF8.Encoding.BinaryString.encode(input);
     }
     LZUTF8.encodeBinaryString = encodeBinaryString;
@@ -1951,80 +1937,6 @@ var LZUTF8;
     }
     LZUTF8.verifyEncoding = verifyEncoding;
 })(LZUTF8 || (LZUTF8 = {}));
-var LZUTF8;
-(function (LZUTF8) {
-    var Benchmark = (function () {
-        function Benchmark(benchmarkContext, options) {
-            this.getTimestamp = LZUTF8.Timer.getHighResolutionTimestampFunction();
-            this.benchmarkContext = benchmarkContext;
-            if (options)
-                this.defaultOptions = options;
-            else
-                options = { maximumSamples: 20, maximumTime: 100 };
-            this.sampleResults = [];
-        }
-        Benchmark.prototype.run = function (benchmarkedFunction, options) {
-            this.sampleResults.length = 0;
-            if (!options)
-                options = this.defaultOptions;
-            var sampleCount = 0;
-            var testStartTime = this.getTimestamp();
-            do {
-                // setup
-                if (this.benchmarkContext.beforeEach)
-                    this.benchmarkContext.beforeEach();
-                // actual run
-                var sampleStartTime = this.getTimestamp();
-                benchmarkedFunction.call(this.benchmarkContext);
-                var sampleEndTime = this.getTimestamp();
-                //
-                // teardown
-                if (this.benchmarkContext.afterEach)
-                    this.benchmarkContext.afterEach();
-                // calcs
-                var sampleElapsedTime = sampleEndTime - sampleStartTime;
-                this.sampleResults.push(sampleElapsedTime);
-                //console.log("Iteration " + iterationCount + ": " + iterationElapsedTime.toFixed(3));
-                sampleCount++;
-            } while (sampleCount < options.maximumSamples && this.getTimestamp() - testStartTime < options.maximumTime);
-            // find function name
-            var testName = LZUTF8.ObjectTools.findPropertyInObject(benchmarkedFunction, this.benchmarkContext);
-            if (!testName)
-                testName = "Unknown";
-            // calculate result time
-            var result = this.getResult();
-            var message = testName + ": " + result.toFixed(3) + "ms (" + (1000 / result).toFixed(0) + " runs/s, " + sampleCount + " sampled)";
-            console.log(message);
-            if (options.logToDocument && typeof document == "object")
-                document.write(message + "<br/>");
-            return result;
-        };
-        Benchmark.prototype.runAll = function (excludeList) {
-            var excludedFunctions = ["beforeEach", "afterEach", "constructor"];
-            excludedFunctions = excludedFunctions.concat(excludeList);
-            for (var property in this.benchmarkContext)
-                if ((typeof this.benchmarkContext[property] === "function") &&
-                    LZUTF8.ArrayTools.find(excludedFunctions, property) === -1 &&
-                    LZUTF8.ArrayTools.find(excludedFunctions, this.benchmarkContext[property]) === -1) {
-                    this.run(this.benchmarkContext[property]);
-                }
-        };
-        Benchmark.prototype.getResult = function () {
-            this.sampleResults.sort(function (num1, num2) { return num1 - num2; });
-            return this.sampleResults[Math.floor(this.sampleResults.length / 2)];
-        };
-        Benchmark.prototype.getTimestamp = function () {
-            return undefined;
-        };
-        Benchmark.run = function (testFunction, context, options) {
-            if (context === void 0) { context = {}; }
-            var benchmark = new Benchmark(context);
-            return benchmark.run(testFunction, options);
-        };
-        return Benchmark;
-    })();
-    LZUTF8.Benchmark = Benchmark;
-})(LZUTF8 || (LZUTF8 = {}));
 //if (typeof window == "object") window["Uint8Array"] = undefined;
 //jasmine.DEFAULT_TIMEOUT_INTERVAL = 400;
 var LZUTF8;
@@ -2082,7 +1994,7 @@ var LZUTF8;
                             var decompressedString2 = decompressor.decompressBlockToString(joinedCompressedData.subarray(Math.floor(joinedCompressedData.length * 0.2123684521), Math.floor(joinedCompressedData.length * 0.41218346219)));
                             var decompressedString3 = decompressor.decompressBlockToString(joinedCompressedData.subarray(Math.floor(joinedCompressedData.length * 0.41218346219), Math.floor(joinedCompressedData.length * 0.74129384652)));
                             var decompressedString4 = decompressor.decompressBlockToString(joinedCompressedData.subarray(Math.floor(joinedCompressedData.length * 0.74129384652), Math.floor(joinedCompressedData.length * 0.74129384652) + 2));
-                            var decompressedString5 = decompressor.decompressBlockToString(LZUTF8.newByteArray(0));
+                            var decompressedString5 = decompressor.decompressBlockToString(new Uint8Array(0));
                             var decompressedString6 = decompressor.decompressBlockToString(joinedCompressedData.subarray(Math.floor(joinedCompressedData.length * 0.74129384652) + 2, Math.floor(joinedCompressedData.length * 0.9191234791281724)));
                             var decompressedString7 = decompressor.decompressBlockToString(joinedCompressedData.subarray(Math.floor(joinedCompressedData.length * 0.9191234791281724)));
                             expect(LZUTF8.compareSequences(decompressedString1 + decompressedString2 + decompressedString3 + decompressedString4 + decompressedString5 + decompressedString6 + decompressedString7, inputString)).toBe(true);
@@ -2352,14 +2264,14 @@ var LZUTF8;
         });
         describe("Trivial cases:", function () {
             it("Handles zero length input for compression and decompression", function () {
-                expect(LZUTF8.compress(LZUTF8.newByteArray(0))).toEqual(LZUTF8.newByteArray(0));
-                expect(LZUTF8.decompress(LZUTF8.newByteArray(0))).toEqual("");
-                expect(LZUTF8.decompress(LZUTF8.newByteArray(0), { outputEncoding: "ByteArray" })).toEqual(LZUTF8.newByteArray(0));
+                expect(LZUTF8.compress(new Uint8Array(0))).toEqual(new Uint8Array(0));
+                expect(LZUTF8.decompress(new Uint8Array(0))).toEqual("");
+                expect(LZUTF8.decompress(new Uint8Array(0), { outputEncoding: "ByteArray" })).toEqual(new Uint8Array(0));
                 var compressor = new LZUTF8.Compressor();
-                expect(compressor.compressBlock(LZUTF8.newByteArray(0))).toEqual(LZUTF8.newByteArray(0));
+                expect(compressor.compressBlock(new Uint8Array(0))).toEqual(new Uint8Array(0));
                 var decompressor = new LZUTF8.Decompressor();
-                expect(decompressor.decompressBlock(LZUTF8.newByteArray(0))).toEqual(LZUTF8.newByteArray(0));
-                expect(decompressor.decompressBlockToString(LZUTF8.newByteArray(0))).toEqual("");
+                expect(decompressor.decompressBlock(new Uint8Array(0))).toEqual(new Uint8Array(0));
+                expect(decompressor.decompressBlockToString(new Uint8Array(0))).toEqual("");
             });
         });
         describe("Special bytestream features:", function () {
@@ -2408,7 +2320,7 @@ var LZUTF8;
                 });
             }
             it("Handles undefined, null or empty strings (encoding)", function () {
-                var emptyByteArray = LZUTF8.newByteArray(0);
+                var emptyByteArray = new Uint8Array(0);
                 expect(function () { return LZUTF8.Encoding.UTF8.encode(undefined); }).toThrow();
                 expect(function () { return LZUTF8.Encoding.UTF8.encode(null); }).toThrow();
                 expect(LZUTF8.Encoding.UTF8.encode("")).toEqual(emptyByteArray);
@@ -2416,12 +2328,12 @@ var LZUTF8;
             it("Handles undefined, null or empty arrays (decoding)", function () {
                 expect(function () { return LZUTF8.Encoding.UTF8.decode(undefined); }).toThrow();
                 expect(function () { return LZUTF8.Encoding.UTF8.decode(null); }).toThrow();
-                expect(LZUTF8.Encoding.UTF8.decode(LZUTF8.newByteArray(0))).toEqual("");
+                expect(LZUTF8.Encoding.UTF8.decode(new Uint8Array(0))).toEqual("");
             });
         });
         describe("Base64:", function () {
             it("Correctly encodes and decodes to base 64 (case 1)", function () {
-                var data = LZUTF8.convertToByteArray([243, 121, 5, 57, 175, 27, 142, 3, 239, 212]);
+                var data = new Uint8Array([243, 121, 5, 57, 175, 27, 142, 3, 239, 212]);
                 var base64 = LZUTF8.Encoding.Base64.encode(data);
                 expect(base64).toEqual("83kFOa8bjgPv1A==");
                 expect(LZUTF8.compareSequences(LZUTF8.Encoding.Base64.decode(base64), data)).toBe(true);
@@ -2430,7 +2342,7 @@ var LZUTF8;
                 expect(LZUTF8.compareSequences(LZUTF8.Encoding.Base64.decode(base64), data)).toBe(true);
             });
             it("Correctly encodes and decodes to base 64 (case 2)", function () {
-                var data = LZUTF8.convertToByteArray([145, 153, 99, 66, 151, 39, 228, 211, 88, 167, 15]);
+                var data = new Uint8Array([145, 153, 99, 66, 151, 39, 228, 211, 88, 167, 15]);
                 var base64 = LZUTF8.Encoding.Base64.encode(data);
                 expect(base64).toEqual("kZljQpcn5NNYpw8=");
                 expect(LZUTF8.compareSequences(LZUTF8.Encoding.Base64.decode(base64), data)).toBe(true);
@@ -2439,13 +2351,13 @@ var LZUTF8;
                 expect(LZUTF8.compareSequences(LZUTF8.Encoding.Base64.decode(base64), data)).toBe(true);
             });
             it("Handles undefined, null or empty arrays (encoding)", function () {
-                var emptyByteArray = LZUTF8.newByteArray(0);
+                var emptyByteArray = new Uint8Array(0);
                 expect(function () { return LZUTF8.Encoding.Base64.encode(undefined); }).toThrow();
                 expect(function () { return LZUTF8.Encoding.Base64.encode(null); }).toThrow();
-                expect(LZUTF8.Encoding.Base64.encode(LZUTF8.newByteArray(0))).toEqual("");
+                expect(LZUTF8.Encoding.Base64.encode(new Uint8Array(0))).toEqual("");
             });
             it("Handles undefined, null or empty strings (decoding)", function () {
-                var emptyByteArray = LZUTF8.newByteArray(0);
+                var emptyByteArray = new Uint8Array(0);
                 expect(function () { return LZUTF8.Encoding.Base64.decode(undefined); }).toThrow();
                 expect(function () { return LZUTF8.Encoding.Base64.decode(null); }).toThrow();
                 expect(LZUTF8.Encoding.Base64.decode("")).toEqual(emptyByteArray);
@@ -2453,7 +2365,7 @@ var LZUTF8;
             if (LZUTF8.runningInNodeJS()) {
                 it("Produces output equivalent to node.js library", function () {
                     for (var i = 0; i < 100; i++) {
-                        var randomBytes = LZUTF8.convertToByteArray(LZUTF8.Random.getRandomIntegerArrayOfLength(i, 0, 256));
+                        var randomBytes = new Uint8Array(LZUTF8.Random.getRandomIntegerArrayOfLength(i, 0, 256));
                         var libraryResult = LZUTF8.Encoding.Base64.encode(randomBytes);
                         var nodeResult = LZUTF8.encodeBase64(randomBytes);
                         expect(LZUTF8.compareSequences(libraryResult, nodeResult)).toBe(true);
@@ -2495,7 +2407,7 @@ var LZUTF8;
                 for (var j = 0; j < 100; j++) {
                     for (var i = 0; i < 100; i++) {
                         var randomValues = LZUTF8.Random.getRandomIntegerArrayOfLength(i, 0, 256);
-                        var encodedString = LZUTF8.Encoding.BinaryString.encode(LZUTF8.convertToByteArray(randomValues));
+                        var encodedString = LZUTF8.Encoding.BinaryString.encode(new Uint8Array(randomValues));
                         var decodedValues = LZUTF8.Encoding.BinaryString.decode(encodedString);
                         expect(LZUTF8.compareSequences(randomValues, decodedValues)).toBe(true);
                         expect(LZUTF8.verifyEncoding(encodedString, "BinaryString")).toBe(true);
@@ -2505,11 +2417,11 @@ var LZUTF8;
             it("Decodes concatenated binary strings correctly", function () {
                 for (var j = 0; j < 100; j++) {
                     for (var i = 0; i < 100; i++) {
-                        var randomValues1 = LZUTF8.convertToByteArray(LZUTF8.Random.getRandomIntegerArrayOfLength(LZUTF8.Random.getRandomIntegerInRange(0, i), 0, 256));
-                        var randomValues2 = LZUTF8.convertToByteArray(LZUTF8.Random.getRandomIntegerArrayOfLength(LZUTF8.Random.getRandomIntegerInRange(0, i), 0, 256));
-                        var randomValues3 = LZUTF8.convertToByteArray(LZUTF8.Random.getRandomIntegerArrayOfLength(LZUTF8.Random.getRandomIntegerInRange(0, i), 0, 256));
-                        var randomValues4 = LZUTF8.convertToByteArray(LZUTF8.Random.getRandomIntegerArrayOfLength(LZUTF8.Random.getRandomIntegerInRange(0, i), 0, 256));
-                        var randomValues5 = LZUTF8.convertToByteArray(LZUTF8.Random.getRandomIntegerArrayOfLength(LZUTF8.Random.getRandomIntegerInRange(0, i), 0, 256));
+                        var randomValues1 = new Uint8Array(LZUTF8.Random.getRandomIntegerArrayOfLength(LZUTF8.Random.getRandomIntegerInRange(0, i), 0, 256));
+                        var randomValues2 = new Uint8Array(LZUTF8.Random.getRandomIntegerArrayOfLength(LZUTF8.Random.getRandomIntegerInRange(0, i), 0, 256));
+                        var randomValues3 = new Uint8Array(LZUTF8.Random.getRandomIntegerArrayOfLength(LZUTF8.Random.getRandomIntegerInRange(0, i), 0, 256));
+                        var randomValues4 = new Uint8Array(LZUTF8.Random.getRandomIntegerArrayOfLength(LZUTF8.Random.getRandomIntegerInRange(0, i), 0, 256));
+                        var randomValues5 = new Uint8Array(LZUTF8.Random.getRandomIntegerArrayOfLength(LZUTF8.Random.getRandomIntegerInRange(0, i), 0, 256));
                         var encodedString1 = LZUTF8.Encoding.BinaryString.encode(randomValues1);
                         var encodedString2 = LZUTF8.Encoding.BinaryString.encode(randomValues2);
                         var encodedString3 = LZUTF8.Encoding.BinaryString.encode(randomValues3);
@@ -2524,12 +2436,12 @@ var LZUTF8;
             it("Handles undefined, null or empty arrays (encoding)", function () {
                 expect(function () { return LZUTF8.encodeBinaryString(undefined); }).toThrow();
                 expect(function () { return LZUTF8.encodeBinaryString(null); }).toThrow();
-                expect(LZUTF8.encodeBinaryString(LZUTF8.newByteArray(0))).toEqual("");
+                expect(LZUTF8.encodeBinaryString(new Uint8Array(0))).toEqual("");
             });
             it("Handles undefined, null or empty strings (decoding)", function () {
                 expect(function () { return LZUTF8.decodeBinaryString(undefined); }).toThrow();
                 expect(function () { return LZUTF8.decodeBinaryString(null); }).toThrow();
-                expect(LZUTF8.decodeBinaryString("")).toEqual(LZUTF8.newByteArray(0));
+                expect(LZUTF8.decodeBinaryString("")).toEqual(new Uint8Array(0));
             });
         });
     });
@@ -2537,26 +2449,26 @@ var LZUTF8;
 /// <reference path="./LZUTF8/Library/Dependencies/node-internal.d.ts"/>
 /// <reference path="./LZUTF8/Tests/Dependencies/jasmine.d.ts"/>
 /// <reference path="./LZUTF8/Library/Common/Globals.ext.ts"/>
-/// <reference path="./LZUTF8/Library/Common/Timer.ts"/>
+/// <reference path="./LZUTF8/Benchmarks/BenchmarkSuites/AsyncBenchmarks.ts"/>
+/// <reference path="./LZUTF8/Benchmarks/BenchmarkSuites/CompressionBenchmarks.ts"/>
+/// <reference path="./LZUTF8/Benchmarks/BenchmarkSuites/EncodingBenchmarks.ts"/>
+/// <reference path="./LZUTF8/Benchmarks/Common/Benchmark.ts"/>
 /// <reference path="./LZUTF8/CLI/CLI.ts"/>
 /// <reference path="./LZUTF8/Library/Async/AsyncCompressor.ts"/>
 /// <reference path="./LZUTF8/Library/Async/AsyncDecompressor.ts"/>
 /// <reference path="./LZUTF8/Library/Async/WebWorker.ts"/>
 /// <reference path="./LZUTF8/Library/Common/ArraySegment.ts"/>
 /// <reference path="./LZUTF8/Library/Common/ArrayTools.ts"/>
-/// <reference path="./LZUTF8/Library/Common/ByteArray.ts"/>
 /// <reference path="./LZUTF8/Library/Common/CompressionCommon.ts"/>
 /// <reference path="./LZUTF8/Library/Common/EventLoop.ts"/>
 /// <reference path="./LZUTF8/Library/Common/GlobalInterfaces.ts"/>
-/// <reference path="./LZUTF8/Benchmarks/BenchmarkSuites/AsyncBenchmarks.ts"/>
 /// <reference path="./LZUTF8/Library/Common/ObjectTools.ts"/>
 /// <reference path="./LZUTF8/Library/Common/StringBuilder.ts"/>
-/// <reference path="./LZUTF8/Benchmarks/BenchmarkSuites/CompressionBenchmarks.ts"/>
+/// <reference path="./LZUTF8/Library/Common/Timer.ts"/>
 /// <reference path="./LZUTF8/Library/Compression/Compressor.ts"/>
 /// <reference path="./LZUTF8/Library/Compression/CompressorCustomHashTable.ts"/>
 /// <reference path="./LZUTF8/Library/Compression/CompressorSimpleHashTable.ts"/>
 /// <reference path="./LZUTF8/Library/Decompression/Decompressor.ts"/>
-/// <reference path="./LZUTF8/Benchmarks/BenchmarkSuites/EncodingBenchmarks.ts"/>
 /// <reference path="./LZUTF8/Library/Encoding/Base64.ts"/>
 /// <reference path="./LZUTF8/Library/Encoding/BinaryString.ts"/>
 /// <reference path="./LZUTF8/Library/Encoding/Misc.ts"/>
@@ -2566,7 +2478,6 @@ var LZUTF8;
 /// <reference path="./LZUTF8/Tests/Common/Random.ts"/>
 /// <reference path="./LZUTF8/Tests/Common/TestData.ts"/>
 /// <reference path="./LZUTF8/Tests/Common/TestingTools.ts"/>
-/// <reference path="./LZUTF8/Benchmarks/Common/Benchmark.ts"/>
 /// <reference path="./LZUTF8/Tests/TestSuites/CompressionTests.spec.ts"/>
 /// <reference path="./LZUTF8/Tests/TestSuites/EncodingTests.spec.ts"/>
 //# sourceMappingURL=lzutf8.js.map

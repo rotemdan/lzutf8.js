@@ -81,7 +81,7 @@ module LZUTF8
 							var decompressedString2 = decompressor.decompressBlockToString(joinedCompressedData.subarray(Math.floor(joinedCompressedData.length * 0.2123684521), Math.floor(joinedCompressedData.length * 0.41218346219)));
 							var decompressedString3 = decompressor.decompressBlockToString(joinedCompressedData.subarray(Math.floor(joinedCompressedData.length * 0.41218346219), Math.floor(joinedCompressedData.length * 0.74129384652)));
 							var decompressedString4 = decompressor.decompressBlockToString(joinedCompressedData.subarray(Math.floor(joinedCompressedData.length * 0.74129384652), Math.floor(joinedCompressedData.length * 0.74129384652) + 2));
-							var decompressedString5 = decompressor.decompressBlockToString(newByteArray(0));
+							var decompressedString5 = decompressor.decompressBlockToString(new Uint8Array(0));
 							var decompressedString6 = decompressor.decompressBlockToString(joinedCompressedData.subarray(Math.floor(joinedCompressedData.length * 0.74129384652) + 2, Math.floor(joinedCompressedData.length * 0.9191234791281724)));
 							var decompressedString7 = decompressor.decompressBlockToString(joinedCompressedData.subarray(Math.floor(joinedCompressedData.length * 0.9191234791281724)));
 
@@ -95,7 +95,7 @@ module LZUTF8
 							var input = encodeUTF8(truncatedInputString);
 							var compressor = new Compressor();
 
-							var compressedParts: ByteArray[] = [];
+							var compressedParts: Uint8Array[] = [];
 							for (var offset = 0; offset < input.length;)
 							{
 								var randomLength = Math.floor(Math.random() * 4);
@@ -110,7 +110,7 @@ module LZUTF8
 
 							var decompressor = new Decompressor();
 
-							var decompressedParts: ByteArray[] = [];
+							var decompressedParts: Uint8Array[] = [];
 							for (var offset = 0; offset < input.length;)
 							{
 								expect(joinedCompressedParts).toBeDefined();
@@ -462,17 +462,17 @@ module LZUTF8
 		{
 			it("Handles zero length input for compression and decompression", () =>
 			{
-				expect(compress(newByteArray(0))).toEqual(newByteArray(0));
+				expect(compress(new Uint8Array(0))).toEqual(new Uint8Array(0));
 
-				expect(decompress(newByteArray(0))).toEqual("");
-				expect(decompress(newByteArray(0), { outputEncoding: "ByteArray" })).toEqual(newByteArray(0));
+				expect(decompress(new Uint8Array(0))).toEqual("");
+				expect(decompress(new Uint8Array(0), { outputEncoding: "ByteArray" })).toEqual(new Uint8Array(0));
 
 				var compressor = new Compressor();
-				expect(compressor.compressBlock(newByteArray(0))).toEqual(newByteArray(0));
+				expect(compressor.compressBlock(new Uint8Array(0))).toEqual(new Uint8Array(0));
 
 				var decompressor = new Decompressor();
-				expect(decompressor.decompressBlock(newByteArray(0))).toEqual(newByteArray(0));
-				expect(decompressor.decompressBlockToString(newByteArray(0))).toEqual("");
+				expect(decompressor.decompressBlock(new Uint8Array(0))).toEqual(new Uint8Array(0));
+				expect(decompressor.decompressBlockToString(new Uint8Array(0))).toEqual("");
 			});
 		});
 

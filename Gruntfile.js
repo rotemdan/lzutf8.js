@@ -1,13 +1,8 @@
-/// <vs SolutionOpened='watch' />
+/// <binding ProjectOpened='watch:typescriptFiles' />
 module.exports = function (grunt)
 {
 	function generateTypeScriptReferencesFile(filters, outFilename)
 	{
-		var fileNames = [];
-		
-		for (var i=0; i < filters.length; i++)
-			fileNames = fileNames.concat(grunt.file.expand(filters[i]))
-		
 		function getPriorityByFileExtension(filePath)
 		{
 			if (/.+\.d.ts$/.test(filePath))
@@ -20,10 +15,23 @@ module.exports = function (grunt)
 				return 2;
 		}
 		
-		fileNames.sort(function (fileName1, fileName2) { return getPriorityByFileExtension(fileName1) - getPriorityByFileExtension(fileName2) });
-		fileContent = fileNames.reduce(function(result, filePath) {	return result + "/// <reference path=\"" + filePath + "\"/>\n";	}, "");
+		var fileNames = [];
+		
+		for (var i=0; i < filters.length; i++)
+			fileNames = fileNames.concat(grunt.file.expand(filters[i]))
+		
+		
+		var prioritizedFileNames = [];
+		
+		for (var p = 0; p < 4; p++)
+			for (var i = 0; i < fileNames.length; i++)
+				if (getPriorityByFileExtension(fileNames[i]) === p)
+					prioritizedFileNames.push(fileNames[i]);
+		
+		//fileNames.sort(function (fileName1, fileName2) { return getPriorityByFileExtension(fileName1) - getPriorityByFileExtension(fileName2) });
+		var result = prioritizedFileNames.reduce(function(previousResult, filePath) {	return previousResult + "/// <reference path=\"" + filePath + "\"/>\n";	}, "");
 
-		grunt.file.write(outFilename, fileContent);
+		grunt.file.write(outFilename, result);
 		grunt.log.writeln(fileNames.join("\n"));
 	}
 	
@@ -41,6 +49,10 @@ module.exports = function (grunt)
 
 		ts:
 		{
+			options:
+			{
+				compiler: './node_modules/typescript/bin/tsc'
+			},			
 			buildDebug:
 			{
 				src: './_DebugBuildReferences.ts',
@@ -51,7 +63,8 @@ module.exports = function (grunt)
 					module: 'commonjs',
 					fast: 'never',
 					sourceMap: true,
-					removeComments: false
+					removeComments: false,
+					noEmitOnError: true
 				}
 			},
 			
@@ -65,7 +78,8 @@ module.exports = function (grunt)
 					module: 'commonjs',
 					fast: 'never',
 					sourceMap: false,
-					removeComments: true
+					removeComments: true,
+					noEmitOnError: true
 				}
 			}
 		},

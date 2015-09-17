@@ -2,31 +2,27 @@
 {
 	export class AsyncCompressor
 	{
-		static compressAsync(input: any, options: CompressionOptions, callback: (result: any, error?: Error) => void)
+		static compressAsync(input: string | Uint8Array, options: CompressionOptions, callback: (result: any, error?: Error) => void)
 		{
 			var timer = new Timer();
 			var compressor = new Compressor();
 
-			if (typeof input == "string")
+			if (!callback)
+				throw new TypeError("compressAsync: No callback argument given");
+
+			if (typeof input === "string")
 			{
-				input = encodeUTF8(input);
+				input = encodeUTF8(<string> input);
 			}
-			else
+			else if (input == null || !(input instanceof Uint8Array))
 			{
-				try
-				{
-					input = convertToByteArray(input);
-				}
-				catch (e)
-				{
-					callback(undefined, e);
-					return;
-				}
+				callback(undefined, new TypeError("compressAsync: Invalid input argument"));
+				return;
 			}
 
-			var sourceBlocks = ArrayTools.splitByteArray(input, options.blockSize);
+			var sourceBlocks = ArrayTools.splitByteArray(<Uint8Array> input, options.blockSize);
 
-			var compressedBlocks: ByteArray[] = [];
+			var compressedBlocks: Uint8Array[] = [];
 
 			var compressBlocksStartingAt = (index: number) =>
 			{
@@ -89,7 +85,7 @@
 			{
 				try
 				{
-					var buffer = compressor.compressBlock(convertToByteArray(data));
+					var buffer = new Buffer(compressor.compressBlock(new Uint8Array(data)));
 				}
 				catch (e)
 				{

@@ -2,15 +2,15 @@
 {
 	export class CompressionCommon
 	{
-		static getCroppedBuffer(buffer: ByteArray, cropStartOffset: number, cropLength: number, additionalCapacity: number = 0): ByteArray
+		static getCroppedBuffer(buffer: Uint8Array, cropStartOffset: number, cropLength: number, additionalCapacity: number = 0): Uint8Array
 		{
-			var croppedBuffer = newByteArray(cropLength + additionalCapacity);
+			var croppedBuffer = new Uint8Array(cropLength + additionalCapacity);
 			croppedBuffer.set(buffer.subarray(cropStartOffset, cropStartOffset + cropLength));
 
 			return croppedBuffer;
 		}
 
-		static getCroppedAndAppendedBuffer(buffer: ByteArray, cropStartOffset: number, cropLength: number, bufferToAppend: ByteArray): ByteArray
+		static getCroppedAndAppendedBuffer(buffer: Uint8Array, cropStartOffset: number, cropLength: number, bufferToAppend: Uint8Array): Uint8Array
 		{
 			return ArrayTools.joinByteArrays([buffer.subarray(cropStartOffset, cropStartOffset + cropLength), bufferToAppend]);
 		}
@@ -23,7 +23,7 @@
 				return "ByteArray";
 		}
 
-		static encodeCompressedBytes(compressedBytes: ByteArray, outputEncoding: string): any
+		static encodeCompressedBytes(compressedBytes: Uint8Array, outputEncoding: string): any
 		{
 			switch (outputEncoding)
 			{
@@ -38,7 +38,7 @@
 			}
 		}
 
-		static decodeCompressedData(compressedData: any, inputEncoding: string): ByteArray
+		static decodeCompressedData(compressedData: any, inputEncoding: string): Uint8Array
 		{
 			if (inputEncoding == "ByteArray" && typeof compressedData == "string")
 				throw new TypeError("decodeCompressedData: receieved input was string when encoding was set to a ByteArray");
@@ -46,7 +46,7 @@
 			switch (inputEncoding)
 			{
 				case "ByteArray":
-					return convertToByteArray(compressedData);
+					return compressedData;
 				case "BinaryString":
 					return decodeBinaryString(compressedData);
 				case "Base64":
@@ -56,7 +56,7 @@
 			}
 		}
 
-		static encodeDecompressedBytes(decompressedBytes: ByteArray, outputEncoding: string): any
+		static encodeDecompressedBytes(decompressedBytes: Uint8Array, outputEncoding: string): any
 		{
 			switch (outputEncoding)
 			{

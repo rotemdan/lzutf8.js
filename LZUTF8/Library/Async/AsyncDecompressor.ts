@@ -4,6 +4,9 @@
 	{
 		static decompressAsync(input: any, options: CompressionOptions, callback: (result: any, error?: Error) => void)
 		{
+			if (!callback)
+				throw new TypeError("compressAsync: No callback argument given");
+
 			var timer = new Timer();
 			try
 			{
@@ -18,7 +21,7 @@
 			var decompressor = new Decompressor();
 			var sourceBlocks = ArrayTools.splitByteArray(input, options.blockSize);
 
-			var decompressedBlocks: ByteArray[] = [];
+			var decompressedBlocks: Uint8Array[] = [];
 
 			var decompressBlocksStartingAt = (index: number) =>
 			{
@@ -82,7 +85,7 @@
 			{
 				try
 				{
-					var buffer = decompressor.decompressBlock(convertToByteArray(data));
+					var buffer = new Buffer(decompressor.decompressBlock(new Uint8Array(data)));
 				}
 				catch (e)
 				{

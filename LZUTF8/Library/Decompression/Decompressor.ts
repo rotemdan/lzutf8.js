@@ -4,23 +4,21 @@
 	{
 		MaximumMatchDistance = 32767;
 
-		outputBuffer: ByteArray;
+		outputBuffer: Uint8Array;
 		outputPosition: number = 0;
 
-		inputBufferRemainder: ByteArray;
-		outputBufferRemainder: ByteArray;
+		inputBufferRemainder: Uint8Array;
+		outputBufferRemainder: Uint8Array;
 
-		decompressBlockToString(input: ByteArray): string
+		decompressBlockToString(input: Uint8Array): string
 		{
 			return decodeUTF8(this.decompressBlock(input));
 		}
 
-		decompressBlock(input: ByteArray): ByteArray
+		decompressBlock(input: Uint8Array): Uint8Array
 		{
 			if (input === undefined || input === null)
 				throw new TypeError("decompressBlock: undefined or null input received");
-
-			input = convertToByteArray(input);
 
 			if (this.inputBufferRemainder)
 			{
@@ -49,7 +47,7 @@
 				if ( readPosition == inputLength - 1 ||
 					(readPosition == inputLength - 2 && sequenceLengthIdentifier == 7))
 				{
-					this.inputBufferRemainder = newByteArray(input.subarray(readPosition));
+					this.inputBufferRemainder = input.subarray(readPosition);
 					break;
 				}
 
@@ -100,7 +98,7 @@
 		{
 			if (!this.outputBuffer)
 			{
-				this.outputBuffer = newByteArray(initialCapacity);
+				this.outputBuffer = new Uint8Array(initialCapacity);
 				return 0;
 			}
 
@@ -131,7 +129,7 @@
 					(offset < 2 && (value >>> 5) === 6))     // Leading byte of a 2 byte UTF8 sequence
 				{
 
-					this.outputBufferRemainder = newByteArray(this.outputBuffer.subarray(this.outputPosition - offset, this.outputPosition));
+					this.outputBufferRemainder = this.outputBuffer.subarray(this.outputPosition - offset, this.outputPosition);
 					this.outputPosition -= offset;
 
 					return;

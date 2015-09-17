@@ -26,7 +26,7 @@
 
 			it("Handles undefined, null or empty strings (encoding)", () =>
 			{
-				var emptyByteArray = newByteArray(0);
+				var emptyByteArray = new Uint8Array(0);
 
 				expect(() => Encoding.UTF8.encode(undefined)).toThrow();
 				expect(() => Encoding.UTF8.encode(null)).toThrow();
@@ -37,7 +37,7 @@
 			{
 				expect(() => Encoding.UTF8.decode(undefined)).toThrow();
 				expect(() => Encoding.UTF8.decode(null)).toThrow();
-				expect(Encoding.UTF8.decode(newByteArray(0))).toEqual("");
+				expect(Encoding.UTF8.decode(new Uint8Array(0))).toEqual("");
 			});
 		});
 
@@ -45,7 +45,7 @@
 		{
 			it("Correctly encodes and decodes to base 64 (case 1)", () =>
 			{
-				var data = convertToByteArray([243, 121, 5, 57, 175, 27, 142, 3, 239, 212]);
+				var data = new Uint8Array([243, 121, 5, 57, 175, 27, 142, 3, 239, 212]);
 				var base64 = Encoding.Base64.encode(data);
 				expect(base64).toEqual("83kFOa8bjgPv1A==");
 				expect(compareSequences(Encoding.Base64.decode(base64), data)).toBe(true);
@@ -57,7 +57,7 @@
 
 			it("Correctly encodes and decodes to base 64 (case 2)", () =>
 			{
-				var data = convertToByteArray([145, 153, 99, 66, 151, 39, 228, 211, 88, 167, 15]);
+				var data = new Uint8Array([145, 153, 99, 66, 151, 39, 228, 211, 88, 167, 15]);
 				var base64 = Encoding.Base64.encode(data);
 				expect(base64).toEqual("kZljQpcn5NNYpw8=");
 				expect(compareSequences(Encoding.Base64.decode(base64), data)).toBe(true);
@@ -69,16 +69,16 @@
 
 			it("Handles undefined, null or empty arrays (encoding)", () =>
 			{
-				var emptyByteArray = newByteArray(0);
+				var emptyByteArray = new Uint8Array(0);
 
 				expect(() => Encoding.Base64.encode(undefined)).toThrow();
 				expect(() => Encoding.Base64.encode(null)).toThrow();
-				expect(Encoding.Base64.encode(newByteArray(0))).toEqual("");
+				expect(Encoding.Base64.encode(new Uint8Array(0))).toEqual("");
 			});
 
 			it("Handles undefined, null or empty strings (decoding)", () =>
 			{
-				var emptyByteArray = newByteArray(0);
+				var emptyByteArray = new Uint8Array(0);
 
 				expect(() => Encoding.Base64.decode(undefined)).toThrow();
 				expect(() => Encoding.Base64.decode(null)).toThrow();
@@ -91,7 +91,7 @@
 				{
 					for (var i = 0; i < 100; i++)
 					{
-						var randomBytes = convertToByteArray(Random.getRandomIntegerArrayOfLength(i, 0, 256));
+						var randomBytes = new Uint8Array(Random.getRandomIntegerArrayOfLength(i, 0, 256));
 						var libraryResult = Encoding.Base64.encode(randomBytes);
 						var nodeResult = encodeBase64(randomBytes);
 
@@ -140,7 +140,7 @@
 					for (var i = 0; i < 100; i++)
 					{
 						var randomValues = Random.getRandomIntegerArrayOfLength(i, 0, 256);
-						var encodedString: string = Encoding.BinaryString.encode(convertToByteArray(randomValues));
+						var encodedString: string = Encoding.BinaryString.encode(new Uint8Array(randomValues));
 						var decodedValues = Encoding.BinaryString.decode(encodedString);
 
 						expect(compareSequences(randomValues, decodedValues)).toBe(true);
@@ -155,11 +155,11 @@
 				{
 					for (var i = 0; i < 100; i++)
 					{
-						var randomValues1 = convertToByteArray(Random.getRandomIntegerArrayOfLength(Random.getRandomIntegerInRange(0, i), 0, 256));
-						var randomValues2 = convertToByteArray(Random.getRandomIntegerArrayOfLength(Random.getRandomIntegerInRange(0, i), 0, 256));
-						var randomValues3 = convertToByteArray(Random.getRandomIntegerArrayOfLength(Random.getRandomIntegerInRange(0, i), 0, 256));
-						var randomValues4 = convertToByteArray(Random.getRandomIntegerArrayOfLength(Random.getRandomIntegerInRange(0, i), 0, 256));
-						var randomValues5 = convertToByteArray(Random.getRandomIntegerArrayOfLength(Random.getRandomIntegerInRange(0, i), 0, 256));
+						var randomValues1 = new Uint8Array(Random.getRandomIntegerArrayOfLength(Random.getRandomIntegerInRange(0, i), 0, 256));
+						var randomValues2 = new Uint8Array(Random.getRandomIntegerArrayOfLength(Random.getRandomIntegerInRange(0, i), 0, 256));
+						var randomValues3 = new Uint8Array(Random.getRandomIntegerArrayOfLength(Random.getRandomIntegerInRange(0, i), 0, 256));
+						var randomValues4 = new Uint8Array(Random.getRandomIntegerArrayOfLength(Random.getRandomIntegerInRange(0, i), 0, 256));
+						var randomValues5 = new Uint8Array(Random.getRandomIntegerArrayOfLength(Random.getRandomIntegerInRange(0, i), 0, 256));
 
 						var encodedString1: string = Encoding.BinaryString.encode(randomValues1);
 						var encodedString2: string = Encoding.BinaryString.encode(randomValues2);
@@ -180,14 +180,14 @@
 			{
 				expect(() => encodeBinaryString(undefined)).toThrow();
 				expect(() => encodeBinaryString(null)).toThrow();
-				expect(encodeBinaryString(newByteArray(0))).toEqual("");
+				expect(encodeBinaryString(new Uint8Array(0))).toEqual("");
 			});
 
 			it("Handles undefined, null or empty strings (decoding)", () =>
 			{
 				expect(() => decodeBinaryString(undefined)).toThrow();
 				expect(() => decodeBinaryString(null)).toThrow();
-				expect(decodeBinaryString("")).toEqual(newByteArray(0));
+				expect(decodeBinaryString("")).toEqual(new Uint8Array(0));
 			});
 		});
 	});

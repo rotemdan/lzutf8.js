@@ -4,7 +4,7 @@
 	{
 		export class BinaryString
 		{
-			static encode(input: ByteArray): string
+			static encode(input: Uint8Array): string
 			{
 				if (input == null)
 					throw new TypeError("BinaryString.encode: undefined or null input received");
@@ -49,15 +49,15 @@
 				return outputStringBuilder.toString();
 			}
 
-			static decode(input: string): ByteArray
+			static decode(input: string): Uint8Array
 			{
 				if (typeof input !== "string")
 					throw new TypeError("BinaryString.decode: invalid input type");
 
 				if (input == "")
-					return newByteArray(0);
+					return new Uint8Array(0);
 
-				var output = newByteArray(input.length * 3);
+				var output = new Uint8Array(input.length * 3);
 				var outputPosition = 0;
 
 				var appendToOutput = (value: number) =>

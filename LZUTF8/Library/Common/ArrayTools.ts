@@ -69,15 +69,15 @@
 			array.length = truncatedLength;
 		}
 
-		static doubleByteArrayCapacity(array: ByteArray): ByteArray
+		static doubleByteArrayCapacity(array: Uint8Array): Uint8Array
 		{
-			var newArray = newByteArray(array.length * 2);
+			var newArray = new Uint8Array(array.length * 2);
 			newArray.set(array);
 
 			return newArray;
 		}
 
-		static joinByteArrays(byteArrays: ByteArray[])
+		static joinByteArrays(byteArrays: Uint8Array[])
 		{
 			var totalLength = 0;
 
@@ -86,7 +86,7 @@
 				totalLength += byteArrays[i].length;
 			}
 
-			var result = newByteArray(totalLength);
+			var result = new Uint8Array(totalLength);
 			var currentOffset = 0;
 
 			for (var i = 0; i < byteArrays.length; i++)
@@ -98,9 +98,9 @@
 			return result;
 		}
 
-		static splitByteArray(byteArray: ByteArray, maxPartLength: number): ByteArray[]
+		static splitByteArray(byteArray: Uint8Array, maxPartLength: number): Uint8Array[]
 		{
-			var result: ByteArray[] = [];
+			var result: Uint8Array[] = [];
 
 			for (var offset = 0; offset < byteArray.length; )
 			{

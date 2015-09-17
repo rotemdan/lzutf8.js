@@ -4,16 +4,16 @@
 	{
 		export class UTF8
 		{
-			static encode(str: string, outputArray?: ByteArray): ByteArray
+			static encode(str: string, outputArray?: Uint8Array): Uint8Array
 			{
 				if (typeof str !== "string")
 					throw new TypeError("UTF8.encode: null, undefined or invalid input type");
 
 				if (str.length == 0)
-					return newByteArray(0);
+					return new Uint8Array(0);
 
 				if (!outputArray)
-					outputArray = newByteArray(str.length * 4);
+					outputArray = new Uint8Array(str.length * 4);
 
 				var writeIndex = 0;
 
@@ -52,7 +52,7 @@
 				return outputArray.subarray(0, writeIndex);
 			}
 
-			static decode(utf8Bytes: ByteArray): string
+			static decode(utf8Bytes: Uint8Array): string
 			{
 				if (utf8Bytes == null)
 					throw new TypeError("UTF8.decode: null or undefined input type recieved");

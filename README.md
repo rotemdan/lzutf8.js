@@ -27,7 +27,7 @@ A high-performance string compression library and stream format:
 
 *Javascript implementation:*
 
-  - Thoroughly tested on all popular browsers and platforms - Chrome, Firefox, IE8+, Android 4+, Safari 6+ and Node.js 0.10+.
+  - Thoroughly tested on most popular browsers and platforms - Chrome, Firefox, IE10+, IE8+ (with a [typed array polyfill](https://github.com/inexorabletash/polyfill/blob/master/typedarray.js)), Android 4+, Safari 6+ and Node.js 0.10+.
   - Allows compressed data to be efficiently packed in plain UTF-16 strings (see the "BinaryString" encoding) when binary storage is not available or desired (e.g. when using LocalStorage or older IndexedDB).
   - Can operate asynchronously, both in Node.js and in the browser. Uses web workers when available (and takes full advantage of [transferable objects](http://www.w3.org/html/wg/drafts/html/master/#transferable-objects) if supported) and falls back to async iterations when not.
   - Supports Node.js streams.
@@ -109,6 +109,8 @@ var LZUTF8 = require('lzutf8');
 
 
 *`ByteArray`* - a platform dependent array of bytes. Based on the platform and availability of the underlying types, would either be a regular `Array` (IE8, IE9), `Uint8Array` (IE10+, all other modern browsers) or `Buffer` (Node.js).
+
+_Note_: Since version `0.2.4`, only `Uint8Array` is supported and returned by the library's methods. This was done to support Node 4.0+ where `Buffer` became a subtype of `Uint8Array`. Since IE8/9 don't support typed arrays, support for these browsers has been removed though they can still be used with a [typed array polyfill](https://github.com/inexorabletash/polyfill/blob/master/typedarray.js).
 
 
 ## Core Methods

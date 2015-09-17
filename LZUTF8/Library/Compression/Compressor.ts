@@ -7,10 +7,10 @@
 		MaximumMatchDistance = 32767;
 		PrefixHashTableSize = 65537;
 
-		inputBuffer: ByteArray;
+		inputBuffer: Uint8Array;
 		inputBufferStreamOffset: number = 1;
 
-		outputBuffer: ByteArray;
+		outputBuffer: Uint8Array;
 		outputBufferPosition: number;
 
 		prefixHashTable: CompressorHashTable;
@@ -23,30 +23,28 @@
 				this.prefixHashTable = new CompressorSimpleHashTable(this.PrefixHashTableSize);
 		}
 		
-		compressBlock(input: any): ByteArray
+		compressBlock(input: string | Uint8Array): Uint8Array
 		{
 			if (input === undefined || input === null)
 				throw new TypeError("compressBlock: undefined or null input received");
 
 			if (typeof input == "string")
-				input = encodeUTF8(input);
+				input = encodeUTF8(<string> input);
 
-			return this.compressByteArrayBlock(input);
+			return this.compressByteArrayBlock(<Uint8Array> input);
 		}
 
-		compressByteArrayBlock(utf8Bytes: ByteArray): ByteArray
+		compressByteArrayBlock(utf8Bytes: Uint8Array): Uint8Array
 		{
 			if (!utf8Bytes || utf8Bytes.length == 0)
-				return newByteArray(0);
-
-			utf8Bytes = convertToByteArray(utf8Bytes);
+				return new Uint8Array(0);
 
 			var bufferStartingReadOffset = this.cropAndAddNewBytesToInputBuffer(utf8Bytes);
 
 			var inputBuffer = this.inputBuffer;
 			var inputBufferLength = this.inputBuffer.length;
 
-			this.outputBuffer = newByteArray(utf8Bytes.length);
+			this.outputBuffer = new Uint8Array(utf8Bytes.length);
 			this.outputBufferPosition = 0;
 
 			var latestMatchEndPosition = 0;
@@ -190,7 +188,7 @@
 			this.outputBuffer[this.outputBufferPosition++] = value;
 		}
 
-		private cropAndAddNewBytesToInputBuffer(newInput: ByteArray): number
+		private cropAndAddNewBytesToInputBuffer(newInput: Uint8Array): number
 		{
 			if (this.inputBuffer === undefined)
 			{
