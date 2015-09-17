@@ -6,6 +6,8 @@
 		if (input === undefined || input === null)
 			throw new TypeError("compress: undefined or null input received");
 
+		input = ArrayTools.convertToUint8ArrayIfNeeded(input);
+
 		options = ObjectTools.extendObject({ outputEncoding: "ByteArray" }, options);
 
 		var compressor = new Compressor();
@@ -18,6 +20,8 @@
 	{
 		if (input === undefined || input === null)
 			throw new TypeError("decompress: undefined or null input received");
+
+		input = ArrayTools.convertToUint8ArrayIfNeeded(input);
 
 		options = ObjectTools.extendObject({ inputEncoding: "ByteArray", outputEncoding: "String" }, options);
 
@@ -40,6 +44,8 @@
 			callback(undefined, new TypeError("compressAsync: undefined or null input received"));
 			return;
 		}
+
+		input = ArrayTools.convertToUint8ArrayIfNeeded(input);
 
 		var defaultOptions: CompressionOptions =
 			{
@@ -75,6 +81,8 @@
 			callback(undefined, new TypeError("decompressAsync: undefined or null input received"));
 			return;
 		}
+
+		input = ArrayTools.convertToUint8ArrayIfNeeded(input);
 
 		var defaultOptions: CompressionOptions =
 			{
@@ -139,9 +147,21 @@
 
 	export function decodeUTF8(input: Uint8Array): string
 	{
+		if (input == null)
+			throw new TypeError("decodeUTF8: undefined or null input received");
+
 		if (runningInNodeJS())
 		{
-			return (new Buffer(input)).toString("utf8");
+			let buf: Buffer;
+
+			if (input instanceof Uint8Array)
+				buf = new Buffer(input);
+			else if (input instanceof Buffer)
+				buf = <any>input;
+			else
+				throw new TypeError("decodeUTF8: invalid input type");
+
+			return buf.toString("utf8");
 		}
 		else if (typeof TextDecoder === "function")
 		{
@@ -157,11 +177,20 @@
 	export function encodeBase64(input: Uint8Array): string
 	{
 		if (input == null)
-			throw new TypeError("decodeBase64: undefined or null input received");
+			throw new TypeError("encodeBase64: undefined or null input received");
 
 		if (runningInNodeJS())
 		{
-			var result = (new Buffer(input)).toString("base64");
+			let buf: Buffer;
+
+			if (input instanceof Uint8Array)
+				buf = new Buffer(input);
+			else if (input instanceof Buffer)
+				buf = <any>input;
+			else
+				throw new TypeError("encodeBase64: invalid input type");
+
+			let result = buf.toString("base64");
 
 			if (result == null)
 				throw new Error("encodeBase64: failed encdoing Base64");
@@ -190,45 +219,10 @@
 			return Encoding.Base64.decode(str);
 	}
 
-	/*
-	export function decodeConcatenatedBase64(concatBase64Strings: string): ByteArray
-	{
-		var base64Strings: string[] = [];
-
-		for (var offset = 0; offset < concatBase64Strings.length; )
-		{
-			var endPosition = concatBase64Strings.indexOf("=", offset);
-
-			if (endPosition == -1)
-			{
-				endPosition = concatBase64Strings.length;
-			}
-			else
-			{
-				if (concatBase64Strings[endPosition] == "=")
-					endPosition++;
-
-				if (concatBase64Strings[endPosition] == "=") // Note: if endPosition equals string length the char would be undefined
-					endPosition++;
-			}
-
-			base64Strings.push(concatBase64Strings.substring(offset, endPosition));
-			offset = endPosition;
-		}
-
-		var decodedByteArrays: ByteArray[] = [];
-
-		for (var i = 0; i < base64Strings.length; i++)
-		{
-			decodedByteArrays.push(decodeBase64(base64Strings[i]));
-		}
-
-		return ArrayTools.joinByteArrays(decodedByteArrays);
-	}
-	*/
-
 	export function encodeBinaryString(input: Uint8Array): string
 	{
+		input = ArrayTools.convertToUint8ArrayIfNeeded(input);
+
 		return Encoding.BinaryString.encode(input);
 	}
 

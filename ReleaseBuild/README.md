@@ -108,10 +108,9 @@ var LZUTF8 = require('lzutf8');
 ## Core Types
 
 
-*`ByteArray`* - a platform dependent array of bytes. Based on the platform and availability of the underlying types, would either be a regular `Array` (IE8, IE9), `Uint8Array` (IE10+, all other modern browsers) or `Buffer` (Node.js).
+*`ByteArray`* - An array of bytes. Supports `Uint8Array` (IE10+, all other modern browsers) and `Buffer` objects (Node.js) when given as inputs (`Buffer` objects would be internally converted to `Uint8Array` instances). As of `0.3.0` outputs are always `Uint8Array` objects (this may be subject to change in future versions).
 
-_Note_: Since version `0.2.4`, only `Uint8Array` is supported and returned by the library's methods. This was done to support Node 4.0+ where `Buffer` became a subtype of `Uint8Array`. Since IE8/9 don't support typed arrays, support for these browsers has been removed though they can still be used with a [typed array polyfill](https://github.com/inexorabletash/polyfill/blob/master/typedarray.js).
-
+IE8/9 and support was dropped at `0.3.0` though these browsers can still be used with a [typed array polyfill](https://github.com/inexorabletash/polyfill/blob/master/typedarray.js).
 
 ## Core Methods
 
@@ -124,7 +123,7 @@ var output = LZUTF8.compress(input, [options]);
 ```
 Compresses the given input data.
 
-*`input`* can be either a ``String`` or UTF-8 bytes stored in an `Array`, `Uint8Array` or `Buffer`
+*`input`* can be either a `String` or UTF-8 bytes stored in a `Uint8Array` or `Buffer`
 
 *`options`* (optional): an object that may have any of the properties:
 
@@ -140,7 +139,7 @@ var output = LZUTF8.decompress(input, [options]);
 ```
 Decompresses the given compressed data.
 
-*`input`*: can be either an `Array`, `Uint8Array`, `Buffer` or `String` (where encoding scheme is then specified in `inputEncoding`)
+*`input`*: can be either a `Uint8Array`, `Buffer` or `String` (where encoding scheme is then specified in `inputEncoding`)
 
 *`options`* (optional): an object that may have the properties:
 
@@ -160,16 +159,16 @@ LZUTF8.compressAsync(input, [options], callback);
 ```
 Asynchronously compresses the given input data.
 
-*`input`* can be either a ``String``, or UTF-8 bytes stored in an `Array`, `Uint8Array` or `Buffer`.
+*`input`* can be either a `String`, or UTF-8 bytes stored in an `Uint8Array` or `Buffer`.
 
 *`options`* (optional): an object that may have any of the properties:
 
 * `outputEncoding`: `"ByteArray"` (default), `"BinaryString"` or `"Base64"`
 * `useWebWorker`: `true` (default) would use a web worker if available. `false` would use iterated yielding instead.
 
-*`callback`*: a user-defined callback function accepting a first argument containing the resulting compressed data as specified by `outputEncoding` (or `ByteArray` if not specified) and a possible second parameter containing an ```Error``` object.
+*`callback`*: a user-defined callback function accepting a first argument containing the resulting compressed data as specified by `outputEncoding` (or `ByteArray` if not specified) and a possible second parameter containing an `Error` object.
 
-*On error*: invokes the callback with a first argument of ```undefined``` and a second one containing the ```Error``` object.
+*On error*: invokes the callback with a first argument of `undefined` and a second one containing the ```Error``` object.
 
 *Example:*
 ```js
@@ -188,7 +187,7 @@ LZUTF8.decompressAsync(input, [options], callback);
 ```
 Asynchronously decompresses the given compressed input.
 
-*`input`*: can be either an `Array`, `Uint8Array`, `Buffer` or `String` (where encoding is set with `inputEncoding`).
+*`input`*: can be either a `Uint8Array`, `Buffer` or `String` (where encoding is set with `inputEncoding`).
 
 *`options`* (optional): an object that may have the properties:
 
@@ -213,7 +212,7 @@ LZUTF8.decompressAsync(input, {inputEncoding: "BinaryString", outputEncoding: "B
 ### *General notes on async operations*
 
 
-Web workers are available if supported by the browser and the library's script source is referenced in the document with a `<script>` tag having `id` of `"lzutf8"` (its `src` attribute is then used as the source URI for the web worker). In cases where a script tag is not available (such as when the script is dynamically loaded or bundled with other scripts) the value of `LZUTF8.WebWorker.scriptURI` may alternatively be set before the first async method call.
+Web workers are available if supported by the browser and the library's script source is referenced in the document with a `script` tag having `id` of `"lzutf8"` (its `src` attribute is then used as the source URI for the web worker). In cases where a script tag is not available (such as when the script is dynamically loaded or bundled with other scripts) the value of `LZUTF8.WebWorker.scriptURI` may alternatively be set before the first async method call.
 
 Workers are optimized for various input and output encoding schemes, so only the minimal amount of work is done in the main Javascript thread. Internally, conversion to or from various encodings is performed within the worker itself, reducing delays and allowing greater parallelization. Additionally, if [transferable objects](http://www.w3.org/html/wg/drafts/html/master/#transferable-objects) are supported by the browser, binary arrays will be transferred virtually instantly to and from the worker.
 
@@ -242,7 +241,7 @@ var compressedBlock = compressor.compressBlock(input);
 ```
 Compresses the given input UTF-8 block.
 
-*`input`* can be either a `String`, or UTF-8 bytes stored in an `Array`, `Uint8Array` or `Buffer`
+*`input`* can be either a `String`, or UTF-8 bytes stored in a `Uint8Array` or `Buffer`
 
 *returns*: compressed bytes as `ByteArray`
 
@@ -273,7 +272,7 @@ var decompressedBlock = decompressor.decompressBlock(input);
 ```
 Decompresses the given block of compressed bytes.
 
-*`input`* can be either an `Array`, `Uint8Array` or `Buffer`
+*`input`* can be either a `Uint8Array` or `Buffer`
 
 *returns*: decompressed UTF-8 bytes as `ByteArray`
 
@@ -297,7 +296,7 @@ var decompressedBlockAsString = decompressor.decompressBlockToString(input);
 ```
 Decompresses the given block of compressed bytes  and converts the result to a `String`.
 
-*`input`* can be either an `Array`, `Uint8Array` or `Buffer`
+*`input`* can be either a `Uint8Array` or `Buffer`
 
 *returns*: decompressed `String`
 
@@ -324,7 +323,7 @@ var compressionStream = LZUTF8.createCompressionStream();
 sourceReadStrem.pipe(compressionStream).pipe(destWriteStream);
 ```
 
-*On error*: emits an ```error``` event with the ```Error``` object as parameter.
+*On error*: emits an `error` event with the `Error` object as parameter.
 
 ### LZUTF8.createDecompressionStream()
 
@@ -334,7 +333,7 @@ var decompressionStream = LZUTF8.createDecompressionStream();
 
 Creates a decompression stream. The stream will accept and return Buffers.
 
-*On error*: emits an ```error``` event with the ```Error``` object as parameter.
+*On error*: emits an `error` event with the `Error` object as parameter.
 
 ## Character encoding methods
 
@@ -358,7 +357,7 @@ var outputString = LZUTF8.decodeUTF8(input);
 ```
 Decodes UTF-8 bytes to a String.
 
-*`input`* as either an `Array`, `Uint8Array` or `Buffer`
+*`input`* as either a `Uint8Array` or `Buffer`
 
 *returns*: decoded bytes as `String`
 
@@ -370,11 +369,11 @@ var outputString = LZUTF8.encodeBase64(bytes);
 ```
 Encodes bytes to a Base64 string. 
 
-*``input``* as either an ``Array``, ``Uint8Array`` or ``Buffer``
+*`input`* as either a `Uint8Array` or `Buffer`
 
 *returns*: base64 
 
-*remarks*: Maps every 3 consecutive input bytes to 4 output characters of the set ``A-Z``,``a-z``,``0-9``,``+``,``/`` (a total of 64 characters). Increases stored byte size to 133.33% of original (when stored as ASCII or UTF-8) or 266% (stored as UCS-2/UTF-16).
+*remarks*: Maps every 3 consecutive input bytes to 4 output characters of the set `A-Z`,`a-z`,`0-9`,`+`,`/` (a total of 64 characters). Increases stored byte size to 133.33% of original (when stored as ASCII or UTF-8) or 266% (stored as UCS-2/UTF-16).
 
 ### LZUTF8.decodeBase64(..)
 
@@ -383,9 +382,9 @@ var output = LZUTF8.decodeBase64(input);
 ```
 Decodes UTF-8 bytes to a String.
 
-*`input`* as ``String``
+*`input`* as `String`
 
-*returns*: decoded bytes as ``ByteArray``
+*returns*: decoded bytes as `ByteArray`
 
 *remarks:* the decoder cannot decode concatenated base64 strings. Although it is possible to add this capability to the JS version, compatibility with other decoders (such as the Node.js decoder) prevents this feature to be added.
 
@@ -396,7 +395,7 @@ var outputString = LZUTF8.encodeBinaryString(bytes);
 ```
 Encodes binary bytes to a valid UTF-16 string.
 
-*``input``* as either an ``Array``, ``Uint8Array`` or ``Buffer``
+*`input`* as either a `Uint8Array` or `Buffer`
 
 *returns*: `String`
 
@@ -409,15 +408,16 @@ var output = LZUTF8.decodeBinaryString(input);
 ```
 Decodes a binary string.
 
-*`input`* as ``String``
+*`input`* as `String`
 
-*returns*: decoded bytes as ``ByteArray``
+*returns*: decoded bytes as `ByteArray`
 
 *remarks:* Multiple binary strings may be freely concatenated and decoded as a single string. This is made possible by ending every sequence with special marker (char code 32768 for an even-length sequence and 32769 for a an odd-length sequence).
 
 
 # Release history
 
+* ```0.3.x```: Removed support to IE8/9. Removed support for Array inputs and Buffer outputs. All method outputs are now `Uint8Array` objects.
 * ```0.2.x```: Added async error handling. Added support for TextEncoder and TextDecoder when available.
 * ```0.1.x```: Initial release.
 

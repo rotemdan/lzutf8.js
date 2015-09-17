@@ -12,6 +12,8 @@
 
 		decompressBlockToString(input: Uint8Array): string
 		{
+			input = ArrayTools.convertToUint8ArrayIfNeeded(input);
+
 			return decodeUTF8(this.decompressBlock(input));
 		}
 
@@ -19,6 +21,8 @@
 		{
 			if (input === undefined || input === null)
 				throw new TypeError("decompressBlock: undefined or null input received");
+
+			input = ArrayTools.convertToUint8ArrayIfNeeded(input);
 
 			if (this.inputBufferRemainder)
 			{

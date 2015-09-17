@@ -151,7 +151,7 @@ module LZUTF8
 			addTestsForInputString("Repeating String 'aaaaaaa'..", repeatString("aaaaaaaaaa", 2000));
 		});
 
-		describe("Sycnhronous operations with different input and output encodings", () =>
+		describe("Synchronous operations with different input and output encodings", () =>
 		{
 			var sourceAsString = TestData.hindiText.substr(0, 100);
 			var sourceAsByteArray = encodeUTF8(sourceAsString);
@@ -474,6 +474,42 @@ module LZUTF8
 				expect(decompressor.decompressBlock(new Uint8Array(0))).toEqual(new Uint8Array(0));
 				expect(decompressor.decompressBlockToString(new Uint8Array(0))).toEqual("");
 			});
+
+			if (runningInNodeJS())
+			{
+				it("Automatically converts Buffers to Uint8Arrays (sync)", () =>
+				{
+					let compressedText = compress(new Buffer(TestData.loremIpsum));
+					let decompressedText = decompress(new Buffer(compressedText));
+
+					expect(decompressedText).toEqual(TestData.loremIpsum);
+				});
+
+				it("Automatically converts Buffers to Uint8Arrays (sync, incremental)", () =>
+				{
+					let compressor = new Compressor();
+					let compressedText = compressor.compressBlock(<any> new Buffer(TestData.loremIpsum));
+
+					let decompressor = new Decompressor();
+					let decompressedText = decompressor.decompressBlock(<any> new Buffer(compressedText));
+
+					expect(decodeUTF8(decompressedText)).toEqual(TestData.loremIpsum);
+				});
+
+
+				it("Automatically converts Buffers to Uint8Arrays (async)", (done) =>
+				{
+					compressAsync(new Buffer(TestData.loremIpsum), {}, (compressedText) =>
+					{
+						decompressAsync(new Buffer(compressedText), {}, (decompressedText) =>
+						{
+							expect(decompressedText).toEqual(TestData.loremIpsum);
+							done();
+						});
+					});
+				});
+
+			}
 		});
 
 

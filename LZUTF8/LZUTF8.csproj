@@ -44,6 +44,7 @@
     <Content Include="Tests\Dependencies\jasmine\jasmine.css" />
     <Content Include="Tests\Dependencies\jasmine\jasmine.js" />
     <Content Include="Tests\Dependencies\jasmine\jasmine_favicon.png" />
+    <Content Include="Tests\Dependencies\Uint8ArrayPolyfill.js" />
     <Content Include="Tests\index.html" />
     <Content Include="web.config" />
   </ItemGroup>

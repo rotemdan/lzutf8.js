@@ -112,5 +112,13 @@
 
 			return result;
 		}
+
+		static convertToUint8ArrayIfNeeded(input: any): any
+		{
+			if (Array.isArray(input) || (typeof Buffer === "function" && input instanceof Buffer))
+				return new Uint8Array(input);
+			else
+				return input;
+		}
 	}
 } 

@@ -29,7 +29,9 @@
 				throw new TypeError("compressBlock: undefined or null input received");
 
 			if (typeof input == "string")
-				input = encodeUTF8(<string> input);
+				input = encodeUTF8(<string>input);
+
+			input = ArrayTools.convertToUint8ArrayIfNeeded(input);
 
 			return this.compressByteArrayBlock(<Uint8Array> input);
 		}

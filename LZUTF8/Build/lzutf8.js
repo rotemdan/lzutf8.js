@@ -731,6 +731,12 @@ var LZUTF8;
             }
             return result;
         };
+        ArrayTools.convertToUint8ArrayIfNeeded = function (input) {
+            if (Array.isArray(input) || (typeof Buffer === "function" && input instanceof Buffer))
+                return new Uint8Array(input);
+            else
+                return input;
+        };
         return ArrayTools;
     })();
     LZUTF8.ArrayTools = ArrayTools;
@@ -978,6 +984,7 @@ var LZUTF8;
                 throw new TypeError("compressBlock: undefined or null input received");
             if (typeof input == "string")
                 input = LZUTF8.encodeUTF8(input);
+            input = LZUTF8.ArrayTools.convertToUint8ArrayIfNeeded(input);
             return this.compressByteArrayBlock(input);
         };
         Compressor.prototype.compressByteArrayBlock = function (utf8Bytes) {
@@ -1267,11 +1274,13 @@ var LZUTF8;
             this.outputPosition = 0;
         }
         Decompressor.prototype.decompressBlockToString = function (input) {
+            input = LZUTF8.ArrayTools.convertToUint8ArrayIfNeeded(input);
             return LZUTF8.decodeUTF8(this.decompressBlock(input));
         };
         Decompressor.prototype.decompressBlock = function (input) {
             if (input === undefined || input === null)
                 throw new TypeError("decompressBlock: undefined or null input received");
+            input = LZUTF8.ArrayTools.convertToUint8ArrayIfNeeded(input);
             if (this.inputBufferRemainder) {
                 input = LZUTF8.ArrayTools.joinByteArrays([this.inputBufferRemainder, input]);
                 this.inputBufferRemainder = undefined;
@@ -1652,6 +1661,7 @@ var LZUTF8;
     function compress(input, options) {
         if (input === undefined || input === null)
             throw new TypeError("compress: undefined or null input received");
+        input = LZUTF8.ArrayTools.convertToUint8ArrayIfNeeded(input);
         options = LZUTF8.ObjectTools.extendObject({ outputEncoding: "ByteArray" }, options);
         var compressor = new LZUTF8.Compressor();
         var compressedBytes = compressor.compressBlock(input);
@@ -1661,6 +1671,7 @@ var LZUTF8;
     function decompress(input, options) {
         if (input === undefined || input === null)
             throw new TypeError("decompress: undefined or null input received");
+        input = LZUTF8.ArrayTools.convertToUint8ArrayIfNeeded(input);
         options = LZUTF8.ObjectTools.extendObject({ inputEncoding: "ByteArray", outputEncoding: "String" }, options);
         input = LZUTF8.CompressionCommon.decodeCompressedData(input, options.inputEncoding);
         var decompressor = new LZUTF8.Decompressor();
@@ -1676,6 +1687,7 @@ var LZUTF8;
             callback(undefined, new TypeError("compressAsync: undefined or null input received"));
             return;
         }
+        input = LZUTF8.ArrayTools.convertToUint8ArrayIfNeeded(input);
         var defaultOptions = {
             inputEncoding: LZUTF8.CompressionCommon.detectCompressionSourceEncoding(input),
             outputEncoding: "ByteArray",
@@ -1701,6 +1713,7 @@ var LZUTF8;
             callback(undefined, new TypeError("decompressAsync: undefined or null input received"));
             return;
         }
+        input = LZUTF8.ArrayTools.convertToUint8ArrayIfNeeded(input);
         var defaultOptions = {
             inputEncoding: "ByteArray",
             outputEncoding: "String",
@@ -1747,8 +1760,17 @@ var LZUTF8;
     }
     LZUTF8.encodeUTF8 = encodeUTF8;
     function decodeUTF8(input) {
+        if (input == null)
+            throw new TypeError("decodeUTF8: undefined or null input received");
         if (LZUTF8.runningInNodeJS()) {
-            return (new Buffer(input)).toString("utf8");
+            var buf;
+            if (input instanceof Uint8Array)
+                buf = new Buffer(input);
+            else if (input instanceof Buffer)
+                buf = input;
+            else
+                throw new TypeError("decodeUTF8: invalid input type");
+            return buf.toString("utf8");
         }
         else if (typeof TextDecoder === "function") {
             if (globalUTF8TextDecoder === undefined)
@@ -1761,9 +1783,16 @@ var LZUTF8;
     LZUTF8.decodeUTF8 = decodeUTF8;
     function encodeBase64(input) {
         if (input == null)
-            throw new TypeError("decodeBase64: undefined or null input received");
+            throw new TypeError("encodeBase64: undefined or null input received");
         if (LZUTF8.runningInNodeJS()) {
-            var result = (new Buffer(input)).toString("base64");
+            var buf;
+            if (input instanceof Uint8Array)
+                buf = new Buffer(input);
+            else if (input instanceof Buffer)
+                buf = input;
+            else
+                throw new TypeError("encodeBase64: invalid input type");
+            var result = buf.toString("base64");
             if (result == null)
                 throw new Error("encodeBase64: failed encdoing Base64");
             return result;
@@ -1785,43 +1814,8 @@ var LZUTF8;
             return LZUTF8.Encoding.Base64.decode(str);
     }
     LZUTF8.decodeBase64 = decodeBase64;
-    /*
-    export function decodeConcatenatedBase64(concatBase64Strings: string): ByteArray
-    {
-        var base64Strings: string[] = [];
-
-        for (var offset = 0; offset < concatBase64Strings.length; )
-        {
-            var endPosition = concatBase64Strings.indexOf("=", offset);
-
-            if (endPosition == -1)
-            {
-                endPosition = concatBase64Strings.length;
-            }
-            else
-            {
-                if (concatBase64Strings[endPosition] == "=")
-                    endPosition++;
-
-                if (concatBase64Strings[endPosition] == "=") // Note: if endPosition equals string length the char would be undefined
-                    endPosition++;
-            }
-
-            base64Strings.push(concatBase64Strings.substring(offset, endPosition));
-            offset = endPosition;
-        }
-
-        var decodedByteArrays: ByteArray[] = [];
-
-        for (var i = 0; i < base64Strings.length; i++)
-        {
-            decodedByteArrays.push(decodeBase64(base64Strings[i]));
-        }
-
-        return ArrayTools.joinByteArrays(decodedByteArrays);
-    }
-    */
     function encodeBinaryString(input) {
+        input = LZUTF8.ArrayTools.convertToUint8ArrayIfNeeded(input);
         return LZUTF8.Encoding.BinaryString.encode(input);
     }
     LZUTF8.encodeBinaryString = encodeBinaryString;
@@ -2043,7 +2037,7 @@ var LZUTF8;
             addTestsForInputString("Long mixed text", LZUTF8.TestData.hindiText + LZUTF8.TestData.loremIpsum + LZUTF8.TestData.hindiText + LZUTF8.TestData.chineseText + LZUTF8.TestData.chineseText);
             addTestsForInputString("Repeating String 'aaaaaaa'..", LZUTF8.repeatString("aaaaaaaaaa", 2000));
         });
-        describe("Sycnhronous operations with different input and output encodings", function () {
+        describe("Synchronous operations with different input and output encodings", function () {
             var sourceAsString = LZUTF8.TestData.hindiText.substr(0, 100);
             var sourceAsByteArray = LZUTF8.encodeUTF8(sourceAsString);
             function addTestForEncodingCombination(testedSourceEncoding, testedCompressedEncoding, testedDecompressedEncoding) {
@@ -2273,6 +2267,28 @@ var LZUTF8;
                 expect(decompressor.decompressBlock(new Uint8Array(0))).toEqual(new Uint8Array(0));
                 expect(decompressor.decompressBlockToString(new Uint8Array(0))).toEqual("");
             });
+            if (LZUTF8.runningInNodeJS()) {
+                it("Automatically converts Buffers to Uint8Arrays (sync)", function () {
+                    var compressedText = LZUTF8.compress(new Buffer(LZUTF8.TestData.loremIpsum));
+                    var decompressedText = LZUTF8.decompress(new Buffer(compressedText));
+                    expect(decompressedText).toEqual(LZUTF8.TestData.loremIpsum);
+                });
+                it("Automatically converts Buffers to Uint8Arrays (sync, incremental)", function () {
+                    var compressor = new LZUTF8.Compressor();
+                    var compressedText = compressor.compressBlock(new Buffer(LZUTF8.TestData.loremIpsum));
+                    var decompressor = new LZUTF8.Decompressor();
+                    var decompressedText = decompressor.decompressBlock(new Buffer(compressedText));
+                    expect(LZUTF8.decodeUTF8(decompressedText)).toEqual(LZUTF8.TestData.loremIpsum);
+                });
+                it("Automatically converts Buffers to Uint8Arrays (async)", function (done) {
+                    LZUTF8.compressAsync(new Buffer(LZUTF8.TestData.loremIpsum), {}, function (compressedText) {
+                        LZUTF8.decompressAsync(new Buffer(compressedText), {}, function (decompressedText) {
+                            expect(decompressedText).toEqual(LZUTF8.TestData.loremIpsum);
+                            done();
+                        });
+                    });
+                });
+            }
         });
         describe("Special bytestream features:", function () {
             it("Allows concatenation of multiple compressed and uncompressed streams to a single, valid compressed stream", function () {
