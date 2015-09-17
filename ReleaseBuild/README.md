@@ -110,6 +110,8 @@ var LZUTF8 = require('lzutf8');
 
 *`ByteArray`* - a platform dependent array of bytes. Based on the platform and availability of the underlying types, would either be a regular `Array` (IE8, IE9), `Uint8Array` (IE10+, all other modern browsers) or `Buffer` (Node.js).
 
+_Note_: Since version `0.2.4`, only `Uint8Array` is supported and returned by the library's methods. This was done to support Node 4.0+ where `Buffer` became a subtype of `Uint8Array`. Since IE8/9 don't support typed arrays, support for these browsers has been removed though they can still be used with a [typed array polyfill](https://github.com/inexorabletash/polyfill/blob/master/typedarray.js).
+
 
 ## Core Methods
 

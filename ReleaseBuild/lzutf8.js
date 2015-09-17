@@ -1,5 +1,5 @@
 /*
- LZ-UTF8 v0.2.4
+ LZ-UTF8 v0.2.5
 
  Copyright (c) 2014-2015, Rotem Dan <rotemdan@gmail.com> 
  Released under the MIT license.

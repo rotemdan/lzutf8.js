@@ -1,6 +1,6 @@
 {
 	"name": "lzutf8",
-	"version": "0.2.4",
+	"version": "0.2.5",
 	"description": "A high-performance string compression library",
 	"authors": [
 		"Rotem Dan <rotemdan@gmail.com>"
