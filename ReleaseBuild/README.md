@@ -108,11 +108,15 @@ var LZUTF8 = require('lzutf8');
 ## Types Identifiers
 
 
-*`ByteArray`* - An array of bytes. As of `0.3.0`, always a `Uint8Array`. In versions up to `0.2.3` the type was determined by the platform (`Array` for browsers that don't support typed arrays, `Uint8Array` for supporting browsers and `Buffer` for Node.js).
+*`ByteArray`* - An array of bytes. As of `0.3.2`, always a `Uint8Array`. In versions up to `0.2.3` the type was determined by the platform (`Array` for browsers that don't support typed arrays, `Uint8Array` for supporting browsers and `Buffer` for Node.js).
 
 IE8/9 and support was dropped at `0.3.0` though these browsers can still be used with a [typed array polyfill](https://github.com/inexorabletash/polyfill/blob/master/typedarray.js).
 
 *`Buffer`* - A Node.js `Buffer` object.
+
+*`BinaryString`* - A `string` containing binary data encoded to only use the lowest 15 bits of each character.
+
+*`Base64`* - A [base 64](https://en.wikipedia.org/wiki/Base64) string.
 
 ## Core Methods
 
