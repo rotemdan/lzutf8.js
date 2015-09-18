@@ -29,6 +29,8 @@
 			{
 				case "ByteArray":
 					return compressedBytes;
+				case "Buffer":
+					return new Buffer(compressedBytes);
 				case "BinaryString":
 					return encodeBinaryString(compressedBytes);
 				case "Base64":
@@ -62,6 +64,8 @@
 			{
 				case "ByteArray":
 					return decompressedBytes;
+				case "Buffer":
+					return new Buffer(decompressedBytes);
 				case "String":
 					return decodeUTF8(decompressedBytes);
 				default:

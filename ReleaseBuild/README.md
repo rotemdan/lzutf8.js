@@ -6,10 +6,10 @@
 
 A high-performance string compression library and stream format:
 
-  - Very fast, especially decompression (times are for a low-end desktop PC processing 1MB files):
+  - Fast, especially decompression (times are for a low-end desktop PC processing 1MB files):
     - Javascript: 3-14MB/s compression , 20-80MB/s decompression (detailed benchmarks and comparison to other Javascript libraries can be found in the [technical paper](https://goo.gl/0g0fzm)).
     - C++: 30-40MB/s compression, 300-500MB/s decompression (currently unreleased, figures may improve in the future).
-  - Reasonable compression ratio - excellent for shorter strings (&lt;32k), but less efficient for longer ones.
+  - Reasonable compression ratio - very good for shorter strings (&lt;32k), but less efficient for longer ones.
   - Conceived with web and mobile use cases in mind. Designed for and implemented in Javascript from the very beginning.
   - Simple and easy-to-use API that's consistent across all platforms, both in the browser and in Node.js.
   - 100% patent-free.
@@ -105,12 +105,14 @@ var LZUTF8 = require('lzutf8');
 ```
 
 
-## Core Types
+## Types Identifiers
 
 
-*`ByteArray`* - An array of bytes. Supports `Uint8Array` (IE10+, all other modern browsers) and `Buffer` objects (Node.js) when given as inputs (`Buffer` objects would be internally converted to `Uint8Array` instances). As of `0.3.0` outputs are always `Uint8Array` objects (this may be subject to change in future versions).
+*`ByteArray`* - An array of bytes. As of `0.3.0`, always a `Uint8Array`. In versions up to `0.2.3` the type was determined by the platform (`Array` for browsers that don't support typed arrays, `Uint8Array` for supporting browsers and `Buffer` for Node.js).
 
 IE8/9 and support was dropped at `0.3.0` though these browsers can still be used with a [typed array polyfill](https://github.com/inexorabletash/polyfill/blob/master/typedarray.js).
+
+*`Buffer`* - A Node.js `Buffer` object.
 
 ## Core Methods
 
@@ -127,7 +129,7 @@ Compresses the given input data.
 
 *`options`* (optional): an object that may have any of the properties:
 
-* `outputEncoding`: `"ByteArray"` (default), `"BinaryString"` or `"Base64"`
+* `outputEncoding`: `"ByteArray"` (default),`"Buffer"`, `"BinaryString"` or `"Base64"`
 
 *returns*: compressed data encoded by `encoding`, or `ByteArray` if not specified.
 
@@ -144,7 +146,7 @@ Decompresses the given compressed data.
 *`options`* (optional): an object that may have the properties:
 
 * `inputEncoding`:  `"ByteArray"` (default), `"BinaryString"` or `"Base64"`
-* `outputEncoding`: `"String"` (default), `"ByteArray"` to return UTF-8 bytes
+* `outputEncoding`: `"String"` (default), `"ByteArray"` or `"Buffer"` to return UTF-8 bytes
 
 *returns*: decompressed bytes encoded as `encoding`, or as `String` if not specified.
 
@@ -163,7 +165,7 @@ Asynchronously compresses the given input data.
 
 *`options`* (optional): an object that may have any of the properties:
 
-* `outputEncoding`: `"ByteArray"` (default), `"BinaryString"` or `"Base64"`
+* `outputEncoding`: `"ByteArray"` (default),`"Buffer"`, `"BinaryString"` or `"Base64"`
 * `useWebWorker`: `true` (default) would use a web worker if available. `false` would use iterated yielding instead.
 
 *`callback`*: a user-defined callback function accepting a first argument containing the resulting compressed data as specified by `outputEncoding` (or `ByteArray` if not specified) and a possible second parameter containing an `Error` object.
@@ -173,10 +175,10 @@ Asynchronously compresses the given input data.
 *Example:*
 ```js
 LZUTF8.compressAsync(input, {outputEncoding: "BinaryString"}, function (result, error) {
-	if (error === undefined)
-		console.log("Data successfully compressed and encoded to " + result.length + " characters");
-	else
-		console.log("Compression error: " + error.message);
+    if (error === undefined)
+        console.log("Data successfully compressed and encoded to " + result.length + " characters");
+    else
+        console.log("Compression error: " + error.message);
 });
 ```
 
@@ -192,7 +194,7 @@ Asynchronously decompresses the given compressed input.
 *`options`* (optional): an object that may have the properties:
 
 * `inputEncoding`: `"ByteArray"` (default), `"BinaryString"` or `"Base64"`
-* `outputEncoding`: `"String"` (default), `"ByteArray"` to return UTF-8 bytes.
+* `outputEncoding`: `"String"` (default), `"ByteArray"` or `"Buffer"`, to return UTF-8 bytes.
 * `useWebWorker`: `true` (default) would use a web worker if available. `false` would use incremental yielding instead. 
  
 *`callback`*: a user-defined callback function accepting a first argument containing the resulting decompressed data as specified by `outputEncoding` and a possible second parameter containing an ```Error``` object.
@@ -202,10 +204,10 @@ Asynchronously decompresses the given compressed input.
 *Example:*
 ```js
 LZUTF8.decompressAsync(input, {inputEncoding: "BinaryString", outputEncoding: "ByteArray"}, function (result, error) {
-	if (error === undefined)
-		console.log("Data successfully decompressed to " + result.length + " UTF-8 bytes");
-	else
-		console.log("Decompression error: " + error.message);
+    if (error === undefined)
+        console.log("Data successfully decompressed to " + result.length + " UTF-8 bytes");
+    else
+        console.log("Decompression error: " + error.message);
 });
 ```
 
@@ -371,7 +373,7 @@ Encodes bytes to a Base64 string.
 
 *`input`* as either a `Uint8Array` or `Buffer`
 
-*returns*: base64 
+*returns*: resulting Base64 string. 
 
 *remarks*: Maps every 3 consecutive input bytes to 4 output characters of the set `A-Z`,`a-z`,`0-9`,`+`,`/` (a total of 64 characters). Increases stored byte size to 133.33% of original (when stored as ASCII or UTF-8) or 266% (stored as UCS-2/UTF-16).
 

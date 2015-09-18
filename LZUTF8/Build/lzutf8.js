@@ -732,7 +732,7 @@ var LZUTF8;
             return result;
         };
         ArrayTools.convertToUint8ArrayIfNeeded = function (input) {
-            if (Array.isArray(input) || (typeof Buffer === "function" && input instanceof Buffer))
+            if (typeof Buffer === "function" && input instanceof Buffer)
                 return new Uint8Array(input);
             else
                 return input;
@@ -765,6 +765,8 @@ var LZUTF8;
             switch (outputEncoding) {
                 case "ByteArray":
                     return compressedBytes;
+                case "Buffer":
+                    return new Buffer(compressedBytes);
                 case "BinaryString":
                     return LZUTF8.encodeBinaryString(compressedBytes);
                 case "Base64":
@@ -791,6 +793,8 @@ var LZUTF8;
             switch (outputEncoding) {
                 case "ByteArray":
                     return decompressedBytes;
+                case "Buffer":
+                    return new Buffer(decompressedBytes);
                 case "String":
                     return LZUTF8.decodeUTF8(decompressedBytes);
                 default:
