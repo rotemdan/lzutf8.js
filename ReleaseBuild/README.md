@@ -54,7 +54,7 @@ A high-performance string compression library and stream format:
 
 - [API Reference](#api-reference)
   - [Getting started](#getting-started)
-  - [Core Types](#core-types)
+  - [Type Identifiers](#type-identifiers)
   - [Core Methods](#core-methods)
     - [LZUTF8.compress(..)](#lzutf8compress)
     - [LZUTF8.decompress(..)](#lzutf8decompress)
@@ -129,7 +129,7 @@ Compresses the given input data.
 
 *`options`* (optional): an object that may have any of the properties:
 
-* `outputEncoding`: `"ByteArray"` (default),`"Buffer"`, `"BinaryString"` or `"Base64"`
+* `outputEncoding`: `"ByteArray"` (default), `"Buffer"`, `"BinaryString"` or `"Base64"`
 
 *returns*: compressed data encoded by `encoding`, or `ByteArray` if not specified.
 
@@ -165,7 +165,7 @@ Asynchronously compresses the given input data.
 
 *`options`* (optional): an object that may have any of the properties:
 
-* `outputEncoding`: `"ByteArray"` (default),`"Buffer"`, `"BinaryString"` or `"Base64"`
+* `outputEncoding`: `"ByteArray"` (default), `"Buffer"`, `"BinaryString"` or `"Base64"`
 * `useWebWorker`: `true` (default) would use a web worker if available. `false` would use iterated yielding instead.
 
 *`callback`*: a user-defined callback function accepting a first argument containing the resulting compressed data as specified by `outputEncoding` (or `ByteArray` if not specified) and a possible second parameter containing an `Error` object.
@@ -194,7 +194,7 @@ Asynchronously decompresses the given compressed input.
 *`options`* (optional): an object that may have the properties:
 
 * `inputEncoding`: `"ByteArray"` (default), `"BinaryString"` or `"Base64"`
-* `outputEncoding`: `"String"` (default), `"ByteArray"` or `"Buffer"`, to return UTF-8 bytes.
+* `outputEncoding`: `"String"` (default), `"ByteArray"` or `"Buffer"` to return UTF-8 bytes.
 * `useWebWorker`: `true` (default) would use a web worker if available. `false` would use incremental yielding instead. 
  
 *`callback`*: a user-defined callback function accepting a first argument containing the resulting decompressed data as specified by `outputEncoding` and a possible second parameter containing an ```Error``` object.
@@ -419,7 +419,7 @@ Decodes a binary string.
 
 # Release history
 
-* ```0.3.x```: Removed support to IE8/9. Removed support for Array inputs and Buffer outputs. All method outputs are now `Uint8Array` objects.
+* ```0.3.x```: Removed support to IE8/9. Removed support for Array inputs. All `"ByteArray"` outputs are now `Uint8Array` objects. A separate `"Buffer"` can be set to return Buffer objects.
 * ```0.2.x```: Added async error handling. Added support for TextEncoder and TextDecoder when available.
 * ```0.1.x```: Initial release.
 
