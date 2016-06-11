@@ -54,7 +54,7 @@ A high-performance string compression library and stream format:
 
 - [API Reference](#api-reference)
   - [Getting started](#getting-started)
-  - [Type Identifiers](#type-identifiers)
+  - [Type Identifier Strings](#type-identifier-strings)
   - [Core Methods](#core-methods)
     - [LZUTF8.compress(..)](#lzutf8compress)
     - [LZUTF8.decompress(..)](#lzutf8decompress)
