@@ -11,21 +11,21 @@
 	"license": "MIT",
 	"private": true,
 	"devDependencies": {
-		"grunt": "^1.0.1",
-		"grunt-contrib-clean": "^1.0.0",
-		"grunt-contrib-concat": "^1.0.0",
-		"grunt-contrib-copy": "^1.0.0",
-		"grunt-contrib-uglify": "^1.0.0",
-		"grunt-contrib-watch": "^1.0.0",
-		"grunt-shell": "^1.1.2",
-		"grunt-ts": "^5.5.0-beta.2",
-		"grunt-update-json": "^0.2.2",
-		"load-grunt-tasks": "^3.4.0",
-		"typescript": "^1.8.2",
+		"grunt": "*",
+		"grunt-contrib-clean": "*",
+		"grunt-contrib-concat": "*",
+		"grunt-contrib-copy": "*",
+		"grunt-contrib-uglify": "*",
+		"grunt-contrib-watch": "*",
+		"grunt-shell": "*",
+		"grunt-ts": "*",
+		"grunt-update-json": "*",
+		"load-grunt-tasks": "*",
+		"typescript": "*",
 		
-		"mocha": "^2.4.5",
-		"grunt-mocha-test": "^0.12.7",
-		"expectations": "^0.6.0"
+		"mocha": "*",
+		"grunt-mocha-test": "*",
+		"expectations": "*"
 	},
 	"scripts": {
 		"test": "grunt test --verbose"
