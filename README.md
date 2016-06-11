@@ -105,7 +105,7 @@ var LZUTF8 = require('lzutf8');
 ```
 
 
-## Types Identifiers
+## Type Identifier Strings
 
 
 *`"ByteArray"`* - An array of bytes. As of `0.3.2`, always a `Uint8Array`. In versions up to `0.2.3` the type was determined by the platform (`Array` for browsers that don't support typed arrays, `Uint8Array` for supporting browsers and `Buffer` for Node.js).
