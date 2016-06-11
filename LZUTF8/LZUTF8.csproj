@@ -10,7 +10,7 @@
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <TypeScriptToolsVersion>1.6</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>1.8</TypeScriptToolsVersion>
     <UseIISExpress>false</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
@@ -38,13 +38,10 @@
     <Content Include="Demo\demo.css" />
     <Content Include="Demo\gh-buttons.css" />
     <Content Include="Demo\index.html" />
-    <Content Include="Tests\Dependencies\jasmine\boot.js" />
-    <Content Include="Tests\Dependencies\jasmine\console.js" />
-    <Content Include="Tests\Dependencies\jasmine\jasmine-html.js" />
-    <Content Include="Tests\Dependencies\jasmine\jasmine.css" />
-    <Content Include="Tests\Dependencies\jasmine\jasmine.js" />
-    <Content Include="Tests\Dependencies\jasmine\jasmine_favicon.png" />
-    <Content Include="Tests\Dependencies\Uint8ArrayPolyfill.js" />
+    <TypeScriptCompile Include="Library\Dependencies\IE10SubarrayBugFixer.ext.ts" />
+    <Content Include="Tests\Dependencies\mocha\expectations.js" />
+    <Content Include="Tests\Dependencies\mocha\mocha.css" />
+    <Content Include="Tests\Dependencies\mocha\mocha.js" />
     <Content Include="Tests\index.html" />
     <Content Include="web.config" />
   </ItemGroup>
@@ -94,7 +91,8 @@
     <TypeScriptCompile Include="Tests\Common\JasmineGlobals.ts" />
     <TypeScriptCompile Include="Tests\Common\Random.ts" />
     <TypeScriptCompile Include="Tests\Common\TestData.ts" />
-    <TypeScriptCompile Include="Tests\Dependencies\jasmine.d.ts" />
+    <TypeScriptCompile Include="Tests\Dependencies\TestEnvironment.d.ts" />
+    <TypeScriptCompile Include="Tests\Dependencies\TestEnvironmentDummyInstaller.ext.ts" />
     <TypeScriptCompile Include="Tests\TestSuites\CompressionTests.spec.ts" />
     <TypeScriptCompile Include="Tests\TestSuites\EncodingTests.spec.ts" />
     <TypeScriptCompile Include="Tests\Common\TestingTools.ts" />

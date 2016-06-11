@@ -1,12 +1,12 @@
-﻿module LZUTF8
+﻿namespace LZUTF8
 {
 	export class ObjectTools
 	{
-		static extendObject(obj: any, newProperties: any): any
+		static overrideObject<T, V>(obj: T, newProperties: V): T
 		{
 			if (newProperties != null)
 			{
-				for (var property in newProperties)
+				for (let property in newProperties)
 					obj[property] = newProperties[property];
 			}
 
@@ -15,7 +15,7 @@
 
 		static findPropertyInObject(propertyToFind, object): string
 		{
-			for (var property in object)
+			for (let property in object)
 				if (object[property] === propertyToFind)
 					return property;
 

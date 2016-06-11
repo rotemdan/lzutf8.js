@@ -1,4 +1,4 @@
-﻿module LZUTF8
+﻿namespace LZUTF8
 {
 	export class Random
 	{
@@ -9,9 +9,9 @@
 
 		static getRandomIntegerArrayOfLength(length: number, low: number, high: number): number[]
 		{
-			var randomValues: number[] = [];
+			let randomValues: number[] = [];
 
-			for (var i = 0; i < length; i++)
+			for (let i = 0; i < length; i++)
 			{
 				randomValues.push(Random.getRandomIntegerInRange(low, high));
 			}
@@ -21,13 +21,15 @@
 
 		static getRandomUTF16StringOfLength(length: number): string
 		{
-			var randomString = "";
+			let randomString = "";
 
-			for (var i = 0; i < length; i++)
+			for (let i = 0; i < length; i++)
 			{
+				let randomCodePoint: number;
+
 				do
 				{
-					var randomCodePoint = Random.getRandomIntegerInRange(0, 0x10FFFF + 1);
+					randomCodePoint = Random.getRandomIntegerInRange(0, 0x10FFFF + 1);
 				} while (randomCodePoint >= 0xD800 && randomCodePoint <= 0xDFFF);
 
 				randomString += Encoding.UTF8.getStringFromUnicodeCodePoint(randomCodePoint);

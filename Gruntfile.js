@@ -19,8 +19,7 @@ module.exports = function (grunt)
 		
 		for (var i=0; i < filters.length; i++)
 			fileNames = fileNames.concat(grunt.file.expand(filters[i]))
-		
-		
+
 		var prioritizedFileNames = [];
 		
 		for (var p = 0; p < 4; p++)
@@ -28,14 +27,13 @@ module.exports = function (grunt)
 				if (getPriorityByFileExtension(fileNames[i]) === p)
 					prioritizedFileNames.push(fileNames[i]);
 		
-		//fileNames.sort(function (fileName1, fileName2) { return getPriorityByFileExtension(fileName1) - getPriorityByFileExtension(fileName2) });
 		var result = prioritizedFileNames.reduce(function(previousResult, filePath) {	return previousResult + "/// <reference path=\"" + filePath + "\"/>\n";	}, "");
 
 		grunt.file.write(outFilename, result);
-		grunt.log.writeln(fileNames.join("\n"));
+		grunt.log.writeln(prioritizedFileNames.join("\n"));
 	}
 	
-	var releaseBuildBanner = '/*\n LZ-UTF8 v<%=pkg.version%>\n\n Copyright (c) 2014-2015, Rotem Dan <rotemdan@gmail.com> \n Released under the MIT license.\n\n Build date: <%= grunt.template.today("yyyy-mm-dd") %> \n*/\n';
+	var releaseBuildBanner = '/*\n LZ-UTF8 v<%=pkg.version%>\n\n Copyright (c) 2014-2016, Rotem Dan <rotemdan@gmail.com> \n Released under the MIT license.\n\n Build date: <%= grunt.template.today("yyyy-mm-dd") %> \n*/\n';
 	
 	// Project configuration.
 	grunt.initConfig({
@@ -60,7 +58,6 @@ module.exports = function (grunt)
 				options:
 				{
 					target: 'es3',
-					module: 'commonjs',
 					fast: 'never',
 					sourceMap: true,
 					removeComments: false,
@@ -75,7 +72,6 @@ module.exports = function (grunt)
 				options:
 				{
 					target: 'es3',
-					module: 'commonjs',
 					fast: 'never',
 					sourceMap: false,
 					removeComments: true,
@@ -84,19 +80,22 @@ module.exports = function (grunt)
 			}
 		},
 		
-		jasmine_nodejs:
+		mochaTest:
 		{
-			options:
+			runTestsWithinDebugBuild: 
 			{
-				specNameSuffix: ".js"
-			},
-			
-			runJasmineTestsWithinDebugBuild:
-			{
-				specs:
-				[
-					"./LZUTF8/Build/lzutf8.js"
-				]
+				options:
+				{
+					ui: 'bdd',
+					slow: -1,
+					timeout: 3000,					
+					reporter: 'spec',
+					quiet: false, 
+					clearRequireCache: false,
+					require: 'expectations'
+				},
+				
+				src: ['./LZUTF8/Build/lzutf8.js']
 			}
 		},
 
@@ -216,7 +215,7 @@ module.exports = function (grunt)
 			'clean:deleteDebugBuildReferencesFile',	
 			
 			// Run tests included within the debug build
-			'jasmine_nodejs:runJasmineTestsWithinDebugBuild',
+			'mochaTest:runTestsWithinDebugBuild',
 			
 			// Generate release build
 			'generateReleaseBuildReferencesFile',
@@ -251,6 +250,6 @@ module.exports = function (grunt)
 			'buildDebug',
 			
 			// Run tests included within the debug build
-			'jasmine_nodejs:runJasmineTestsWithinDebugBuild',
+			'mochaTest:runTestsWithinDebugBuild',
 		]);
 };

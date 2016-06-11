@@ -1,11 +1,11 @@
-﻿module LZUTF8
+﻿namespace LZUTF8
 {
 	export class WebWorker
 	{
 		static compressAsync(input: any, options: CompressionOptions, callback: (result: any, error?: Error) => void)
 		{
-			var requestInputEncoding = options.inputEncoding;
-			var requestOutputEncoding = options.outputEncoding;
+			let requestInputEncoding = options.inputEncoding;
+			let requestOutputEncoding = options.outputEncoding;
 
 			if (!WebWorker.supportsTransferableObjects)
 			{
@@ -41,7 +41,7 @@
 				}
 			}
 
-			var request: WebWorkerMessage =
+			let request: WebWorkerMessage =
 				{
 					token: Math.random().toString(),
 					type: "compress",
@@ -56,9 +56,9 @@
 				WebWorker.globalWorker.postMessage(request, []);
 
 
-			var responseListener = (e) =>
+			let responseListener = (e) =>
 			{
-				var response: WebWorkerMessage = e.data;
+				let response: WebWorkerMessage = e.data;
 
 				if (!response || response.token != request.token)
 					return;
@@ -78,8 +78,8 @@
 
 		static decompressAsync(input: any, options: CompressionOptions, callback: (result: any, error?: Error) => void)
 		{
-			var requestInputEncoding = options.inputEncoding;
-			var requestOutputEncoding = options.outputEncoding;
+			let requestInputEncoding = options.inputEncoding;
+			let requestOutputEncoding = options.outputEncoding;
 
 			if (!WebWorker.supportsTransferableObjects)
 			{
@@ -104,7 +104,7 @@
 				}
 			}
 
-			var request: WebWorkerMessage =
+			let request: WebWorkerMessage =
 				{
 					token: Math.random().toString(),
 					type: "decompress",
@@ -120,9 +120,9 @@
 				WebWorker.globalWorker.postMessage(request, []);
 			//
 
-			var responseListener = (e) =>
+			let responseListener = (e) =>
 			{
-				var response: WebWorkerMessage = e.data;
+				let response: WebWorkerMessage = e.data;
 
 				if (!response || response.token != request.token)
 					return;
@@ -142,13 +142,13 @@
 		// Worker internal handler
 		static workerMessageHandler(e: MessageEvent)
 		{
-			var request: WebWorkerMessage = e.data;
+			let request: WebWorkerMessage = e.data;
 
 			if (request.type == "compress")
 			{
-				var compressedData = compress(request.data, { outputEncoding: request.outputEncoding });
+				let compressedData = compress(request.data, { outputEncoding: request.outputEncoding });
 
-				var response: WebWorkerMessage =
+				let response: WebWorkerMessage =
 					{
 						token: request.token,
 						type: "compressionResult",
@@ -163,9 +163,9 @@
 			}
 			else if (request.type == "decompress")
 			{
-				var decompressedData = decompress(request.data, { inputEncoding: request.inputEncoding, outputEncoding: request.outputEncoding });
+				let decompressedData = decompress(request.data, { inputEncoding: request.inputEncoding, outputEncoding: request.outputEncoding });
 
-				var response: WebWorkerMessage =
+				let response: WebWorkerMessage =
 					{
 						token: request.token,
 						type: "decompressionResult",
@@ -188,7 +188,7 @@
 
 				self.addEventListener("error", (e: ErrorEvent) =>
 				{
-					console.log("LZUTF8 WebWorker exception: " + e.message);
+					log("LZUTF8 WebWorker exception: " + e.message);
 				});
 			}
 		}
@@ -207,7 +207,7 @@
 			WebWorker.globalWorker = new Worker(WebWorker.scriptURI);
 			WebWorker.supportsTransferableObjects = WebWorker.testSupportForTransferableObjects();
 
-			//console.log("WebWorker.supportsTransferableObjects = " + WebWorker.supportsTransferableObjects);
+			//log("WebWorker.supportsTransferableObjects = " + WebWorker.supportsTransferableObjects);
 		}
 
 		static isSupported()
@@ -215,17 +215,17 @@
 			if (WebWorker.globalWorker)
 				return true;
 
-			if (typeof window != "object" || typeof window["Worker"] != "function")
+			if (!webWorkersAvailable())
 				return false;
 
 			if (WebWorker.scriptURI)
 				return true;
 
-			var scriptElement = document.getElementById("lzutf8");
+			let scriptElement = document.getElementById("lzutf8");
 
 			if (!scriptElement || scriptElement.tagName != "SCRIPT")
 			{
-				console.log("Cannot use a web worker as no script element with id 'lzutf8' was found in the page");
+				log("Cannot use a web worker as no script element with id 'lzutf8' was found in the page");
 				return false;
 			}
 
@@ -241,9 +241,9 @@
 				throw new Error("testSupportForTransferableObjects: No global worker created");
 
 			// Test if web worker implementation support transferable objects (Chrome 21+, Firefox 18+, Safari 6+)
-			var testArrayBuffer = new ArrayBuffer(1);
+			let testArrayBuffer = new ArrayBuffer(1);
 
-			var result: boolean;
+			let result: boolean;
 			try
 			{
 				WebWorker.globalWorker.postMessage(testArrayBuffer, [testArrayBuffer]);
@@ -283,6 +283,6 @@
 	//if (typeof document == "object")
 	//	document.addEventListener("DOMContentLoaded", () => WebWorker.createGlobalWorkerIfItDoesntExist());
 
-	// Install listener during script script if inside a worker
+	// Install listener during script load if inside a worker
 	WebWorker.registerListenerIfRunningInWebWorker();
 }

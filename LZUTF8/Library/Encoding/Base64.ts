@@ -1,6 +1,6 @@
-﻿module LZUTF8
+﻿namespace LZUTF8
 {
-	export module Encoding
+	export namespace Encoding
 	{
 		export class Base64
 		{
@@ -12,12 +12,12 @@
 				if (inputArray.length == 0)
 					return "";
 
-				var map = Encoding.Base64.charCodeMap;
+				let map = Encoding.Base64.charCodeMap;
 
-				var output = new StringBuilder();
-				var uint24;
+				let output = new StringBuilder();
+				let uint24: number;
 
-				for (var readPosition = 0, length = inputArray.length; readPosition < length; readPosition += 3)
+				for (let readPosition = 0, length = inputArray.length; readPosition < length; readPosition += 3)
 				{
 					if (readPosition <= length - 3)
 					{
@@ -70,7 +70,7 @@
 					return new Uint8Array(0);
 
 				// Add padding if omitted
-				var lengthModulo4 = base64String.length % 4;
+				let lengthModulo4 = base64String.length % 4;
 
 				if (lengthModulo4 === 1)
 					throw new Error("Invalid Base64 string: length % 4 == 1");
@@ -79,15 +79,17 @@
 				else if (lengthModulo4 === 3)
 					base64String += Encoding.Base64.paddingCharacter;
 
-				var reverseCharCodeMap = Encoding.Base64.reverseCharCodeMap;
+				let reverseCharCodeMap = Encoding.Base64.reverseCharCodeMap;
 
 				if (!outputBuffer)
 					outputBuffer = new Uint8Array(base64String.length);
 
-				var outputPosition = 0;
-				for (var i = 0, length = base64String.length; i < length; i += 4)
+				let outputPosition = 0;
+				let length = base64String.length;
+
+				for (let i = 0; i < length; i += 4)
 				{
-					var uint24 = (reverseCharCodeMap[base64String.charCodeAt(i)] << 18) |
+					let uint24 = (reverseCharCodeMap[base64String.charCodeAt(i)] << 18) |
 						(reverseCharCodeMap[base64String.charCodeAt(i + 1)] << 12) |
 						(reverseCharCodeMap[base64String.charCodeAt(i + 2)] << 6) |
 						(reverseCharCodeMap[base64String.charCodeAt(i + 3)]);

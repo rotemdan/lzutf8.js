@@ -1,20 +1,31 @@
 ﻿<!DOCTYPE html>
-
-<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<meta charset="utf-8" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
 
-	<title>LZ-UTF8 Tests</title>
-	<link rel="stylesheet" href="Dependencies/jasmine/jasmine.css" type="text/css" />
-	<link rel="icon" type="image/png" href="Dependencies/jasmine/jasmine_favicon.png" />
-	<script src="Dependencies/jasmine/jasmine.js"></script>
-	<script src="Dependencies/jasmine/console.js"></script>
-	<script src="Dependencies/jasmine/jasmine-html.js"></script>
-	<script src="Dependencies/jasmine/boot.js"></script>
+    <title>LZ-UTF8 Tests</title>
 
-	<!--<script src="Dependencies/Uint8ArrayPolyfill.js"></script>-->
-	<script id="lzutf8" src="../Build/lzutf8.js"></script>
+    <link rel="shortcut icon" href="Dependencies/mocha/mocha.ico" />
+    <link rel="stylesheet" href="Dependencies/mocha/mocha.css" type="text/css" />
 </head>
+
 <body>
+    <div id="mocha">
+    </div>
+
+    <script src="Dependencies/mocha/mocha.js"></script>
+    <script src="Dependencies/mocha/expectations.js"></script>
+    <script>
+        mocha.setup({
+            ui: 'bdd',
+            slow: -1,
+            timeout: 5000
+        });
+    </script>
+
+    <script id="lzutf8" src="../Build/lzutf8.js"></script>
+
+    <script>mocha.run()</script>
 </body>
 </html>

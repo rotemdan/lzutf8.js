@@ -1,10 +1,10 @@
-﻿module LZUTF8
+﻿namespace LZUTF8
 {
 	export class CompressionCommon
 	{
 		static getCroppedBuffer(buffer: Uint8Array, cropStartOffset: number, cropLength: number, additionalCapacity: number = 0): Uint8Array
 		{
-			var croppedBuffer = new Uint8Array(cropLength + additionalCapacity);
+			let croppedBuffer = new Uint8Array(cropLength + additionalCapacity);
 			croppedBuffer.set(buffer.subarray(cropStartOffset, cropStartOffset + cropLength));
 
 			return croppedBuffer;
@@ -17,10 +17,15 @@
 
 		static detectCompressionSourceEncoding(input: any): string
 		{
-			if (typeof input == "string")
+			if (input == null)
+				throw new TypeError(`detectCompressionSourceEncoding: input is null or undefined`);
+
+			if (typeof input === "string")
 				return "String";
-			else
+			else if (input instanceof Uint8Array || (typeof Buffer === "function" && Buffer.isBuffer(input)))
 				return "ByteArray";
+			else
+				throw new TypeError(`detectCompressionSourceEncoding: input must be of type 'string', 'Uint8Array' or 'Buffer'`);
 		}
 
 		static encodeCompressedBytes(compressedBytes: Uint8Array, outputEncoding: string): any
@@ -30,7 +35,7 @@
 				case "ByteArray":
 					return compressedBytes;
 				case "Buffer":
-					return new Buffer(compressedBytes);
+					return ArrayTools.uint8ArrayToBuffer(compressedBytes);
 				case "BinaryString":
 					return encodeBinaryString(compressedBytes);
 				case "Base64":
@@ -42,19 +47,28 @@
 
 		static decodeCompressedData(compressedData: any, inputEncoding: string): Uint8Array
 		{
-			if (inputEncoding == "ByteArray" && typeof compressedData == "string")
-				throw new TypeError("decodeCompressedData: receieved input was string when encoding was set to a ByteArray");
+			if (inputEncoding == null)
+				throw new TypeError("decodeCompressedData: Input is null or undefined");
 
 			switch (inputEncoding)
 			{
 				case "ByteArray":
+					if (!(compressedData instanceof Uint8Array))
+						throw new TypeError("decodeCompressedData: ByteArray input type was specified but input is not a Uint8Array");
+
 					return compressedData;
 				case "BinaryString":
+					if (typeof compressedData !== "string")
+						throw new TypeError("decodeCompressedData: BinaryString input type was specified but input is not a string");
+
 					return decodeBinaryString(compressedData);
 				case "Base64":
+					if (typeof compressedData !== "string")
+						throw new TypeError("decodeCompressedData: Base64 input type was specified but input is not a string");
+
 					return decodeBase64(compressedData);
 				default:
-					throw new TypeError("decodeCompressedData: invalid input encoding requested");
+					throw new TypeError(`decodeCompressedData: invalid input encoding '${inputEncoding}' requested`);
 			}
 		}
 
@@ -65,7 +79,7 @@
 				case "ByteArray":
 					return decompressedBytes;
 				case "Buffer":
-					return new Buffer(decompressedBytes);
+					return ArrayTools.uint8ArrayToBuffer(decompressedBytes);
 				case "String":
 					return decodeUTF8(decompressedBytes);
 				default:

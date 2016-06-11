@@ -1,4 +1,4 @@
-﻿module LZUTF8
+﻿namespace LZUTF8
 {
 	export class Benchmark
 	{
@@ -8,7 +8,6 @@
 
 		constructor(benchmarkContext: BenchmarkContext, options?: BenchmarkOptions)
 		{
-			this.getTimestamp = Timer.getHighResolutionTimestampFunction();
 			this.benchmarkContext = benchmarkContext;
 
 			if (options)
@@ -19,88 +18,74 @@
 			this.sampleResults = [];
 		}
 
-		run(benchmarkedFunction: Action, options?: BenchmarkOptions): number
+		run(benchmarkedFunction: Action, testTitle: string, options?: BenchmarkOptions): number
 		{
 			this.sampleResults.length = 0;
 
 			if (!options)
 				options = this.defaultOptions;
 
-			var sampleCount = 0;
+			let sampleCount = 0;
 
-			var testStartTime = this.getTimestamp();
+			let testStartTime = Timer.getTimestamp();
 			do
 			{
-				// setup
+				// Setup
 				if (this.benchmarkContext.beforeEach)
 					this.benchmarkContext.beforeEach();
 
-				// actual run
-				var sampleStartTime = this.getTimestamp();
+				// Actual run
+				let sampleStartTime = Timer.getTimestamp();
 				benchmarkedFunction.call(this.benchmarkContext);
-				var sampleEndTime = this.getTimestamp();
+				let sampleEndTime = Timer.getTimestamp();
 				//
 
-				// teardown
+				// Teardown
 				if (this.benchmarkContext.afterEach)
 					this.benchmarkContext.afterEach();
 
-				// calcs
-				var sampleElapsedTime = sampleEndTime - sampleStartTime;
+				// Calcs
+				let sampleElapsedTime = sampleEndTime - sampleStartTime;
 				this.sampleResults.push(sampleElapsedTime);
 
-				//console.log("Iteration " + iterationCount + ": " + iterationElapsedTime.toFixed(3));
+				//log("Iteration " + iterationCount + ": " + iterationElapsedTime.toFixed(3));
 
 				sampleCount++;
 
-			} while (sampleCount < options.maximumSamples && this.getTimestamp() - testStartTime < options.maximumTime);
-
-			// find function name
-			var testName = ObjectTools.findPropertyInObject(benchmarkedFunction, this.benchmarkContext);
-			if (!testName)
-				testName = "Unknown";
+			} while (sampleCount < options.maximumSamples && Timer.getTimestamp() - testStartTime < options.maximumTime);
 
 			// calculate result time
-			var result = this.getResult();
+			let result = this.getResult();
 
-			var message = testName + ": " + result.toFixed(3) + "ms (" + (1000 / result).toFixed(0) + " runs/s, " + sampleCount + " sampled)";
-			console.log(message);
+			let message = `${testTitle}: ${result.toFixed(3)}ms (${(1000 / result).toFixed(0)} runs/s, ${sampleCount} sampled)`;
+			log(message, true);
 
-			if (options.logToDocument && typeof document == "object")
-				document.write(message + "<br/>");
 
 			return result;
 		}
 
 		runAll(excludeList?: any[])
 		{
-			var excludedFunctions = ["beforeEach", "afterEach", "constructor"];
+			let excludedFunctions = ["beforeEach", "afterEach", "constructor"];
 			excludedFunctions = excludedFunctions.concat(excludeList);
 
-			for (var property in this.benchmarkContext)
-				if ((typeof this.benchmarkContext[property] === "function") &&
-					ArrayTools.find(excludedFunctions, property) === -1 &&
-					ArrayTools.find(excludedFunctions, this.benchmarkContext[property]) === -1)
-				{
-					this.run(this.benchmarkContext[property]);
-				}
+			let propertyList = Object.getOwnPropertyNames(Object.getPrototypeOf(this.benchmarkContext));
+
+			for (let propertyName of propertyList)
+				if ((typeof this.benchmarkContext[propertyName] === "function") && excludedFunctions.indexOf(propertyName) === -1 && excludedFunctions.indexOf(this.benchmarkContext[propertyName]) === -1)
+					this.run(this.benchmarkContext[propertyName], propertyName);
 		}
 
 		getResult(): number
 		{
-			this.sampleResults.sort((num1: number, num2: number) => num1 - num2);
+			this.sampleResults.sort((a, b) => a - b);
 			return this.sampleResults[Math.floor(this.sampleResults.length / 2)];
 		}
 
-		getTimestamp(): number
+		static run(testFunction: Action, testTitle: string, context: BenchmarkContext = {}, options?: BenchmarkOptions): number
 		{
-			return undefined;
-		}
-
-		static run(testFunction: Action, context: BenchmarkContext = {}, options?: BenchmarkOptions): number
-		{
-			var benchmark = new Benchmark(context);
-			return benchmark.run(testFunction, options);
+			let benchmark = new Benchmark(context);
+			return benchmark.run(testFunction, testTitle, options);
 		}
 	}
 
@@ -108,6 +93,7 @@
 	{
 		beforeEach?: Action;
 		afterEach?: Action;
+		[memberName: string]: any;
 	}
 
 	export interface BenchmarkOptions
@@ -116,4 +102,4 @@
 		maximumSamples: number;
 		logToDocument?: boolean;
 	}
-} 
+}

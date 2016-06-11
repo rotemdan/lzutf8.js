@@ -1,4 +1,4 @@
-﻿module LZUTF8
+﻿namespace LZUTF8
 {
 	export function compareSequences(sequence1: IndexableCollection<any>, sequence2: IndexableCollection<any>): boolean
 	{
@@ -7,15 +7,15 @@
 
 	export function repeatString(str: string, count: number): string
 	{
-		var result = "";
-		for (var i = 0; i < count; i++)
+		let result = "";
+		for (let i = 0; i < count; i++)
 			result += str;
 		return result;
 	}
 
 	export function truncateUTF16String(str: string, truncatedLength: number): string
 	{
-		var lastCharCode = str.charCodeAt(truncatedLength - 1);
+		let lastCharCode = str.charCodeAt(truncatedLength - 1);
 
 		if (lastCharCode >= 0xD800 && lastCharCode <= 0xDBFF)
 			return str.substr(0, truncatedLength - 1);
@@ -35,7 +35,7 @@
 			if (typeof input != "string")
 				return false;
 
-			for (var p = 0; p < input.length - 1; p++)
+			for (let p = 0; p < input.length - 1; p++)
 			{
 				if (input.charCodeAt(p) >= 32768)
 					return false;
@@ -48,7 +48,6 @@
 		}
 		else if (expectedEncoding == "Base64")
 		{
-			
 			if (typeof input != "string")
 				return false;
 

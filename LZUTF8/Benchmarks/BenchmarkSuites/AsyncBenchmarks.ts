@@ -1,10 +1,10 @@
-﻿module LZUTF8
+﻿namespace LZUTF8
 {
 	export class AsyncBenchmarks
 	{
 		static benchmark(testData: any, compressedEncoding: string, decompressedEncoding: string, useWebWorker: boolean, done: Action)
 		{
-			var timer = new Timer();
+			let timer = new Timer();
 			compress(testData, { outputEncoding: compressedEncoding });
 			timer.logAndRestart("compress");
 
@@ -22,18 +22,10 @@
 
 		static start()
 		{
-			//var testData = TestData.hindiText + TestData.hindiText + TestData.hindiText + TestData.hindiText + TestData.hindiText;
-			var testData = TestData.loremIpsum;
+			let testData = TestData.hindiText + TestData.hindiText + TestData.hindiText + TestData.hindiText + TestData.hindiText;
 
-			var timer = new Timer();
-
-			WebWorker.createGlobalWorkerIfItDoesntExist();
-			//
 			compressAsync("", { useWebWorker: true }, () =>
 			{
-				timer.logAndRestart("createGlobalWorkerIfItDoesntExist");
-
-
 				//document.write("<br/>Without web worker:<br/>");
 				AsyncBenchmarks.benchmark(testData, "BinaryString", "String", false, () =>
 				{

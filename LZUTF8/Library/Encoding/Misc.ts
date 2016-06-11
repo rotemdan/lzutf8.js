@@ -1,14 +1,14 @@
-﻿module LZUTF8
+﻿namespace LZUTF8
 {
-	export module Encoding
+	export namespace Encoding
 	{
 		export class Misc
 		{
 			static binaryBytesToDecimalString(binaryBytes: Uint8Array): string
 			{
-				var resultArray = [];
+				let resultArray = [];
 
-				for (var i = 0; i < binaryBytes.length; i++)
+				for (let i = 0; i < binaryBytes.length; i++)
 					resultArray.push(Encoding.Misc.binaryBytesToDecimalStringLookupTable[binaryBytes[i]]);
 
 				return resultArray.join(" ");

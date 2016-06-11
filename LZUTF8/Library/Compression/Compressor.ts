@@ -1,4 +1,4 @@
-﻿module LZUTF8
+﻿namespace LZUTF8
 {
 	export class Compressor
 	{
@@ -41,20 +41,20 @@
 			if (!utf8Bytes || utf8Bytes.length == 0)
 				return new Uint8Array(0);
 
-			var bufferStartingReadOffset = this.cropAndAddNewBytesToInputBuffer(utf8Bytes);
+			let bufferStartingReadOffset = this.cropAndAddNewBytesToInputBuffer(utf8Bytes);
 
-			var inputBuffer = this.inputBuffer;
-			var inputBufferLength = this.inputBuffer.length;
+			let inputBuffer = this.inputBuffer;
+			let inputBufferLength = this.inputBuffer.length;
 
 			this.outputBuffer = new Uint8Array(utf8Bytes.length);
 			this.outputBufferPosition = 0;
 
-			var latestMatchEndPosition = 0;
+			let latestMatchEndPosition = 0;
 
-			for (var readPosition = bufferStartingReadOffset; readPosition < inputBufferLength; readPosition++)
+			for (let readPosition = bufferStartingReadOffset; readPosition < inputBufferLength; readPosition++)
 			{
-				var inputValue = inputBuffer[readPosition];
-				var withinAMatchedRange = readPosition < latestMatchEndPosition;
+				let inputValue = inputBuffer[readPosition];
+				let withinAMatchedRange = readPosition < latestMatchEndPosition;
 
 				// Last 3 bytes are not matched
 				if (readPosition > inputBufferLength - this.MinimumSequenceLength)
@@ -66,12 +66,12 @@
 				}
 
 				// Find the target bucket index
-				var targetBucketIndex = this.getBucketIndexForPrefix(readPosition);
+				let targetBucketIndex = this.getBucketIndexForPrefix(readPosition);
 
 				if (!withinAMatchedRange)
 				{
 					// Try to find the longest match for the sequence starting at the current position
-					var matchLocator = this.findLongestMatch(readPosition, targetBucketIndex);
+					let matchLocator = this.findLongestMatch(readPosition, targetBucketIndex);
 
 					// If match found
 					if (matchLocator !== null)
@@ -92,7 +92,7 @@
 				// Add the current 4 byte sequence to the hash table 
 				// (note that input stream offset starts at 1, so it will never equal 0, thus the hash
 				// table can safely use 0 as an empty bucket slot indicator - this property is critical for the custom hash table implementation).
-				var inputStreamPosition = this.inputBufferStreamOffset + readPosition;
+				let inputStreamPosition = this.inputBufferStreamOffset + readPosition;
 				this.prefixHashTable.addValueToBucket(targetBucketIndex, inputStreamPosition);
 			}
 
@@ -103,28 +103,31 @@
 
 		private findLongestMatch(matchedSequencePosition: number, bucketIndex: number): MatchLocator
 		{
-			var bucket = this.prefixHashTable.getArraySegmentForBucketIndex(bucketIndex, this.reusableArraySegmentObject);
+			let bucket = this.prefixHashTable.getArraySegmentForBucketIndex(bucketIndex, this.reusableArraySegmentObject);
 
 			if (bucket == null)
 				return null;
 
-			var input = this.inputBuffer;
-			var longestMatchDistance: number;
-			var longestMatchLength: number;
+			let input = this.inputBuffer;
+			let longestMatchDistance: number;
+			let longestMatchLength: number;
 
-			for (var i = 0; i < bucket.length; i++)
+			for (let i = 0; i < bucket.length; i++)
 			{
 				// Adjust to the actual buffer position. Note: position might be negative (not in the current buffer)
-				var testedSequencePosition = bucket.getInReversedOrder(i) - this.inputBufferStreamOffset;
-				var testedSequenceDistance = matchedSequencePosition - testedSequencePosition;
+				let testedSequencePosition = bucket.getInReversedOrder(i) - this.inputBufferStreamOffset;
+				let testedSequenceDistance = matchedSequencePosition - testedSequencePosition;
+
 
 				// Find the length to surpass for this match
+				let lengthToSurpass: number;
+
 				if (longestMatchDistance === undefined)
-					var lengthToSurpass = this.MinimumSequenceLength - 1;
+					lengthToSurpass = this.MinimumSequenceLength - 1;
 				else if (longestMatchDistance < 128 && testedSequenceDistance >= 128)
-					var lengthToSurpass = longestMatchLength + (longestMatchLength >>> 1); // floor(l * 1.5)
+					lengthToSurpass = longestMatchLength + (longestMatchLength >>> 1); // floor(l * 1.5)
 				else
-					var lengthToSurpass = longestMatchLength;
+					lengthToSurpass = longestMatchLength;
 
 				// Break if any of the conditions occur
 				if (testedSequenceDistance > this.MaximumMatchDistance ||
@@ -136,7 +139,7 @@
 				if (input[testedSequencePosition + lengthToSurpass] !== input[matchedSequencePosition + lengthToSurpass])
 					continue;
 
-				for (var offset = 0; ; offset++)
+				for (let offset = 0; ; offset++)
 				{
 					if (matchedSequencePosition + offset === input.length ||
 						input[testedSequencePosition + offset] !== input[matchedSequencePosition + offset])
@@ -199,8 +202,8 @@
 			}
 			else
 			{
-				var cropLength = Math.min(this.inputBuffer.length, this.MaximumMatchDistance);
-				var cropStartOffset = this.inputBuffer.length - cropLength;
+				let cropLength = Math.min(this.inputBuffer.length, this.MaximumMatchDistance);
+				let cropStartOffset = this.inputBuffer.length - cropLength;
 
 				this.inputBuffer = CompressionCommon.getCroppedAndAppendedBuffer(this.inputBuffer, cropStartOffset, cropLength, newInput);
 
@@ -211,13 +214,13 @@
 
 		private logStatisticsToConsole(bytesRead: number)
 		{
-			var usedBucketCount = this.prefixHashTable.getUsedBucketCount();
-			var totalHashtableElementCount = this.prefixHashTable.getTotalElementCount();
+			let usedBucketCount = this.prefixHashTable.getUsedBucketCount();
+			let totalHashtableElementCount = this.prefixHashTable.getTotalElementCount();
 
-			console.log("Compressed size: " + this.outputBufferPosition + "/" + bytesRead + " (" + (this.outputBufferPosition / bytesRead * 100).toFixed(2) + "%)");
-			console.log("Occupied bucket count: " + usedBucketCount + "/" + this.PrefixHashTableSize);
-			console.log("Total hashtable element count: " + totalHashtableElementCount + " (" + (totalHashtableElementCount / usedBucketCount).toFixed(2) + " elements per occupied bucket on average)");
-			console.log("");
+			log("Compressed size: " + this.outputBufferPosition + "/" + bytesRead + " (" + (this.outputBufferPosition / bytesRead * 100).toFixed(2) + "%)");
+			log("Occupied bucket count: " + usedBucketCount + "/" + this.PrefixHashTableSize);
+			log("Total hashtable element count: " + totalHashtableElementCount + " (" + (totalHashtableElementCount / usedBucketCount).toFixed(2) + " elements per occupied bucket on average)");
+			log("");
 		}
 
 		private reusableArraySegmentObject = new ArraySegment<number>();

@@ -1,6 +1,6 @@
-﻿module LZUTF8
+﻿namespace LZUTF8
 {
-	export module Encoding
+	export namespace Encoding
 	{
 		export class BinaryString
 		{
@@ -12,19 +12,21 @@
 				if (input.length === 0)
 					return "";
 
-				var inputLength = input.length;
+				let inputLength = input.length;
 
-				var outputStringBuilder = new StringBuilder();
+				let outputStringBuilder = new StringBuilder();
 
-				var remainder = 0;
-				var state = 1;
+				let remainder = 0;
+				let state = 1;
 
-				for (var i = 0; i < inputLength; i += 2)
+				for (let i = 0; i < inputLength; i += 2)
 				{
+					let value: number;
+
 					if (i == inputLength - 1)
-						var value = (input[i] << 8);
+						value = (input[i] << 8);
 					else
-						var value = (input[i] << 8) | input[i + 1];
+						value = (input[i] << 8) | input[i + 1];
 
 					outputStringBuilder.append((remainder << (16 - state)) | value >>> state);
 					remainder = value & ((1 << state) - 1);
@@ -57,21 +59,21 @@
 				if (input == "")
 					return new Uint8Array(0);
 
-				var output = new Uint8Array(input.length * 3);
-				var outputPosition = 0;
+				let output = new Uint8Array(input.length * 3);
+				let outputPosition = 0;
 
-				var appendToOutput = (value: number) =>
+				let appendToOutput = (value: number) =>
 				{
 					output[outputPosition++] = value >>> 8;
 					output[outputPosition++] = value & 255;
 				};
 
-				var remainder;
-				var state = 0;
+				let remainder;
+				let state = 0;
 
-				for (var i = 0; i < input.length; i++)
+				for (let i = 0; i < input.length; i++)
 				{
-					var value = input.charCodeAt(i);
+					let value = input.charCodeAt(i);
 
 					if (value >= 32768)
 					{

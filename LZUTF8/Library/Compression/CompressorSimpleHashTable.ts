@@ -1,4 +1,4 @@
-﻿module LZUTF8
+﻿namespace LZUTF8
 {
 	export class CompressorSimpleHashTable implements CompressorHashTable
 	{
@@ -12,7 +12,7 @@
 
 		addValueToBucket(bucketIndex: number, valueToAdd: number)
 		{
-			var bucket = this.buckets[bucketIndex];
+			let bucket = this.buckets[bucketIndex];
 
 			if (bucket === undefined)
 			{
@@ -29,7 +29,7 @@
 
 		getArraySegmentForBucketIndex(bucketIndex: number, outputObject?: ArraySegment<number>): ArraySegment<number>
 		{
-			var bucket = this.buckets[bucketIndex];
+			let bucket = this.buckets[bucketIndex];
 
 			if (bucket === undefined)
 				return null;
@@ -51,9 +51,9 @@
 
 		getTotalElementCount(): number
 		{
-			var currentSum = 0;
+			let currentSum = 0;
 
-			for (var i = 0; i < this.buckets.length; i++)
+			for (let i = 0; i < this.buckets.length; i++)
 			{
 				if (this.buckets[i] !== undefined)
 					currentSum += this.buckets[i].length;

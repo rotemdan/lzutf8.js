@@ -1,6 +1,6 @@
-﻿module LZUTF8
+﻿namespace LZUTF8
 {
-	export module Encoding
+	export namespace Encoding
 	{
 		export class UTF8
 		{
@@ -15,11 +15,11 @@
 				if (!outputArray)
 					outputArray = new Uint8Array(str.length * 4);
 
-				var writeIndex = 0;
+				let writeIndex = 0;
 
-				for (var readIndex = 0; readIndex < str.length; readIndex++)
+				for (let readIndex = 0; readIndex < str.length; readIndex++)
 				{
-					var charCode = Encoding.UTF8.getUnicodeCodePoint(str, readIndex);
+					let charCode = Encoding.UTF8.getUnicodeCodePoint(str, readIndex);
 
 					if (charCode < 128)          // 0x7F + 1
 					{
@@ -60,10 +60,10 @@
 				if (utf8Bytes.length == 0)
 					return "";
 
-				var output = new StringBuilder();
-				var outputCodePoint: number, leadByte: number;
+				let output = new StringBuilder();
+				let outputCodePoint: number, leadByte: number;
 
-				for (var readIndex = 0, length = utf8Bytes.length; readIndex < length;)
+				for (let readIndex = 0, length = utf8Bytes.length; readIndex < length;)
 				{
 					leadByte = utf8Bytes[readIndex];
 
@@ -107,13 +107,13 @@
 
 			static getUnicodeCodePoint(str: string, position: number): number
 			{
-				var charCode = str.charCodeAt(position);
+				let charCode = str.charCodeAt(position);
 
 				if (charCode < 0xD800 || charCode > 0xDBFF)
 					return charCode;
 				else
 				{
-					var nextCharCode = str.charCodeAt(position + 1);
+					let nextCharCode = str.charCodeAt(position + 1);
 
 					if (nextCharCode >= 0xDC00 && nextCharCode <= 0xDFFF)
 						return 0x10000 + (((charCode - 0xD800) << 10) + (nextCharCode - 0xDC00));

@@ -1,22 +1,22 @@
 ﻿//if (typeof window == "object") window["Uint8Array"] = undefined;
 //jasmine.DEFAULT_TIMEOUT_INTERVAL = 400;
 
-module LZUTF8
+namespace LZUTF8
 {
 	describe("LZ-UTF8:", () =>
 	{
 		describe("Test inputs:", () =>
 		{
-			var addTestsForInputString = (testStringTitle: string, inputString: string) =>
+			let addTestsForInputString = (testStringTitle: string, inputString: string) =>
 			{
 				describe(testStringTitle + ":", () =>
 				{
 					describe("Basic tests with diffferent types of hash tables:", () =>
 					{
-						var compressor1 = new Compressor(false);
-						var compressor2 = new Compressor(true);
-						var compressedData1 = compressor1.compressBlock(inputString);
-						var compressedData2 = compressor2.compressBlock(inputString);
+						let compressor1 = new Compressor(false);
+						let compressor2 = new Compressor(true);
+						let compressedData1 = compressor1.compressBlock(inputString);
+						let compressedData2 = compressor2.compressBlock(inputString);
 
 						it("Compresses correctly with simple hash table", () =>
 						{
@@ -60,64 +60,64 @@ module LZUTF8
 					{
 						it("Compresses and decompresses correctly when input and output are divided into multiple arbitrary parts", () =>
 						{
-							var inputStringAsUTF8 = encodeUTF8(inputString);
-							var part1 = inputStringAsUTF8.subarray(0, Math.floor(inputStringAsUTF8.length * 0.377345));
-							var part2 = inputStringAsUTF8.subarray(Math.floor(inputStringAsUTF8.length * 0.377345), Math.floor(inputStringAsUTF8.length * 0.377345) + 2);
-							var part3 = inputStringAsUTF8.subarray(Math.floor(inputStringAsUTF8.length * 0.377345) + 2, Math.floor(inputStringAsUTF8.length * 0.719283471));
-							var part4 = inputStringAsUTF8.subarray(Math.floor(inputStringAsUTF8.length * 0.719283471), Math.floor(inputStringAsUTF8.length * 0.822345178225));
-							var part5 = inputStringAsUTF8.subarray(Math.floor(inputStringAsUTF8.length * 0.822345178225));
+							let inputStringAsUTF8 = encodeUTF8(inputString);
+							let part1 = inputStringAsUTF8.subarray(0, Math.floor(inputStringAsUTF8.length * 0.377345));
+							let part2 = inputStringAsUTF8.subarray(Math.floor(inputStringAsUTF8.length * 0.377345), Math.floor(inputStringAsUTF8.length * 0.377345) + 2);
+							let part3 = inputStringAsUTF8.subarray(Math.floor(inputStringAsUTF8.length * 0.377345) + 2, Math.floor(inputStringAsUTF8.length * 0.719283471));
+							let part4 = inputStringAsUTF8.subarray(Math.floor(inputStringAsUTF8.length * 0.719283471), Math.floor(inputStringAsUTF8.length * 0.822345178225));
+							let part5 = inputStringAsUTF8.subarray(Math.floor(inputStringAsUTF8.length * 0.822345178225));
 
-							var compressor = new Compressor();
-							var compressedData1 = compressor.compressBlock(part1);
-							var compressedData2 = compressor.compressBlock(part2);
-							var compressedData3 = compressor.compressBlock(part3);
-							var compressedData4 = compressor.compressBlock(part4);
-							var compressedData5 = compressor.compressBlock(part5);
+							let compressor = new Compressor();
+							let compressedData1 = compressor.compressBlock(part1);
+							let compressedData2 = compressor.compressBlock(part2);
+							let compressedData3 = compressor.compressBlock(part3);
+							let compressedData4 = compressor.compressBlock(part4);
+							let compressedData5 = compressor.compressBlock(part5);
 
-							var joinedCompressedData = ArrayTools.joinByteArrays([compressedData1, compressedData2, compressedData3, compressedData4, compressedData5]);
+							let joinedCompressedData = ArrayTools.joinByteArrays([compressedData1, compressedData2, compressedData3, compressedData4, compressedData5]);
 
-							var decompressor = new Decompressor();
-							var decompressedString1 = decompressor.decompressBlockToString(joinedCompressedData.subarray(0, Math.floor(joinedCompressedData.length * 0.2123684521)));
-							var decompressedString2 = decompressor.decompressBlockToString(joinedCompressedData.subarray(Math.floor(joinedCompressedData.length * 0.2123684521), Math.floor(joinedCompressedData.length * 0.41218346219)));
-							var decompressedString3 = decompressor.decompressBlockToString(joinedCompressedData.subarray(Math.floor(joinedCompressedData.length * 0.41218346219), Math.floor(joinedCompressedData.length * 0.74129384652)));
-							var decompressedString4 = decompressor.decompressBlockToString(joinedCompressedData.subarray(Math.floor(joinedCompressedData.length * 0.74129384652), Math.floor(joinedCompressedData.length * 0.74129384652) + 2));
-							var decompressedString5 = decompressor.decompressBlockToString(new Uint8Array(0));
-							var decompressedString6 = decompressor.decompressBlockToString(joinedCompressedData.subarray(Math.floor(joinedCompressedData.length * 0.74129384652) + 2, Math.floor(joinedCompressedData.length * 0.9191234791281724)));
-							var decompressedString7 = decompressor.decompressBlockToString(joinedCompressedData.subarray(Math.floor(joinedCompressedData.length * 0.9191234791281724)));
+							let decompressor = new Decompressor();
+							let decompressedString1 = decompressor.decompressBlockToString(joinedCompressedData.subarray(0, Math.floor(joinedCompressedData.length * 0.2123684521)));
+							let decompressedString2 = decompressor.decompressBlockToString(joinedCompressedData.subarray(Math.floor(joinedCompressedData.length * 0.2123684521), Math.floor(joinedCompressedData.length * 0.41218346219)));
+							let decompressedString3 = decompressor.decompressBlockToString(joinedCompressedData.subarray(Math.floor(joinedCompressedData.length * 0.41218346219), Math.floor(joinedCompressedData.length * 0.74129384652)));
+							let decompressedString4 = decompressor.decompressBlockToString(joinedCompressedData.subarray(Math.floor(joinedCompressedData.length * 0.74129384652), Math.floor(joinedCompressedData.length * 0.74129384652) + 2));
+							let decompressedString5 = decompressor.decompressBlockToString(new Uint8Array(0));
+							let decompressedString6 = decompressor.decompressBlockToString(joinedCompressedData.subarray(Math.floor(joinedCompressedData.length * 0.74129384652) + 2, Math.floor(joinedCompressedData.length * 0.9191234791281724)));
+							let decompressedString7 = decompressor.decompressBlockToString(joinedCompressedData.subarray(Math.floor(joinedCompressedData.length * 0.9191234791281724)));
 
 							expect(compareSequences(decompressedString1 + decompressedString2 + decompressedString3 + decompressedString4 + decompressedString5 + decompressedString6 + decompressedString7, inputString)).toBe(true);
 						});
 
 						it("Compresses and decompresses correctly when input and output are divided into hundreds of small random parts", () =>
 						{
-							var truncatedLength = 5001;
-							var truncatedInputString = truncateUTF16String(inputString, truncatedLength);
-							var input = encodeUTF8(truncatedInputString);
-							var compressor = new Compressor();
+							let truncatedLength = 5001;
+							let truncatedInputString = truncateUTF16String(inputString, truncatedLength);
+							let input = encodeUTF8(truncatedInputString);
+							let compressor = new Compressor();
 
-							var compressedParts: Uint8Array[] = [];
-							for (var offset = 0; offset < input.length;)
+							let compressedParts: Uint8Array[] = [];
+							for (let offset = 0; offset < input.length;)
 							{
-								var randomLength = Math.floor(Math.random() * 4);
-								var endOffset = Math.min(offset + randomLength, input.length);
+								let randomLength = Math.floor(Math.random() * 4);
+								let endOffset = Math.min(offset + randomLength, input.length);
 
-								var part = compressor.compressBlock(input.subarray(offset, endOffset));
+								let part = compressor.compressBlock(input.subarray(offset, endOffset));
 								compressedParts.push(part);
 								offset += randomLength;
 							}
 
-							var joinedCompressedParts = ArrayTools.joinByteArrays(compressedParts);
+							let joinedCompressedParts = ArrayTools.joinByteArrays(compressedParts);
 
-							var decompressor = new Decompressor();
+							let decompressor = new Decompressor();
 
-							var decompressedParts: Uint8Array[] = [];
-							for (var offset = 0; offset < input.length;)
+							let decompressedParts: Uint8Array[] = [];
+							for (let offset = 0; offset < input.length;)
 							{
 								expect(joinedCompressedParts).toBeDefined();
 
-								var randomLength = Math.floor(Math.random() * 4);
-								var endOffset = Math.min(offset + randomLength, joinedCompressedParts.length);
-								var part = decompressor.decompressBlock(joinedCompressedParts.subarray(offset, endOffset));
+								let randomLength = Math.floor(Math.random() * 4);
+								let endOffset = Math.min(offset + randomLength, joinedCompressedParts.length);
+								let part = decompressor.decompressBlock(joinedCompressedParts.subarray(offset, endOffset));
 
 								expect(() => Encoding.UTF8.decode(part)).not.toThrow(); // Make sure the part is a valid and untruncated UTF-8 sequence
 
@@ -125,7 +125,7 @@ module LZUTF8
 								offset += randomLength;
 							}
 
-							var joinedDecompressedParts = ArrayTools.joinByteArrays(decompressedParts);
+							let joinedDecompressedParts = ArrayTools.joinByteArrays(decompressedParts);
 
 							expect(compareSequences(decodeUTF8(joinedDecompressedParts), truncatedInputString)).toBe(true);
 						});
@@ -135,7 +135,7 @@ module LZUTF8
 					{
 						it("Will decompresses the uncompressed string to itself (assuring UTF-8 backwards compatibility)", () =>
 						{
-							var decompressedUncompressedString = decompress(encodeUTF8(inputString));
+							let decompressedUncompressedString = decompress(encodeUTF8(inputString));
 
 							expect(compareSequences(decompressedUncompressedString, inputString)).toBe(true);
 						});
@@ -153,24 +153,24 @@ module LZUTF8
 
 		describe("Synchronous operations with different input and output encodings", () =>
 		{
-			var sourceAsString = TestData.hindiText.substr(0, 100);
-			var sourceAsByteArray = encodeUTF8(sourceAsString);
+			let sourceAsString = TestData.hindiText.substr(0, 100);
+			let sourceAsByteArray = encodeUTF8(sourceAsString);
 
 			function addTestForEncodingCombination(testedSourceEncoding: string, testedCompressedEncoding: string, testedDecompressedEncoding: string)
 			{
 				it("Successfuly compresses a " + testedSourceEncoding + " to a " + testedCompressedEncoding + " and decompresses to a " + testedDecompressedEncoding, () =>
 				{
-					var source: any;
+					let source: any;
 					if (testedSourceEncoding == "String")
 						source = sourceAsString;
 					else
 						source = sourceAsByteArray;
 
-					var compressedData = compress(source, { outputEncoding: testedCompressedEncoding });
+					let compressedData = compress(source, { outputEncoding: testedCompressedEncoding });
 
 					expect(verifyEncoding(compressedData, testedCompressedEncoding)).toBe(true);
 
-					var decompressedData = decompress(compressedData, { inputEncoding: testedCompressedEncoding, outputEncoding: testedDecompressedEncoding });
+					let decompressedData = decompress(compressedData, { inputEncoding: testedCompressedEncoding, outputEncoding: testedDecompressedEncoding });
 
 					if (testedDecompressedEncoding == "String")
 						expect(compareSequences(decompressedData, sourceAsString)).toBe(true);
@@ -197,14 +197,14 @@ module LZUTF8
 
 		describe("Asynchronous operations with different input and output encodings:", () =>
 		{
-			var sourceAsString = TestData.hindiText.substr(0,100);
-			var sourceAsByteArray = encodeUTF8(sourceAsString);
+			let sourceAsString = TestData.hindiText.substr(0,100);
+			let sourceAsByteArray = encodeUTF8(sourceAsString);
 
 			function addTestForEncodingCombination(testedSourceEncoding: string, testedCompressedEncoding: string, testedDecompressedEncoding: string, webWorkerEnabled: boolean)
 			{
 				it("Successfuly compresses a " + testedSourceEncoding + " to a " + testedCompressedEncoding + " and decompresses to a " + testedDecompressedEncoding, (done) =>
 				{
-					var source: any;
+					let source: any;
 					if (testedSourceEncoding == "String")
 						source = sourceAsString;
 					else
@@ -282,13 +282,13 @@ module LZUTF8
 
 			describe("Simultanous async operations:", () =>
 			{
-				var randomString1 = Random.getRandomUTF16StringOfLength(1001);
-				var randomString2 = Random.getRandomUTF16StringOfLength(1301);
+				let randomString1 = Random.getRandomUTF16StringOfLength(1001);
+				let randomString2 = Random.getRandomUTF16StringOfLength(1301);
 
 				it("Successfuly completes two async operation started in parallel (without web worker)", (done) =>
 				{
-					var firstIsDone = false;
-					var secondIsDone = false;
+					let firstIsDone = false;
+					let secondIsDone = false;
 
 					compressAsync(randomString1, { blockSize: 221, useWebWorker: false }, (result) =>
 					{
@@ -311,8 +311,8 @@ module LZUTF8
 
 				it("Successfuly completes two async operation started in parallel (with web worker if supported)", (done) =>
 				{
-					var firstIsDone = false;
-					var secondIsDone = false;
+					let firstIsDone = false;
+					let secondIsDone = false;
 
 					compressAsync(TestData.chineseText, { useWebWorker: true }, (result) =>
 					{
@@ -365,11 +365,11 @@ module LZUTF8
 				expect(() => decompress(undefined)).toThrow();
 				expect(() => decompress(null)).toThrow();
 
-				var compressor = new Compressor();
+				let compressor = new Compressor();
 				expect(() => compressor.compressBlock(undefined)).toThrow();
 				expect(() => compressor.compressBlock(null)).toThrow();
 
-				var decompressor = new Decompressor();
+				let decompressor = new Decompressor();
 				expect(() => decompressor.decompressBlock(undefined)).toThrow();
 				expect(() => decompressor.decompressBlock(null)).toThrow();
 
@@ -467,10 +467,10 @@ module LZUTF8
 				expect(decompress(new Uint8Array(0))).toEqual("");
 				expect(decompress(new Uint8Array(0), { outputEncoding: "ByteArray" })).toEqual(new Uint8Array(0));
 
-				var compressor = new Compressor();
+				let compressor = new Compressor();
 				expect(compressor.compressBlock(new Uint8Array(0))).toEqual(new Uint8Array(0));
 
-				var decompressor = new Decompressor();
+				let decompressor = new Decompressor();
 				expect(decompressor.decompressBlock(new Uint8Array(0))).toEqual(new Uint8Array(0));
 				expect(decompressor.decompressBlockToString(new Uint8Array(0))).toEqual("");
 			});
@@ -517,14 +517,14 @@ module LZUTF8
 		{
 			it("Allows concatenation of multiple compressed and uncompressed streams to a single, valid compressed stream", () =>
 			{
-				var compressdData1 = compress(TestData.chineseText);
-				var rawData = encodeUTF8(TestData.hindiText);
-				var compressedData2 = compress(TestData.chineseText);
-				var compressedData3 = compress(TestData.loremIpsum);
+				let compressdData1 = compress(TestData.chineseText);
+				let rawData = encodeUTF8(TestData.hindiText);
+				let compressedData2 = compress(TestData.chineseText);
+				let compressedData3 = compress(TestData.loremIpsum);
 
-				var mixedData = ArrayTools.joinByteArrays([compressdData1, rawData, compressedData2, compressedData3]);
+				let mixedData = ArrayTools.joinByteArrays([compressdData1, rawData, compressedData2, compressedData3]);
 
-				var decompressedMixedData: string = decompress(mixedData);
+				let decompressedMixedData: string = decompress(mixedData);
 
 				expect(compareSequences(decompressedMixedData, TestData.chineseText + TestData.hindiText + TestData.chineseText + TestData.loremIpsum)).toBe(true);
 			});
@@ -536,15 +536,15 @@ module LZUTF8
 			{
 				it("Correctly compresses and decompresses through streams", (done: Function) =>
 				{
-					var compressionStream = createCompressionStream();
-					var decompressionStream = createDecompressionStream();
+					let compressionStream = createCompressionStream();
+					let decompressionStream = createDecompressionStream();
 
 					compressionStream.pipe(decompressionStream);
 					compressionStream.write(TestData.hindiText);
 
 					decompressionStream.on("readable", () =>
 					{
-						var result = decompressionStream.read().toString("utf8");
+						let result = decompressionStream.read().toString("utf8");
 						expect(result).toEqual(TestData.hindiText);
 						done();
 					});

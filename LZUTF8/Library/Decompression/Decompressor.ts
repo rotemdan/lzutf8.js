@@ -1,4 +1,4 @@
-﻿module LZUTF8
+﻿namespace LZUTF8
 {
 	export class Decompressor
 	{
@@ -30,11 +30,11 @@
 				this.inputBufferRemainder = undefined;
 			}
 
-			var outputStartPosition = this.cropOutputBufferToWindowAndInitialize(Math.max(input.length * 4, 1024));
+			let outputStartPosition = this.cropOutputBufferToWindowAndInitialize(Math.max(input.length * 4, 1024));
 
-			for (var readPosition = 0, inputLength = input.length; readPosition < inputLength; readPosition++)
+			for (let readPosition = 0, inputLength = input.length; readPosition < inputLength; readPosition++)
 			{
-				var inputValue = input[readPosition];
+				let inputValue = input[readPosition];
 
 				if (inputValue >>> 6 != 3)
 				{
@@ -43,8 +43,8 @@
 					continue;
 				}
 
-				// At this point it is know that the current byte is the lead byte of either a UTF-8 codepoint or a sized pointer sequence.
-				var sequenceLengthIdentifier = inputValue >>> 5; // 6 for 2 bytes, 7 for at least 3 bytes
+				// At this point it is known that the current byte is the lead byte of either a UTF-8 codepoint or a sized pointer sequence.
+				let sequenceLengthIdentifier = inputValue >>> 5; // 6 for 2 bytes, 7 for at least 3 bytes
 
 				// If bytes in read position imply the start of a truncated input sequence (either a literal codepoint or a pointer)
 				// keep the remainder to be decoded with the next buffer
@@ -64,8 +64,8 @@
 				else
 				{
 					// Beginning of a pointer sequence
-					var matchLength = inputValue & 31;
-					var matchDistance;
+					let matchLength = inputValue & 31;
+					let matchDistance;
 
 					if (sequenceLengthIdentifier == 6) // 2 byte pointer type, distance was smaller than 128
 					{
@@ -78,10 +78,10 @@
 						readPosition += 2;
 					}
 
-					var matchPosition = this.outputPosition - matchDistance;
+					let matchPosition = this.outputPosition - matchDistance;
 
 					// Copy the match bytes to output
-					for (var offset = 0; offset < matchLength; offset++)
+					for (let offset = 0; offset < matchLength; offset++)
 						this.outputByte(this.outputBuffer[matchPosition + offset]);
 				}
 			}
@@ -106,14 +106,14 @@
 				return 0;
 			}
 
-			var cropLength = Math.min(this.outputPosition, this.MaximumMatchDistance);
+			let cropLength = Math.min(this.outputPosition, this.MaximumMatchDistance);
 			this.outputBuffer = CompressionCommon.getCroppedBuffer(this.outputBuffer, this.outputPosition - cropLength, cropLength, initialCapacity);
 
 			this.outputPosition = cropLength;
 
 			if (this.outputBufferRemainder)
 			{
-				for (var i = 0; i < this.outputBufferRemainder.length; i++)
+				for (let i = 0; i < this.outputBufferRemainder.length; i++)
 					this.outputByte(this.outputBufferRemainder[i]);
 
 				this.outputBufferRemainder = undefined;
@@ -124,9 +124,9 @@
 
 		private rollBackIfOutputBufferEndsWithATruncatedMultibyteSequence()
 		{
-			for (var offset = 1; offset <= 4 && this.outputPosition - offset >= 0; offset++)
+			for (let offset = 1; offset <= 4 && this.outputPosition - offset >= 0; offset++)
 			{
-				var value = this.outputBuffer[this.outputPosition - offset];
+				let value = this.outputBuffer[this.outputPosition - offset];
 
 				if ((offset < 4 && (value >>> 3) === 30) ||  // Leading byte of a 4 byte UTF8 sequence
 					(offset < 3 && (value >>> 4) === 14) ||  // Leading byte of a 3 byte UTF8 sequence

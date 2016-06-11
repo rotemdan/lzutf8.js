@@ -1,4 +1,4 @@
-﻿module LZUTF8
+﻿namespace LZUTF8
 {
 	export class CompressionBenchmarks
 	{
@@ -44,8 +44,8 @@
 
 		static start()
 		{
-			var bench = new CompressionBenchmarks();
-			var benchmark = new Benchmark(bench, { maximumSamples: 1000, maximumTime: 200, logToDocument: true });
+			let bench = new CompressionBenchmarks();
+			let benchmark = new Benchmark(bench, { maximumSamples: 1000, maximumTime: 200, logToDocument: true });
 			benchmark.runAll([]);
 		}
 	}

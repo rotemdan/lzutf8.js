@@ -1,30 +1,33 @@
 {
-  "name": "lzutf8-build",
-  "version": "0.3.2",
-  "description": "A high-performance string compression library",
-  "author": "Rotem Dan <rotemdan@gmail.com>",
-  "homepage": "https://github.com/rotemdan/lzutf8.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/rotemdan/lzutf8.js.git"
-  },
-  "license": "MIT",
-  "private": true,
-  "devDependencies": {
-    "grunt": "^0.4.5",
-    "grunt-contrib-clean": "^0.6.0",
-    "grunt-contrib-concat": "^0.5.1",
-    "grunt-contrib-copy": "^0.8.1",
-    "grunt-contrib-uglify": "^0.9.1",
-    "grunt-contrib-watch": "^0.6.1",
-    "grunt-jasmine-nodejs": "^1.4.3",
-    "grunt-shell": "^1.1.2",
-    "grunt-ts": "^5.0.0-beta.5",
-    "grunt-update-json": "^0.2.1",
-    "load-grunt-tasks": "^3.2.0",
-    "typescript": "^1.6.2"
-  },
-  "scripts": {
-    "test": "grunt test --verbose"
-  }
+	"name": "lzutf8-build",
+	"version": "0.3.3",
+	"description": "A high-performance string compression library",
+	"author": "Rotem Dan <rotemdan@gmail.com>",
+	"homepage": "https://github.com/rotemdan/lzutf8.js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/rotemdan/lzutf8.js.git"
+	},
+	"license": "MIT",
+	"private": true,
+	"devDependencies": {
+		"grunt": "^1.0.1",
+		"grunt-contrib-clean": "^1.0.0",
+		"grunt-contrib-concat": "^1.0.0",
+		"grunt-contrib-copy": "^1.0.0",
+		"grunt-contrib-uglify": "^1.0.0",
+		"grunt-contrib-watch": "^1.0.0",
+		"grunt-shell": "^1.1.2",
+		"grunt-ts": "^5.5.0-beta.2",
+		"grunt-update-json": "^0.2.2",
+		"load-grunt-tasks": "^3.4.0",
+		"typescript": "^1.8.2",
+		
+		"mocha": "^2.4.5",
+		"grunt-mocha-test": "^0.12.7",
+		"expectations": "^0.6.0"
+	},
+	"scripts": {
+		"test": "grunt test --verbose"
+	}
 }

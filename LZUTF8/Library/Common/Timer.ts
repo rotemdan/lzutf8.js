@@ -1,83 +1,102 @@
 ﻿declare var chrome;
 
-module LZUTF8
+namespace LZUTF8
 {
 	export class Timer
 	{
 		startTime: number;
 
-		constructor(timestampFunc?: () => number)
+		constructor()
 		{
-			if (timestampFunc)
-				this.getTimestamp = timestampFunc;
-			else
-				this.getTimestamp = Timer.getHighResolutionTimestampFunction();
-
 			this.restart();
 		}
 
 		restart()
 		{
-			this.startTime = this.getTimestamp();
+			this.startTime = Timer.getTimestamp();
 		}
 
 		getElapsedTime(): number
 		{
-			return this.getTimestamp() - this.startTime;
+			return Timer.getTimestamp() - this.startTime;
 		}
 
 		getElapsedTimeAndRestart(): number
 		{
-			var elapsedTime = this.getElapsedTime();
+			let elapsedTime = this.getElapsedTime();
 			this.restart();
 			return elapsedTime;
 		}
 
-		logAndRestart(title: string, logToDocument = false)
+		logAndRestart(title: string, logToDocument = true): number
 		{
-			var message = title + ": " + this.getElapsedTime().toFixed(3);
-			console.log(message);
+			let elapsedTime = this.getElapsedTime();
 
-			if (logToDocument && typeof document == "object")
-				document.body.innerHTML += message + "<br/>";
+			//
+			let message = `${title}: ${elapsedTime.toFixed(3)}ms`;
+			log(message, logToDocument);
+			//
 
 			this.restart();
+
+			return elapsedTime;
 		}
 
-		private getTimestamp(): number
+		static getTimestamp(includeFractions = true): number
 		{
-			return undefined;
+			if (!this.timestampFunc)
+				this.createGlobalTimestampFunction();
+
+			let timestamp = this.timestampFunc();
+
+			if (includeFractions)
+				return timestamp;
+			else
+				return Math.floor(timestamp);
 		}
 
-		static getHighResolutionTimestampFunction(): () => number
+		private static createGlobalTimestampFunction()
 		{
-			if (typeof chrome == "object" && chrome.Interval)
+			if (typeof chrome === "object" && chrome.Interval)
 			{
-				var chromeIntervalObject = new chrome.Interval();
+				let baseTimestamp = Date.now();
+
+				let chromeIntervalObject = new chrome.Interval();
 				chromeIntervalObject.start();
 
-				return () => chromeIntervalObject.microseconds() / 1000;
+				this.timestampFunc = () => baseTimestamp + chromeIntervalObject.microseconds() / 1000;
 			}
-			else if (typeof window == "object" && window.performance && window.performance.now)
+			else if (typeof window === "object" && window.performance && window.performance.now)
 			{
-				return () => window.performance.now();
+				let baseTimestamp = Date.now() - window.performance.now();
+
+				this.timestampFunc = () => baseTimestamp + window.performance.now();
 			}
-			else if (typeof process == "object" && process.hrtime)
+			else if (typeof process === "object" && process.hrtime)
 			{
-				return () =>
+				let baseTimestamp = 0;
+
+				this.timestampFunc = () =>
 				{
-					var timeStamp = process.hrtime();
-					return (timeStamp[0] * 1000) + (timeStamp[1] / 1000000);
+					let nodeTimeStamp = process.hrtime();
+					let millisecondTime = (nodeTimeStamp[0] * 1000) + (nodeTimeStamp[1] / 1000000)
+
+					return baseTimestamp + millisecondTime;
 				}
+
+				baseTimestamp = 0;
+				baseTimestamp = Date.now() - this.timestampFunc();
 			}
 			else if (Date.now)
 			{
-				return () => Date.now();
+				this.timestampFunc = () => Date.now();
 			}
 			else
 			{
-				return () => (new Date()).getTime();
+				this.timestampFunc = () => (new Date()).getTime();
 			}
 		}
+
+		private static timestampFunc: () => number;
 	}
 }

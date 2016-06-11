@@ -1,34 +1,34 @@
-﻿module LZUTF8
+﻿namespace LZUTF8
 {
 	// Core
 	export function compress(input: any, options?: CompressionOptions): any
 	{
-		if (input === undefined || input === null)
+		if (input == null)
 			throw new TypeError("compress: undefined or null input received");
 
 		input = ArrayTools.convertToUint8ArrayIfNeeded(input);
 
-		options = ObjectTools.extendObject({ outputEncoding: "ByteArray" }, options);
+		options = ObjectTools.overrideObject({ outputEncoding: "ByteArray" }, options);
 
-		var compressor = new Compressor();
-		var compressedBytes = compressor.compressBlock(input);
+		let compressor = new Compressor();
+		let compressedBytes = compressor.compressBlock(input);
 
 		return CompressionCommon.encodeCompressedBytes(compressedBytes, options.outputEncoding);
 	}
 
 	export function decompress(input: any, options?: CompressionOptions): any
 	{
-		if (input === undefined || input === null)
+		if (input == null)
 			throw new TypeError("decompress: undefined or null input received");
 
 		input = ArrayTools.convertToUint8ArrayIfNeeded(input);
 
-		options = ObjectTools.extendObject({ inputEncoding: "ByteArray", outputEncoding: "String" }, options);
+		options = ObjectTools.overrideObject({ inputEncoding: "ByteArray", outputEncoding: "String" }, options);
 
 		input = CompressionCommon.decodeCompressedData(input, options.inputEncoding);
 
-		var decompressor = new Decompressor();
-		var decompressedBytes = decompressor.decompressBlock(input);
+		let decompressor = new Decompressor();
+		let decompressedBytes = decompressor.decompressBlock(input);
 
 		return CompressionCommon.encodeDecompressedBytes(decompressedBytes, options.outputEncoding);
 	}
@@ -39,25 +39,30 @@
 		if (callback == null)
 			callback = () => { };
 
-		if (input === undefined || input === null)
+		input = ArrayTools.convertToUint8ArrayIfNeeded(input);
+
+		let inputEncoding: string;
+		try
 		{
-			callback(undefined, new TypeError("compressAsync: undefined or null input received"));
+			inputEncoding = CompressionCommon.detectCompressionSourceEncoding(input);
+		}
+		catch (e)
+		{
+			callback(undefined, e);
 			return;
 		}
 
-		input = ArrayTools.convertToUint8ArrayIfNeeded(input);
-
-		var defaultOptions: CompressionOptions =
+		let defaultOptions: CompressionOptions =
 			{
-				inputEncoding: CompressionCommon.detectCompressionSourceEncoding(input),
+				inputEncoding: inputEncoding,
 				outputEncoding: "ByteArray",
 				useWebWorker: true,
 				blockSize: 65536
 			}
 
-		options = ObjectTools.extendObject(defaultOptions, options);
+		options = ObjectTools.overrideObject(defaultOptions, options);
 
-		EventLoop.enqueueImmediate(() =>
+		enqueueImmediate(() =>
 		{
 			if (options.useWebWorker === true && WebWorker.isSupported())
 			{
@@ -84,7 +89,7 @@
 
 		input = ArrayTools.convertToUint8ArrayIfNeeded(input);
 
-		var defaultOptions: CompressionOptions =
+		let defaultOptions: CompressionOptions =
 			{
 				inputEncoding: "ByteArray",
 				outputEncoding: "String",
@@ -92,7 +97,7 @@
 				blockSize: 65536
 			}
 
-		options = ObjectTools.extendObject(defaultOptions, options);
+		options = ObjectTools.overrideObject(defaultOptions, options);
 
 		EventLoop.enqueueImmediate(() =>
 		{
@@ -119,10 +124,10 @@
 		return AsyncDecompressor.createDecompressionStream();
 	}
 
-	declare var TextDecoder;
-	declare var TextEncoder;
-	var globalUTF8TextEncoder;
-	var globalUTF8TextDecoder;
+	declare let TextDecoder;
+	declare let TextEncoder;
+	let globalUTF8TextEncoder;
+	let globalUTF8TextDecoder;
 	
 	// Encodings
 	export function encodeUTF8(str: string): Uint8Array
@@ -132,7 +137,7 @@
 
 		if (runningInNodeJS())
 		{
-			return new Uint8Array(new Buffer(str, "utf8"));
+			return ArrayTools.bufferToUint8Array(new Buffer(str, "utf8"));
 		}
 		else if (typeof TextEncoder === "function")
 		{
@@ -155,7 +160,7 @@
 			let buf: Buffer;
 
 			if (input instanceof Uint8Array)
-				buf = new Buffer(input);
+				buf = ArrayTools.uint8ArrayToBuffer(input);
 			else if (input instanceof Buffer)
 				buf = <any>input;
 			else
@@ -184,7 +189,7 @@
 			let buf: Buffer;
 
 			if (input instanceof Uint8Array)
-				buf = new Buffer(input);
+				buf = ArrayTools.uint8ArrayToBuffer(input);
 			else if (input instanceof Buffer)
 				buf = <any>input;
 			else
@@ -208,7 +213,7 @@
 		
 		if (runningInNodeJS())
 		{
-			var result = new Uint8Array(new Buffer(str, "base64"));
+			let result = ArrayTools.bufferToUint8Array(new Buffer(str, "base64"));
 
 			if (result === null)
 				throw new Error("decodeBase64: failed decoding Base64");
@@ -231,7 +236,7 @@
 		return Encoding.BinaryString.decode(str);
 	}
 
-	export interface CompressionOptions
+	export type CompressionOptions =
 	{
 		inputEncoding?: string;
 		outputEncoding?: string;

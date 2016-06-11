@@ -1,4 +1,4 @@
-﻿module LZUTF8
+﻿namespace LZUTF8
 {
 	export class CompressorCustomHashTable implements CompressorHashTable
 	{
@@ -23,23 +23,24 @@
 			if (this.storageIndex >= (this.storage.length >>> 1))
 				this.compact();
 
-			var startPosition = this.bucketLocators[bucketIndex];
+			let startPosition = this.bucketLocators[bucketIndex];
+			let length: number;
 
 			if (startPosition === 0)
 			{
 				startPosition = this.storageIndex;
-				var length = 1;
+				length = 1;
 				this.storage[this.storageIndex] = valueToAdd;
 				this.storageIndex += this.minimumBucketCapacity; // Set an initial capacity for the bucket
 			}
 			else
 			{
-				var length = this.bucketLocators[bucketIndex + 1];
+				length = this.bucketLocators[bucketIndex + 1];
 
 				if (length === this.maximumBucketCapacity - 1)
 					length = this.truncateBucketToNewerElements(startPosition, length, this.maximumBucketCapacity / 2);
 
-				var endPosition = startPosition + length;
+				let endPosition = startPosition + length;
 
 				if (this.storage[endPosition] === 0)
 				{
@@ -67,7 +68,7 @@
 
 		private truncateBucketToNewerElements(startPosition: number, bucketLength: number, truncatedBucketLength: number)
 		{
-			var sourcePosition = startPosition + bucketLength - truncatedBucketLength;
+			let sourcePosition = startPosition + bucketLength - truncatedBucketLength;
 
 			ArrayTools.copyElements(this.storage, sourcePosition, this.storage, startPosition, truncatedBucketLength);
 			ArrayTools.zeroElements(this.storage, startPosition + truncatedBucketLength, bucketLength - truncatedBucketLength);
@@ -77,16 +78,16 @@
 
 		private compact()
 		{
-			var oldBucketLocators = this.bucketLocators;
-			var oldStorage = this.storage;
+			let oldBucketLocators = this.bucketLocators;
+			let oldStorage = this.storage;
 
 			this.bucketLocators = new Uint32Array(this.bucketLocators.length);
 			this.storageIndex = 1;
 
 			// First pass: Scan and create the new bucket locators
-			for (var bucketIndex = 0; bucketIndex < oldBucketLocators.length; bucketIndex += 2)
+			for (let bucketIndex = 0; bucketIndex < oldBucketLocators.length; bucketIndex += 2)
 			{
-				var length = oldBucketLocators[bucketIndex + 1];
+				let length = oldBucketLocators[bucketIndex + 1];
 
 				if (length === 0)
 					continue;
@@ -102,27 +103,27 @@
 			//
 			
 			// Second pass: After storage was allocated, copy the old data to the new buckets
-			for (var bucketIndex = 0; bucketIndex < oldBucketLocators.length; bucketIndex += 2)
+			for (let bucketIndex = 0; bucketIndex < oldBucketLocators.length; bucketIndex += 2)
 			{
-				var sourcePosition = oldBucketLocators[bucketIndex];
+				let sourcePosition = oldBucketLocators[bucketIndex];
 
 				if (sourcePosition === 0)
 					continue;
 
-				var destPosition = this.bucketLocators[bucketIndex];
-				var length = this.bucketLocators[bucketIndex + 1];
+				let destPosition = this.bucketLocators[bucketIndex];
+				let length = this.bucketLocators[bucketIndex + 1];
 
 				ArrayTools.copyElements(oldStorage, sourcePosition, this.storage, destPosition, length);
 			}
 
-			//console.log("Total allocated storage in hash table: " + this.storageIndex + ", new capacity: " + this.storage.length);
+			//log("Total allocated storage in hash table: " + this.storageIndex + ", new capacity: " + this.storage.length);
 		}
 
 		getArraySegmentForBucketIndex(bucketIndex: number, outputObject?: ArraySegment<number>): ArraySegment<number>
 		{
 			bucketIndex <<= 1;
 
-			var startPosition = this.bucketLocators[bucketIndex];
+			let startPosition = this.bucketLocators[bucketIndex];
 
 			if (startPosition === 0)
 				return null;
@@ -144,9 +145,9 @@
 
 		getTotalElementCount(): number
 		{
-			var result = 0;
+			let result = 0;
 
-			for (var i = 0; i < this.bucketLocators.length; i += 2)
+			for (let i = 0; i < this.bucketLocators.length; i += 2)
 				result += this.bucketLocators[i + 1];
 
 			return result;

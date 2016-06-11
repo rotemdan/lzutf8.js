@@ -1,11 +1,11 @@
-﻿module LZUTF8
+﻿namespace LZUTF8
 {
 	export class AsyncCompressor
 	{
 		static compressAsync(input: string | Uint8Array, options: CompressionOptions, callback: (result: any, error?: Error) => void)
 		{
-			var timer = new Timer();
-			var compressor = new Compressor();
+			let timer = new Timer();
+			let compressor = new Compressor();
 
 			if (!callback)
 				throw new TypeError("compressAsync: No callback argument given");
@@ -16,21 +16,23 @@
 			}
 			else if (input == null || !(input instanceof Uint8Array))
 			{
-				callback(undefined, new TypeError("compressAsync: Invalid input argument"));
+				callback(undefined, new TypeError("compressAsync: Invalid input argument, only 'string' and 'Uint8Array' are supported"));
 				return;
 			}
 
-			var sourceBlocks = ArrayTools.splitByteArray(<Uint8Array> input, options.blockSize);
+			let sourceBlocks = ArrayTools.splitByteArray(<Uint8Array> input, options.blockSize);
 
-			var compressedBlocks: Uint8Array[] = [];
+			let compressedBlocks: Uint8Array[] = [];
 
-			var compressBlocksStartingAt = (index: number) =>
+			let compressBlocksStartingAt = (index: number) =>
 			{
 				if (index < sourceBlocks.length)
 				{
+					let compressedBlock: Uint8Array;
+
 					try
 					{
-						var compressedBlock = compressor.compressBlock(sourceBlocks[index]);
+						compressedBlock = compressor.compressBlock(sourceBlocks[index]);
 					}
 					catch (e)
 					{
@@ -52,13 +54,15 @@
 				}
 				else
 				{
-					var joinedCompressedBlocks = ArrayTools.joinByteArrays(compressedBlocks);
+					let joinedCompressedBlocks = ArrayTools.joinByteArrays(compressedBlocks);
 
 					enqueueImmediate(() =>
 					{
+						let result: any;
+
 						try
 						{
-							var result = CompressionCommon.encodeCompressedBytes(joinedCompressedBlocks, options.outputEncoding);
+							result = CompressionCommon.encodeCompressedBytes(joinedCompressedBlocks, options.outputEncoding);
 						}
 						catch (e)
 						{
@@ -76,16 +80,18 @@
 
 		static createCompressionStream(): stream.Transform
 		{
-			var compressor = new Compressor();
+			let compressor = new Compressor();
 
-			var NodeStream: typeof stream = require("stream");
-			var compressionStream = new NodeStream.Transform({ decodeStrings: true, highWaterMark: 65536 });
+			let NodeStream: typeof stream = require("stream");
+			let compressionStream = new NodeStream.Transform({ decodeStrings: true, highWaterMark: 65536 });
 
 			compressionStream._transform = (data: Buffer, encoding: string, done: Function) =>
 			{
+				let buffer: Buffer;
+
 				try
 				{
-					var buffer = new Buffer(compressor.compressBlock(new Uint8Array(data)));
+					buffer = ArrayTools.uint8ArrayToBuffer(compressor.compressBlock(ArrayTools.bufferToUint8Array(data)));
 				}
 				catch (e)
 				{

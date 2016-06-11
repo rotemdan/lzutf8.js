@@ -1,13 +1,13 @@
-﻿module LZUTF8
+﻿namespace LZUTF8
 {
 	export class AsyncDecompressor
 	{
 		static decompressAsync(input: any, options: CompressionOptions, callback: (result: any, error?: Error) => void)
 		{
 			if (!callback)
-				throw new TypeError("compressAsync: No callback argument given");
+				throw new TypeError("decompressAsync: No callback argument given");
 
-			var timer = new Timer();
+			let timer = new Timer();
 			try
 			{
 				input = CompressionCommon.decodeCompressedData(input, options.inputEncoding);
@@ -18,18 +18,20 @@
 				return;
 			}
 
-			var decompressor = new Decompressor();
-			var sourceBlocks = ArrayTools.splitByteArray(input, options.blockSize);
+			let decompressor = new Decompressor();
+			let sourceBlocks = ArrayTools.splitByteArray(input, options.blockSize);
 
-			var decompressedBlocks: Uint8Array[] = [];
+			let decompressedBlocks: Uint8Array[] = [];
 
-			var decompressBlocksStartingAt = (index: number) =>
+			let decompressBlocksStartingAt = (index: number) =>
 			{
 				if (index < sourceBlocks.length)
 				{
+					let decompressedBlock: Uint8Array;
+
 					try
 					{
-						var decompressedBlock = decompressor.decompressBlock(sourceBlocks[index]);
+						decompressedBlock = decompressor.decompressBlock(sourceBlocks[index]);
 					}
 					catch (e)
 					{
@@ -52,13 +54,15 @@
 				}
 				else
 				{
-					var joinedDecompressedBlocks = ArrayTools.joinByteArrays(decompressedBlocks);
+					let joinedDecompressedBlocks = ArrayTools.joinByteArrays(decompressedBlocks);
 
 					enqueueImmediate(() =>
 					{
+						let result: any;
+
 						try
 						{
-							var result = CompressionCommon.encodeDecompressedBytes(joinedDecompressedBlocks, options.outputEncoding);
+							result = CompressionCommon.encodeDecompressedBytes(joinedDecompressedBlocks, options.outputEncoding);
 						}
 						catch (e)
 						{
@@ -76,16 +80,18 @@
 
 		static createDecompressionStream(): stream.Transform
 		{
-			var decompressor = new Decompressor();
+			let decompressor = new Decompressor();
 
-			var NodeStream: typeof stream = require("stream");
-			var decompressionStream = new NodeStream.Transform({ decodeStrings: true, highWaterMark: 65536 });
+			let NodeStream: typeof stream = require("stream");
+			let decompressionStream = new NodeStream.Transform({ decodeStrings: true, highWaterMark: 65536 });
 
 			decompressionStream._transform = (data: Buffer, encoding: string, done: Function) =>
 			{
+				let buffer: Buffer;
+
 				try
 				{
-					var buffer = new Buffer(decompressor.decompressBlock(new Uint8Array(data)));
+					buffer = ArrayTools.uint8ArrayToBuffer(decompressor.decompressBlock(ArrayTools.bufferToUint8Array(data)));
 				}
 				catch (e)
 				{

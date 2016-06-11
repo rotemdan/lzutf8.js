@@ -1,4 +1,4 @@
-﻿module LZUTF8
+﻿namespace LZUTF8
 {
 	export class EncodingBenchmarks
 	{
@@ -13,7 +13,7 @@
 		{
 			this.randomUTF16String = EncodingBenchmarks.getRandomUTF16StringOfLength(250000);
 			this.randomBytes = encodeUTF8(this.randomUTF16String);
-			//console.log(this.randomBytes.length);
+			//log(this.randomBytes.length);
 		}
 
 		encodeBase64()
@@ -53,13 +53,14 @@
 
 		static getRandomUTF16StringOfLength(length)
 		{
-			var randomString = "";
+			let randomString = "";
 
-			for (var i = 0; i < length; i++)
+			for (let i = 0; i < length; i++)
 			{
+				let randomCodePoint: number;
 				do
 				{
-					var randomCodePoint = EncodingBenchmarks.getRandomIntegerInRange(0, 0x10FFFF + 1);
+					randomCodePoint = EncodingBenchmarks.getRandomIntegerInRange(0, 0x10FFFF + 1);
 				} while (randomCodePoint >= 0xD800 && randomCodePoint <= 0xDFFF);
 
 				randomString += LZUTF8.Encoding.UTF8.getStringFromUnicodeCodePoint(randomCodePoint);
@@ -70,8 +71,8 @@
 
 		static start()
 		{
-			var bench = new EncodingBenchmarks();
-			var benchmark = new Benchmark(bench, { maximumSamples: 1000, maximumTime: 200, logToDocument: true });
+			let bench = new EncodingBenchmarks();
+			let benchmark = new Benchmark(bench, { maximumSamples: 1000, maximumTime: 200, logToDocument: true });
 			benchmark.runAll([]);
 		}
 	}
