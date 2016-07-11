@@ -1,10 +1,10 @@
 /*
- LZ-UTF8 v0.3.4
+ LZ-UTF8 v0.3.5
 
  Copyright (c) 2014-2016, Rotem Dan <rotemdan@gmail.com> 
  Released under the MIT license.
 
- Build date: 2016-06-11 
+ Build date: 2016-07-11 
 */
 var LZUTF8;
 (function (LZUTF8) {
@@ -16,6 +16,10 @@ var LZUTF8;
         return runningInNodeJS() && require.main === module;
     }
     LZUTF8.runningInMainNodeJSModule = runningInMainNodeJSModule;
+    function commonJSSupported() {
+        return typeof module === "object" && typeof module.exports === "object";
+    }
+    LZUTF8.commonJSSupported = commonJSSupported;
     function runningInWebWorker() {
         return typeof window === "undefined" && typeof self === "object" && typeof self.addEventListener === "function";
     }
@@ -65,7 +69,7 @@ var LZUTF8;
         log(createErrorMessage(exception, title));
     }
     LZUTF8.printExceptionAndStackTraceToConsole = printExceptionAndStackTraceToConsole;
-    if (runningInNodeJS()) {
+    if (commonJSSupported()) {
         module.exports = LZUTF8;
     }
 })(LZUTF8 || (LZUTF8 = {}));

@@ -8,6 +8,10 @@ var LZUTF8;
         return runningInNodeJS() && require.main === module;
     }
     LZUTF8.runningInMainNodeJSModule = runningInMainNodeJSModule;
+    function commonJSSupported() {
+        return typeof module === "object" && typeof module.exports === "object";
+    }
+    LZUTF8.commonJSSupported = commonJSSupported;
     function runningInWebWorker() {
         return typeof window === "undefined" && typeof self === "object" && typeof self.addEventListener === "function";
     }
@@ -57,7 +61,7 @@ var LZUTF8;
         log(createErrorMessage(exception, title));
     }
     LZUTF8.printExceptionAndStackTraceToConsole = printExceptionAndStackTraceToConsole;
-    if (runningInNodeJS()) {
+    if (commonJSSupported()) {
         module.exports = LZUTF8;
     }
 })(LZUTF8 || (LZUTF8 = {}));

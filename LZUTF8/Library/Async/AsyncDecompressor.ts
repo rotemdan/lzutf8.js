@@ -49,8 +49,7 @@
 					{
 						enqueueImmediate(() => decompressBlocksStartingAt(index + 1));
 						timer.restart();
-					}
-					
+					}			
 				}
 				else
 				{

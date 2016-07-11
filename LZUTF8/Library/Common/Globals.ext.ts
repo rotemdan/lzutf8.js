@@ -10,6 +10,11 @@
 		return runningInNodeJS() && require.main === module;
 	}
 
+	export function commonJSSupported()
+	{
+		return typeof module === "object" && typeof module.exports === "object";
+	}
+
 	export function runningInWebWorker()
 	{
 		return typeof window === "undefined" && typeof self === "object" && typeof self.addEventListener === "function";
@@ -71,7 +76,7 @@
 		log(createErrorMessage(exception, title));
 	}
 
-	if (runningInNodeJS())
+	if (commonJSSupported())
 	{
 		module.exports = LZUTF8;
 	}
