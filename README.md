@@ -26,7 +26,7 @@ A high-performance string compression library and stream format:
 
 *Javascript implementation:*
 
-  - Tested on most popular browsers and platforms - Chrome, Firefox, IE10+, Android 4+, Safari 5+ and Node.js 0.10+ (IE8 and IE9 may work with a [typed array polyfill](https://github.com/inexorabletash/polyfill/blob/master/typedarray.js).
+  - Tested on most popular browsers and platforms - Chrome, Firefox, IE10+, Android 4+, Safari 5+ and Node.js 4+ (IE8 and IE9 may work with a [typed array polyfill](https://github.com/inexorabletash/polyfill/blob/master/typedarray.js).
   - Allows compressed data to be efficiently packed in plain UTF-16 strings (see the `BinaryString` encoding) when binary storage is not available or desired (e.g. when using LocalStorage or older IndexedDB).
   - Can operate asynchronously, both in Node.js and in the browser. Uses web workers when available (and takes full advantage of [transferable objects](http://www.w3.org/html/wg/drafts/html/master/#transferable-objects) if supported) and falls back to async iterations when not.
   - Supports Node.js streams.
@@ -422,12 +422,13 @@ Decodes a binary string.
 
 # Release history
 
-* ```0.3.x```: Removed support to IE8/9. Removed support for Array inputs. All `"ByteArray"` outputs are now `Uint8Array` objects. A separate `"Buffer"` encoding setting can be used to return `Buffer` objects.
-* ```0.2.x```: Added async error handling. Added support for TextEncoder and TextDecoder when available.
 * ```0.1.x```: Initial release.
+* ```0.2.x```: Added async error handling. Added support for `TextEncoder` and `TextDecoder` when available.
+* ```0.3.x```: Removed support to IE8/9. Removed support for plain `Array` inputs. All `"ByteArray"` outputs are now `Uint8Array` objects. A separate `"Buffer"` encoding setting can be used to return `Buffer` objects.
+* ```0.4.x```: Major code restructuring. Removed support for versions of Node.js before `4.0`.
 
 # License
 
-Copyright (c) 2014-2016, Rotem Dan &lt;rotemdan@gmail.com&gt;.
+Copyright (c) 2014-2017, Rotem Dan &lt;rotemdan@gmail.com&gt;.
 
 Source code and documentation are available under the [MIT license](http://choosealicense.com/licenses/mit/).
