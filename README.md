@@ -18,7 +18,7 @@ A high-performance string compression library and stream format:
   - Based on **[LZ77](https://en.wikipedia.org/wiki/LZ77_and_LZ78)**.
   - Compresses UTF-8 and 7-bit ASCII strings **only**. Doesn't support arbitrary binary content or other string encodings.
   - Byte aligned, meaning individually compressed blocks can be freely concatenated and intermixed with each other and yield a valid compressed stream that decompresses to the equivalent concatenated strings.
-  - **Fully compatible with UTF-8**. Any valid UTF-8 bytestream is also a valid LZ-UTF8 stream (but not vice versa). This special property allows both compressed and plain UTF-8 streams to be freely concatenated and decompressed as single unit (or with any arbitrary partitioning). Some possible applications:
+  - **Byte-level superset of UTF-8**. Any valid UTF-8 bytestream is also a valid LZ-UTF8 stream (but not vice versa). This special property allows both compressed and plain UTF-8 streams to be freely concatenated and decompressed as single unit (or with any arbitrary partitioning). Some possible applications:
     - Sending static pre-compressed data followed by dynamically generated uncompressed data from a server (and possibly appending a compressed static "footer", or repeating the process several times).
     - Appending both uncompressed/compressed data to a compressed log file/journal without needing to rewrite it.
     - Joining multiple source files, where some are possibly pre-compressed, and serving them as a single concatenated file without additional processing.
@@ -32,14 +32,13 @@ A high-performance string compression library and stream format:
   - Supports Node.js streams.
   - Written in TypeScript.
 
-
 # Quick start
 
   - Try the [online demo](https://rotemdan.github.io/lzutf8/demo/) to test and benchmark different inputs.
   - Download the [latest build](https://unpkg.com/lzutf8) (or the [minified version](https://unpkg.com/lzutf8/production/lzutf8.min.js)).
   - Run the [automated tests](https://rotemdan.github.io/lzutf8/tests/).
   - Run the [core benchmarks](https://rotemdan.github.io/lzutf8/benchmarks/).
-  - Read the [technical paper](https://goo.gl/0g0fzm).
+  - Read the [technical paper](https://rotemdan.github.io/lzutf8/docs/paper.pdf).
 
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
@@ -79,9 +78,7 @@ A high-performance string compression library and stream format:
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-
 # API Reference
-
 
 ## Getting started
 
@@ -118,8 +115,6 @@ IE8/9 and support was dropped at `0.3.0` though these browsers can still be used
 *`"Base64"`* - A [base 64](https://en.wikipedia.org/wiki/Base64) string.
 
 ## Core Methods
-
-
 
 ### LZUTF8.compress(..)
 
@@ -425,7 +420,7 @@ Decodes a binary string.
 * ```0.1.x```: Initial release.
 * ```0.2.x```: Added async error handling. Added support for `TextEncoder` and `TextDecoder` when available.
 * ```0.3.x```: Removed support to IE8/9. Removed support for plain `Array` inputs. All `"ByteArray"` outputs are now `Uint8Array` objects. A separate `"Buffer"` encoding setting can be used to return `Buffer` objects.
-* ```0.4.x```: Major code restructuring. Removed support for versions of Node.js before `4.0`.
+* ```0.4.x```: Major code restructuring. Removed support for versions of Node.js prior to `4.0`.
 
 # License
 
