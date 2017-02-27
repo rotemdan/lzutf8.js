@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+	<title>LZ-UTF8 Demo</title>
+
+	<meta charset="utf-8" />
+	<meta name="msapplication-tap-highlight" content="no" />
+	<meta name="viewport" content="user-scalable=no, initial-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+
+	<link rel="stylesheet" href="demo.css" type="text/css" />
+	<link rel="stylesheet" href="gh-buttons.css" type="text/css" />
+
+	<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha256-/SIrNqv8h6QGKDuNoLGA4iret+kyesCkHGzVUUV0shc="
+		crossorigin="anonymous"></script>
+
+	<script id="lzutf8" src="../build/production/lzutf8.js"></script>
+</head>
+
+<body>
+	<div id="container">
+		<div id="header">
+			<h1>LZ-UTF8 Demo</h1>
+		</div>
+
+		<div id="content">
+			<div>
+				<div class="TextAreaLabel">Input:</div>
+				<div><textarea id="inputTextArea" spellcheck="false"></textarea></div>
+				<div id="buttons"><a class="button" id="compressButton">Compress</a><a class="button" id="clearButton">Clear</a></div>
+				<div id="inputInfo">&nbsp;</div>
+			</div>
+
+			<div id="outputContainer">
+				<div class="TextAreaLabel">Output:</div>
+				<div><textarea id="compressedOutputTextArea" readonly="readonly"></textarea></div>
+				<div id="compressionInfo">&nbsp;</div>
+			</div>
+
+			<div>
+				<div class="TextAreaLabel">Decompressed Output:</div>
+				<div><textarea id="decompressedOutputTextArea" readonly="readonly"></textarea></div>
+				<div id="decompressionInfo">&nbsp;</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		$("#compressedOutputTextArea").val("");
+		$("#decompressedOutputTextArea").val("");
+
+		$("#compressButton").on("click", function () {
+			//window.Uint8Array = undefined;
+
+			var stringToCompress = $("#inputTextArea").val();
+			var stringLengthAsUTF8 = LZUTF8.encodeUTF8(stringToCompress).length;
+
+			//
+			// Compression
+			var timer = new LZUTF8.Timer();
+			//
+			var compressedBytes = LZUTF8.compress(stringToCompress);
+			//
+			var compressionTime = timer.getElapsedTime();
+			var megabytesPerSecond = (stringLengthAsUTF8 / 1000000) / (compressionTime / 1000);
+			var compressionRatioPercentage = compressedBytes.length / stringLengthAsUTF8 * 100;
+
+			$("#compressionInfo").text("Compressed " + stringLengthAsUTF8 + " to " + compressedBytes.length + " bytes (" + compressionRatioPercentage.toFixed(1) + "%) in " + compressionTime.toFixed(1) + "ms (" + megabytesPerSecond.toFixed(1) + "MB/s)");
+			var compressedBytesAsDecimalString = LZUTF8.Encoding.DecimalString.encode(compressedBytes);
+			$("#compressedOutputTextArea").val(compressedBytesAsDecimalString);
+
+
+			//
+			// Decompression
+			timer.restart();
+			//
+			var decompressedString = LZUTF8.decompress(compressedBytes);
+			//
+			var decompressionTime = timer.getElapsedTime();
+
+			var decompressionRatioPercentage = stringLengthAsUTF8 / compressedBytes.length * 100;
+			megabytesPerSecond = (stringLengthAsUTF8 / 1000000) / (decompressionTime / 1000);
+
+			$("#decompressedOutputTextArea").val(decompressedString);
+			$("#decompressionInfo").text("Decompressed " + compressedBytes.length + " to " + stringLengthAsUTF8 + " bytes (" + decompressionRatioPercentage.toFixed(1) + "%) in " + decompressionTime.toFixed(1) + "ms (" + megabytesPerSecond.toFixed(1) + "MB/s)");
+		});
+
+		$("#clearButton").on("click", function () {
+			$("#inputTextArea").val("");
+			$("#compressedOutputTextArea").val("");
+			$("#decompressedOutputTextArea").val("");
+			$("#compressionInfo").text("");
+			$("#decompressionInfo").text("");
+		});
+	</script>
+</body>
+
+</html>

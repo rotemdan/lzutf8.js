@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>LZ-UTF8 Tests</title>
+
+	<meta charset="utf-8" />
+	<meta name="msapplication-tap-highlight" content="no" />
+	<meta name="viewport" content="user-scalable=no, initial-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+
+	<link rel="shortcut icon" href="resources/mocha.ico" />
+	<link rel="stylesheet" href="resources/mocha.css" type="text/css" />
+</head>
+
+<body>
+	<div id="mocha">
+	</div>
+
+	<script src="../node_modules/mocha/mocha.js"></script>
+	<script src="../node_modules/expectations/expectations.js"></script>
+	<script>
+		mocha.setup({
+			ui: 'bdd',
+			slow: -1,
+			timeout: 5000
+		});
+	</script>
+
+    <script id="lzutf8" src="../build/development/lzutf8.js"></script>
+
+	<script>mocha.run()</script>
+</body>
+</html>

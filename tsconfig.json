@@ -1,0 +1,46 @@
+{
+	"compileOnSave": true,
+	"compilerOptions": {
+		"target": "es5",
+		"module": "none",
+		"lib": [
+			"es5",
+			"es2015.promise",
+			"dom"
+		],
+		"outFile": "build/development/lzutf8.js",
+		"watch": false,
+		"sourceMap": true,
+		"removeComments": false,
+		"noEmitHelpers": false,
+		"noEmitOnError": true,
+		"noImplicitAny": true,
+		"suppressImplicitAnyIndexErrors": true,
+		"noImplicitThis": true,
+		"noImplicitReturns": true,
+		"allowJs": true,
+		"strictNullChecks": true,
+		"noLib": false,
+		"noEmit": false,
+		"noFallthroughCasesInSwitch": false,
+		"newLine": "LF",
+		"emitBOM": false,
+		"noUnusedLocals": true,
+		"noUnusedParameters": false,
+		"skipLibCheck": false,
+		"alwaysStrict": false,
+		"pretty": false
+	},
+	"include": [
+		"src/Globals/**/*.ts",
+		"src/**/*.ts",
+		"tests/src/Environment/**/*.ts",
+		"tests/src/Common/**/*.ts",
+		"tests/src/**/*.ts",
+		"benchmarks/src/**/*.ts",
+		"cli/src/**/*.ts"
+	],
+	"exclude": [
+		"node_modules"
+	]
+}

@@ -1,14 +1,4 @@
-#ignore thumbnails created by windows
-Thumbs.db
-
-#ignore
 node_modules
-*.sln.ide
-*.v12.suo
-bin
-obj
-LZUTF8/CLI/Test Files
-LZUTF8/Build
-npm-debug.log
-GitHubWebsite
-SanityTest
+cli/test_files
+.vscode/spellchecker.json
+tests/coverage

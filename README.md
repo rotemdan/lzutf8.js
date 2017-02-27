@@ -7,8 +7,7 @@
 A high-performance string compression library and stream format:
 
   - Fast, especially decompression (rates are for a low-end desktop PC processing 1MB files):
-    - Javascript: 3-14MB/s compression , 20-80MB/s decompression (detailed benchmarks and comparison to other Javascript libraries can be found in the [technical paper](https://goo.gl/0g0fzm)).
-    - C++: 30-40MB/s compression, 300-500MB/s decompression (currently unreleased, figures may improve in the future).
+    - Javascript: 3-14MB/s compression , 20-120MB/s decompression (detailed benchmarks and comparison to other Javascript libraries can be found in the [technical paper](https://goo.gl/0g0fzm)).
   - Reasonable compression ratio - very good for shorter strings (&lt;32k), but less efficient for longer ones.
   - Conceived with web and mobile use cases in mind. Designed for and implemented in Javascript from the very beginning.
   - Simple and easy-to-use API that's consistent across all platforms, both in the browser and in Node.js.
@@ -16,7 +15,7 @@ A high-performance string compression library and stream format:
 
 *Technical objectives and properties:*
 
-  - Based on **[LZ77](https://en.wikipedia.org/wiki/LZ77_and_LZ78)**. An efficient decompressor implementation should run virtually in realtime as the decompression process only involves the copying of raw memory blocks.
+  - Based on **[LZ77](https://en.wikipedia.org/wiki/LZ77_and_LZ78)**.
   - Compresses UTF-8 and 7-bit ASCII strings **only**. Doesn't support arbitrary binary content or other string encodings.
   - Byte aligned, meaning individually compressed blocks can be freely concatenated and intermixed with each other and yield a valid compressed stream that decompresses to the equivalent concatenated strings.
   - **Fully compatible with UTF-8**. Any valid UTF-8 bytestream is also a valid LZ-UTF8 stream (but not vice versa). This special property allows both compressed and plain UTF-8 streams to be freely concatenated and decompressed as single unit (or with any arbitrary partitioning). Some possible applications:
@@ -31,16 +30,15 @@ A high-performance string compression library and stream format:
   - Allows compressed data to be efficiently packed in plain UTF-16 strings (see the `BinaryString` encoding) when binary storage is not available or desired (e.g. when using LocalStorage or older IndexedDB).
   - Can operate asynchronously, both in Node.js and in the browser. Uses web workers when available (and takes full advantage of [transferable objects](http://www.w3.org/html/wg/drafts/html/master/#transferable-objects) if supported) and falls back to async iterations when not.
   - Supports Node.js streams.
-  - Well structured code written in TypeScript.
+  - Written in TypeScript.
 
 
 # Quick start
 
-
-  - Try the [online demo](https://rotemdan.github.io/lzutf8/Demo/) to test and benchmark different inputs.
-  - Download the [latest build](https://raw.githubusercontent.com/rotemdan/lzutf8.js/master/ReleaseBuild/lzutf8.js) (or the [minified version](https://raw.githubusercontent.com/rotemdan/lzutf8.js/master/ReleaseBuild/lzutf8.min.js)).
-  - Run the [automated tests](https://rotemdan.github.io/lzutf8/Tests/).
-  - Run the [core benchmarks](https://rotemdan.github.io/lzutf8/Benchmarks/).
+  - Try the [online demo](https://rotemdan.github.io/lzutf8/demo/) to test and benchmark different inputs.
+  - Download the [latest build](https://unpkg.com/lzutf8) (or the [minified version](https://unpkg.com/lzutf8/production/lzutf8.min.js)).
+  - Run the [automated tests](https://rotemdan.github.io/lzutf8/tests/).
+  - Run the [core benchmarks](https://rotemdan.github.io/lzutf8/benchmarks/).
   - Read the [technical paper](https://goo.gl/0g0fzm).
 
 
@@ -49,8 +47,6 @@ A high-performance string compression library and stream format:
 
 
 # Table of Contents
-
-
 
 - [API Reference](#api-reference)
   - [Getting started](#getting-started)
@@ -89,14 +85,8 @@ A high-performance string compression library and stream format:
 
 ## Getting started
 
-
-Browser:
-```html
-<script id="lzutf8" src="path/to/lzutf8.js"></script>
-```
-*note: the `id` attribute and its exact value are necessary for the library to make use of web workers.*
-
 Node.js:
+
 ```
 npm install lzutf8
 ```
@@ -104,9 +94,18 @@ npm install lzutf8
 var LZUTF8 = require('lzutf8');
 ```
 
+Browser:
+```html
+<script id="lzutf8" src="https://unpkg.com/lzutf8"></script>
+```
+or the minified version:
+```html
+<script id="lzutf8" src="https://unpkg.com/lzutf8/production/lzutf8.min.js"></script>
+```
+
+*note: the `id` attribute and its exact value are necessary for the library to make use of web workers.*
 
 ## Type Identifier Strings
-
 
 *`"ByteArray"`* - An array of bytes. As of `0.3.2`, always a `Uint8Array`. In versions up to `0.2.3` the type was determined by the platform (`Array` for browsers that don't support typed arrays, `Uint8Array` for supporting browsers and `Buffer` for Node.js).
 
@@ -199,8 +198,8 @@ Asynchronously decompresses the given compressed input.
 
 * `inputEncoding`: `"ByteArray"` (default), `"BinaryString"` or `"Base64"`
 * `outputEncoding`: `"String"` (default), `"ByteArray"` or `"Buffer"` to return UTF-8 bytes.
-* `useWebWorker`: `true` (default) would use a web worker if available. `false` would use incremental yielding instead. 
- 
+* `useWebWorker`: `true` (default) would use a web worker if available. `false` would use incremental yielding instead.
+
 *`callback`*: a user-defined callback function accepting a first argument containing the resulting decompressed data as specified by `outputEncoding` and a possible second parameter containing an ```Error``` object.
 
 *On error*: invokes the callback with a first argument of ```undefined``` and a second one containing the ```Error``` object.
@@ -373,11 +372,11 @@ Decodes UTF-8 bytes to a String.
 ```js
 var outputString = LZUTF8.encodeBase64(bytes);
 ```
-Encodes bytes to a Base64 string. 
+Encodes bytes to a Base64 string.
 
 *`input`* as either a `Uint8Array` or `Buffer`
 
-*returns*: resulting Base64 string. 
+*returns*: resulting Base64 string.
 
 *remarks*: Maps every 3 consecutive input bytes to 4 output characters of the set `A-Z`,`a-z`,`0-9`,`+`,`/` (a total of 64 characters). Increases stored byte size to 133.33% of original (when stored as ASCII or UTF-8) or 266% (stored as UCS-2/UTF-16).
 
