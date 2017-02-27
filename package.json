@@ -1,6 +1,6 @@
 {
 	"name": "lzutf8",
-	"version": "0.4.2",
+	"version": "0.4.3",
 	"description": "A high-performance string compression library",
 	"keywords": [
 		"compression",
@@ -23,6 +23,7 @@
 	"main": "build/production/lzutf8.js",
 	"files": [
 		"build/production/lzutf8.js",
+		"build/production/lzutf8.min.js",
 		"README.md",
 		"LICENSE"
 	],
