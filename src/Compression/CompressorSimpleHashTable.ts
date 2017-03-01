@@ -8,7 +8,7 @@ namespace LZUTF8 {
 		}
 
 		addValueToBucket(bucketIndex: number, valueToAdd: number) {
-			let bucket = this.buckets[bucketIndex];
+			const bucket = this.buckets[bucketIndex];
 
 			if (bucket === undefined) {
 				this.buckets[bucketIndex] = [valueToAdd];
@@ -22,7 +22,7 @@ namespace LZUTF8 {
 		}
 
 		getArraySegmentForBucketIndex(bucketIndex: number, outputObject?: ArraySegment<number>): ArraySegment<number> | null {
-			let bucket = this.buckets[bucketIndex];
+			const bucket = this.buckets[bucketIndex];
 
 			if (bucket === undefined)
 				return null;

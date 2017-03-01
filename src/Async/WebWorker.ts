@@ -105,7 +105,7 @@ namespace LZUTF8 {
 		export const installWebWorkerIfNeeded = function () {
 			if (typeof self == "object" && self.document === undefined && self.addEventListener != undefined) {
 				self.addEventListener("message", (e: MessageEvent) => {
-					let request: WorkerMessage = e.data;
+					const request: WorkerMessage = e.data;
 
 					if (request.type == "compress") {
 						let compressedData: Uint8Array | string;

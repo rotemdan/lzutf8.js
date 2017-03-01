@@ -34,7 +34,7 @@ namespace LZUTF8 {
 				if (length === this.maximumBucketCapacity - 1)
 					length = this.truncateBucketToNewerElements(startPosition, length, this.maximumBucketCapacity / 2);
 
-				let endPosition = startPosition + length;
+				const endPosition = startPosition + length;
 
 				if (this.storage[endPosition] === 0) {
 					this.storage[endPosition] = valueToAdd;
@@ -59,7 +59,7 @@ namespace LZUTF8 {
 		}
 
 		private truncateBucketToNewerElements(startPosition: number, bucketLength: number, truncatedBucketLength: number) {
-			let sourcePosition = startPosition + bucketLength - truncatedBucketLength;
+			const sourcePosition = startPosition + bucketLength - truncatedBucketLength;
 
 			ArrayTools.copyElements(this.storage, sourcePosition, this.storage, startPosition, truncatedBucketLength);
 			ArrayTools.zeroElements(this.storage, startPosition + truncatedBucketLength, bucketLength - truncatedBucketLength);
@@ -68,15 +68,15 @@ namespace LZUTF8 {
 		}
 
 		private compact() {
-			let oldBucketLocators = this.bucketLocators;
-			let oldStorage = this.storage;
+			const oldBucketLocators = this.bucketLocators;
+			const oldStorage = this.storage;
 
 			this.bucketLocators = new Uint32Array(this.bucketLocators.length);
 			this.storageIndex = 1;
 
 			// First pass: Scan and create the new bucket locators
 			for (let bucketIndex = 0; bucketIndex < oldBucketLocators.length; bucketIndex += 2) {
-				let length = oldBucketLocators[bucketIndex + 1];
+				const length = oldBucketLocators[bucketIndex + 1];
 
 				if (length === 0)
 					continue;
@@ -93,13 +93,13 @@ namespace LZUTF8 {
 
 			// Second pass: After storage was allocated, copy the old data to the new buckets
 			for (let bucketIndex = 0; bucketIndex < oldBucketLocators.length; bucketIndex += 2) {
-				let sourcePosition = oldBucketLocators[bucketIndex];
+				const sourcePosition = oldBucketLocators[bucketIndex];
 
 				if (sourcePosition === 0)
 					continue;
 
-				let destPosition = this.bucketLocators[bucketIndex];
-				let length = this.bucketLocators[bucketIndex + 1];
+				const destPosition = this.bucketLocators[bucketIndex];
+				const length = this.bucketLocators[bucketIndex + 1];
 
 				ArrayTools.copyElements(oldStorage, sourcePosition, this.storage, destPosition, length);
 			}
@@ -110,7 +110,7 @@ namespace LZUTF8 {
 		getArraySegmentForBucketIndex(bucketIndex: number, outputObject?: ArraySegment<number>): ArraySegment<number> | null {
 			bucketIndex <<= 1;
 
-			let startPosition = this.bucketLocators[bucketIndex];
+			const startPosition = this.bucketLocators[bucketIndex];
 
 			if (startPosition === 0)
 				return null;

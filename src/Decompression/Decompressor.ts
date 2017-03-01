@@ -52,13 +52,11 @@ namespace LZUTF8 {
 					const matchLength = inputValue & 31;
 					let matchDistance;
 
-					if (sequenceLengthIdentifier == 6) // 2 byte pointer type, distance was smaller than 128
-					{
+					if (sequenceLengthIdentifier == 6) { // 2 byte pointer type, distance was smaller than 128
 						matchDistance = input[readPosition + 1];
 						readPosition += 1;
 					}
-					else // 3 byte pointer type, distance was greater or equal to 128
-					{
+					else { // 3 byte pointer type, distance was greater or equal to 128
 						matchDistance = (input[readPosition + 1] << 8) | (input[readPosition + 2]); // Big endian
 						readPosition += 2;
 					}
@@ -109,8 +107,7 @@ namespace LZUTF8 {
 
 				if ((offset < 4 && (value >>> 3) === 30) ||  // Leading byte of a 4 byte UTF8 sequence
 					(offset < 3 && (value >>> 4) === 14) ||  // Leading byte of a 3 byte UTF8 sequence
-					(offset < 2 && (value >>> 5) === 6))     // Leading byte of a 2 byte UTF8 sequence
-				{
+					(offset < 2 && (value >>> 5) === 6)) {    // Leading byte of a 2 byte UTF8 sequence
 
 					this.outputBufferRemainder = this.outputBuffer.subarray(this.outputPosition - offset, this.outputPosition);
 					this.outputPosition -= offset;

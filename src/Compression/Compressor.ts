@@ -104,8 +104,8 @@ namespace LZUTF8 {
 
 			for (let i = 0; i < bucket.length; i++) {
 				// Adjust to the actual buffer position. Note: position might be negative (not in the current buffer)
-				let testedSequencePosition = bucket.getInReversedOrder(i) - this.inputBufferStreamOffset;
-				let testedSequenceDistance = matchedSequencePosition - testedSequencePosition;
+				const testedSequencePosition = bucket.getInReversedOrder(i) - this.inputBufferStreamOffset;
+				const testedSequenceDistance = matchedSequencePosition - testedSequencePosition;
 
 				// Find the length to surpass for this match
 				let lengthToSurpass: number;
@@ -179,8 +179,8 @@ namespace LZUTF8 {
 				return 0;
 			}
 			else {
-				let cropLength = Math.min(this.inputBuffer.length, this.MaximumMatchDistance);
-				let cropStartOffset = this.inputBuffer.length - cropLength;
+				const cropLength = Math.min(this.inputBuffer.length, this.MaximumMatchDistance);
+				const cropStartOffset = this.inputBuffer.length - cropLength;
 
 				this.inputBuffer = CompressionCommon.getCroppedAndAppendedByteArray(this.inputBuffer, cropStartOffset, cropLength, newInput);
 
@@ -190,8 +190,8 @@ namespace LZUTF8 {
 		}
 		/*
 		private logStatisticsToConsole(bytesRead: number) {
-			let usedBucketCount = this.prefixHashTable.getUsedBucketCount();
-			let totalHashtableElementCount = this.prefixHashTable.getTotalElementCount();
+			const usedBucketCount = this.prefixHashTable.getUsedBucketCount();
+			const totalHashtableElementCount = this.prefixHashTable.getTotalElementCount();
 
 			log("Compressed size: " + this.outputBufferPosition + "/" + bytesRead + " (" + (this.outputBufferPosition / bytesRead * 100).toFixed(2) + "%)");
 			log("Occupied bucket count: " + usedBucketCount + "/" + this.PrefixHashTableSize);
