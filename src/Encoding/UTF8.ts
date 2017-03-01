@@ -69,7 +69,7 @@ namespace LZUTF8 {
 						readIndex++; // A character outside the BMP had to be made from two surrogate characters
 					}
 					else
-						throw new Error("Invalid UCS-2 string: Encountered a character unsupported by UTF-8/16 (RFC 3629)");
+						throw new Error("Invalid UTF-16 string: Encountered a character unsupported by UTF-8/16 (RFC 3629)");
 				}
 
 				return outputArray.subarray(0, writeIndex);

@@ -27,7 +27,7 @@ A high-performance string compression library and stream format:
 *Javascript implementation:*
 
   - Tested on most popular browsers and platforms: Node.js 4+, Chrome, Firefox, Opera, Edge, IE10+ (IE8 and IE9 may work with a [typed array polyfill](https://github.com/inexorabletash/polyfill/blob/master/typedarray.js)), Android 4+, Safari 5+.
-  - Allows compressed data to be efficiently packed in plain Javascript UCS-2 strings (see the `BinaryString` encoding) when binary storage is not available or desired (e.g. when using LocalStorage or older IndexedDB).
+  - Allows compressed data to be efficiently packed in plain Javascript UTF-16 strings (see the `BinaryString` encoding) when binary storage is not available or desired (e.g. when using LocalStorage or older IndexedDB).
   - Can operate asynchronously, both in Node.js and in the browser. Uses web workers when available (and takes full advantage of [transferable objects](http://www.w3.org/html/wg/drafts/html/master/#transferable-objects) if supported) and falls back to async iterations when not.
   - Supports Node.js streams.
   - Written in TypeScript.
@@ -373,7 +373,7 @@ Encodes bytes to a Base64 string.
 
 *returns*: resulting Base64 string.
 
-*remarks*: Maps every 3 consecutive input bytes to 4 output characters of the set `A-Z`,`a-z`,`0-9`,`+`,`/` (a total of 64 characters). Increases stored byte size to 133.33% of original (when stored as ASCII or UTF-8) or 266% (stored as UCS-2/UTF-16).
+*remarks*: Maps every 3 consecutive input bytes to 4 output characters of the set `A-Z`,`a-z`,`0-9`,`+`,`/` (a total of 64 characters). Increases stored byte size to 133.33% of original (when stored as ASCII or UTF-8) or 266% (stored as UTF-16).
 
 ### LZUTF8.decodeBase64(..)
 
@@ -393,13 +393,13 @@ Decodes UTF-8 bytes to a String.
 ```js
 var outputString = LZUTF8.encodeBinaryString(bytes);
 ```
-Encodes binary bytes to a valid UCS-2 string.
+Encodes binary bytes to a valid UTF-16 string.
 
 *`input`* as either a `Uint8Array` or `Buffer`
 
 *returns*: `String`
 
-*remarks*: To comply with the UCS-2 standard, it only uses the bottom 15 bits of each character, effectively mapping every 15 input bits to a single 16 bit output character. This Increases the stored byte size to 106.66% of original.
+*remarks*: To comply with the UTF-16 standard, it only uses the bottom 15 bits of each character, effectively mapping every 15 input bits to a single 16 bit output character. This Increases the stored byte size to 106.66% of original.
 
 ### LZUTF8.decodeBinaryString(..)
 
