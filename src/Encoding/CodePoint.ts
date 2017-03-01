@@ -24,7 +24,7 @@ namespace LZUTF8 {
 						0xD800 + ((codePoint - 0x10000) >>> 10),
 						0xDC00 + ((codePoint - 0x10000) & 1023));
 				else
-					throw new Error(`getStringFromUnicodeCodePoint: A code point of ${codePoint} cannot be encoded in UTF-16`);
+					throw new Error(`getStringFromUnicodeCodePoint: A code point of ${codePoint} cannot be encoded in UCS-2`);
 			}
 		}
 	}

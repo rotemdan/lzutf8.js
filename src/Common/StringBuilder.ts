@@ -34,7 +34,7 @@ namespace LZUTF8 {
 				this.appendCharCode(0xDC00 + ((codePoint - 0x10000) & 1023));
 			}
 			else
-				throw new Error(`appendCodePoint: A code point of ${codePoint} cannot be encoded in UTF-16`);
+				throw new Error(`appendCodePoint: A code point of ${codePoint} cannot be encoded in UCS-2`);
 		}
 
 		getOutputString(): string {
