@@ -1,45 +1,33 @@
-
 # LZ-UTF8
 
 [![Build Status](https://travis-ci.org/rotemdan/lzutf8.js.svg)](https://travis-ci.org/rotemdan/lzutf8.js)
 [![npm version](https://badge.fury.io/js/lzutf8.svg)](http://badge.fury.io/js/lzutf8)
 
-A high-performance string compression library and stream format:
+LZ-UTF8 is a string compression library and format. Is an extension to the [UTF-8](https://en.wikipedia.org/wiki/UTF-8) character encoding, augmenting the UTF-8 bytestream with optional compression based the [LZ77](https://en.wikipedia.org/wiki/LZ77_and_LZ78) algorithm. Some of its properties:
 
-  - Fast, especially decompression (rates are for a low-end desktop PC processing 1MB files):
-    - Javascript: 3-14MB/s compression , 20-120MB/s decompression (detailed benchmarks and comparison to other Javascript libraries can be found in the [technical paper](https://goo.gl/0g0fzm)).
-  - Reasonable compression ratio - very good for shorter strings (&lt;32k), but less efficient for longer ones.
-  - Conceived with web and mobile use cases in mind. Designed for and implemented in Javascript from the very beginning.
-  - Simple and easy-to-use API that's consistent across all platforms, both in the browser and in Node.js.
-  - 100% patent-free.
+* Compresses **strings only**. Doesn't support arbitrary byte sequences.
+* Strongly optimized for speed, both in the choice of algorithm and its implementation. Approximate measurements using a low-end desktops and 1MB strings: 3-14MB/s compression , 20-120MB/s decompression (detailed benchmarks and comparison to other Javascript libraries can be found in the [technical paper](https://goo.gl/0g0fzm)). Due to the concentration on time efficiency, the resulting compression ratio can be significantly lower when compared to more size efficient algorithms like LZW + entropy coding.
+* **Byte-level superset of UTF-8**. Any valid UTF-8 bytestream is also a valid LZ-UTF8 stream (but not vice versa). This special property allows both compressed and plain UTF-8 streams to be freely concatenated and decompressed as single unit (or with any arbitrary partitioning). Some possible applications:
+  * Sending static pre-compressed data followed by dynamically generated uncompressed data from a server (and possibly appending a compressed static "footer", or repeating the process several times).
+  * Appending both uncompressed/compressed data to a compressed log file/journal without needing to rewrite it.
+  * Joining multiple source files, where some are possibly pre-compressed, and serving them as a single concatenated file without additional processing.
+* Patent free (all relevant patents have long expired).
 
-*Technical objectives and properties:*
+**Javascript implementation:**
 
-  - Based on **[LZ77](https://en.wikipedia.org/wiki/LZ77_and_LZ78)**.
-  - Compresses UTF-8 and 7-bit ASCII strings **only**. Doesn't support arbitrary binary content or other string encodings.
-  - Byte aligned, meaning individually compressed blocks can be freely concatenated and intermixed with each other and yield a valid compressed stream that decompresses to the equivalent concatenated strings.
-  - **Byte-level superset of UTF-8**. Any valid UTF-8 bytestream is also a valid LZ-UTF8 stream (but not vice versa). This special property allows both compressed and plain UTF-8 streams to be freely concatenated and decompressed as single unit (or with any arbitrary partitioning). Some possible applications:
-    - Sending static pre-compressed data followed by dynamically generated uncompressed data from a server (and possibly appending a compressed static "footer", or repeating the process several times).
-    - Appending both uncompressed/compressed data to a compressed log file/journal without needing to rewrite it.
-    - Joining multiple source files, where some are possibly pre-compressed, and serving them as a single concatenated file without additional processing.
-  - Compression always results in a byte count smaller or equal to the source material size (a consequence of not applying an entropy coder).
-
-*Javascript implementation:*
-
-  - Tested on most popular browsers and platforms: Node.js 4+, Chrome, Firefox, Opera, Edge, IE10+ (IE8 and IE9 may work with a [typed array polyfill](https://github.com/inexorabletash/polyfill/blob/master/typedarray.js)), Android 4+, Safari 5+.
-  - Allows compressed data to be efficiently packed in plain Javascript UTF-16 strings (see the `BinaryString` encoding) when binary storage is not available or desired (e.g. when using LocalStorage or older IndexedDB).
-  - Can operate asynchronously, both in Node.js and in the browser. Uses web workers when available (and takes full advantage of [transferable objects](http://www.w3.org/html/wg/drafts/html/master/#transferable-objects) if supported) and falls back to async iterations when not.
-  - Supports Node.js streams.
-  - Written in TypeScript.
+* Tested on most popular browsers and platforms: Node.js 4+, Chrome, Firefox, Opera, Edge, IE10+ (IE8 and IE9 may work with a [typed array polyfill](https://github.com/inexorabletash/polyfill/blob/master/typedarray.js)), Android 4+, Safari 5+.
+* Allows compressed data to be efficiently packed in plain Javascript UTF-16 strings (see the `"BinaryString"` encoding described later in this document) when binary storage is not available or desired (e.g. when using LocalStorage or older IndexedDB).
+* Can operate asynchronously, both in Node.js and in the browser. Uses web workers when available (and takes advantage of [transferable objects](http://www.w3.org/html/wg/drafts/html/master/#transferable-objects) if supported) and falls back to async iterations when not.
+* Supports Node.js streams.
+* Written in TypeScript.
 
 # Quick start
 
-  - Try the [online demo](https://rotemdan.github.io/lzutf8/demo/) to test and benchmark different inputs.
-  - Download the [latest build](https://unpkg.com/lzutf8) (or the [minified version](https://unpkg.com/lzutf8/production/lzutf8.min.js)).
-  - Run the [automated tests](https://rotemdan.github.io/lzutf8/tests/).
-  - Run the [core benchmarks](https://rotemdan.github.io/lzutf8/benchmarks/).
-  - Read the [technical paper](https://rotemdan.github.io/lzutf8/docs/paper.pdf).
-
+* Try the [online demo](https://rotemdan.github.io/lzutf8/demo/) to test and benchmark different inputs.
+* Download the [latest build](https://unpkg.com/lzutf8) (or the [minified version](https://unpkg.com/lzutf8/production/lzutf8.min.js)).
+* Run the [automated tests](https://rotemdan.github.io/lzutf8/tests/).
+* Run the [core benchmarks](https://rotemdan.github.io/lzutf8/benchmarks/).
+* Read the [technical paper](https://rotemdan.github.io/lzutf8/docs/paper.pdf).
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
