@@ -49,8 +49,8 @@ LZ-UTF8 is a string compression library and format. Is an extension to the [UTF-
     - [LZUTF8.Compressor](#lzutf8compressor)
     - [LZUTF8.Compressor.compressBlock(..)](#lzutf8compressorcompressblock)
     - [LZUTF8.Decompressor](#lzutf8decompressor)
-    - [LZUTF8.Deompressor.decompressBlock(..)](#lzutf8deompressordecompressblock)
-    - [LZUTF8.Deompressor.decompressBlockToString(..)](#lzutf8deompressordecompressblocktostring)
+    - [LZUTF8.Decompressor.decompressBlock(..)](#lzutf8decompressordecompressblock)
+    - [LZUTF8.Decompressor.decompressBlockToString(..)](#lzutf8decompressordecompressblocktostring)
   - [Node.js only methods](#nodejs-only-methods)
     - [LZUTF8.createCompressionStream()](#lzutf8createcompressionstream)
     - [LZUTF8.createDecompressionStream()](#lzutf8createdecompressionstream)
@@ -87,6 +87,10 @@ or the minified version:
 ```html
 <script id="lzutf8" src="https://unpkg.com/lzutf8/production/lzutf8.min.js"></script>
 ```
+to reference a particular version use the pattern, where `x.x.x` should be replaced with the exact version number (e.g. `0.4.6`):
+```html
+<script id="lzutf8" src="https://unpkg.com/lzutf8@x.x.x/production/lzutf8.min.js"></script>
+```
 
 *note: the `id` attribute and its exact value are necessary for the library to make use of web workers.*
 
@@ -98,7 +102,7 @@ IE8/9 and support was dropped at `0.3.0` though these browsers can still be used
 
 *`"Buffer"`* - A Node.js `Buffer` object.
 
-*`"BinaryString"`* - A `string` containing binary data encoded to only use the lowest 15 bits of each character.
+*`"BinaryString"`* - A `string` containing binary data encoded to only use the lowest 15 bits of each character (_Note this encoding method has been deprecated. See more details in the reference for `encodeBinaryString` further in this document_).
 
 *`"Base64"`* - A [base 64](https://en.wikipedia.org/wiki/Base64) string.
 
@@ -246,13 +250,13 @@ var compressedBlock3 = compressor.compressBlock(block3);
 ### LZUTF8.Decompressor
 
 ```js
-var decompressor = new LZUTF8.Deompressor();
+var decompressor = new LZUTF8.Decompressor();
 ```
 Creates a decompressor object. Can be used to incrementally decompress a multi-part stream of data.
 
 *returns*: a new `LZUTF8.Decompressor` object
 
-### LZUTF8.Deompressor.decompressBlock(..)
+### LZUTF8.Decompressor.decompressBlock(..)
 
 ```js
 var decompressor = new LZUTF8.Decompressor();
@@ -276,7 +280,7 @@ var decompressedBlock3 = decompressor.decompressBlock(block3);
 ..
 ```
 
-### LZUTF8.Deompressor.decompressBlockToString(..)
+### LZUTF8.Decompressor.decompressBlockToString(..)
 
 ```js
 var decompressor = new LZUTF8.Decompressor();
@@ -378,8 +382,10 @@ Decodes UTF-8 bytes to a String.
 
 ### LZUTF8.encodeBinaryString(..)
 
+_Note: the `BinaryString` encoding has been deprecated due to a [compatibility issue with the IE browser's LocalStorage/SessionStorage implementation](https://github.com/rotemdan/lzutf8.js/issues/11). It is recommended to use the `Base64` encoding instead or output the compressed data to binary and then encode it through a third party implementation._
+
 ```js
-var outputString = LZUTF8.encodeBinaryString(bytes);
+var outputString = LZUTF8.encodeBinaryString(input);
 ```
 Encodes binary bytes to a valid UTF-16 string.
 
@@ -390,6 +396,8 @@ Encodes binary bytes to a valid UTF-16 string.
 *remarks*: To comply with the UTF-16 standard, it only uses the bottom 15 bits of each character, effectively mapping every 15 input bits to a single 16 bit output character. This Increases the stored byte size to 106.66% of original.
 
 ### LZUTF8.decodeBinaryString(..)
+
+_Note: the `BinaryString` encoding has been deprecated due to a [compatibility issue with the IE browser's LocalStorage/SessionStorage implementation](https://github.com/rotemdan/lzutf8.js/issues/11). It is recommended to use the `Base64` encoding instead or encode/decode the data through a third party implementation._
 
 ```js
 var output = LZUTF8.decodeBinaryString(input);
