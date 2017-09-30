@@ -81,14 +81,20 @@ var LZUTF8 = require('lzutf8');
 
 Browser:
 ```html
+<script id="lzutf8" src="https://cdn.jsdelivr.net/npm/lzutf8/build/production/lzutf8.js"></script>
+<!-- or -->
 <script id="lzutf8" src="https://unpkg.com/lzutf8"></script>
 ```
 or the minified version:
 ```html
+<script id="lzutf8" src="https://cdn.jsdelivr.net/npm/lzutf8/build/production/lzutf8.min.js"></script>
+<!-- or -->
 <script id="lzutf8" src="https://unpkg.com/lzutf8/production/lzutf8.min.js"></script>
 ```
 to reference a particular version use the pattern, where `x.x.x` should be replaced with the exact version number (e.g. `0.4.6`):
 ```html
+<script id="lzutf8" src="https://cdn.jsdelivr.net/npm/lzutf8@x.x.x/build/production/lzutf8.min.js"></script>
+<!-- or -->
 <script id="lzutf8" src="https://unpkg.com/lzutf8@x.x.x/production/lzutf8.min.js"></script>
 ```
 
