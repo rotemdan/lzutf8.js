@@ -1,6 +1,6 @@
 {
 	"name": "lzutf8",
-	"version": "0.4.7",
+	"version": "0.5.0",
 	"description": "A high-performance string compression library",
 	"keywords": [
 		"compression",
@@ -29,20 +29,20 @@
 	],
 	"dependencies": {},
 	"devDependencies": {
-		"typescript": "^2.4.2",
-		"mocha": "^4.0.1",
 		"expectations": "^0.7.1",
-		"grunt": "^1.0.1",
+		"grunt": "^1.0.2",
 		"grunt-contrib-clean": "^1.1.0",
 		"grunt-contrib-concat": "^1.0.1",
 		"grunt-contrib-connect": "^1.0.2",
-		"grunt-contrib-uglify": "^3.0.1",
+		"grunt-contrib-uglify": "^3.3.0",
 		"grunt-env": "^0.4.4",
 		"grunt-istanbul": "^0.8.0",
 		"grunt-mocha-phantomjs": "^4.0.0",
-		"grunt-mocha-test": "^0.13.2",
+		"grunt-mocha-test": "^0.13.3",
 		"grunt-shell": "^2.1.0",
-		"load-grunt-tasks": "^3.5.2"
+		"load-grunt-tasks": "^3.5.2",
+		"mocha": "^5.0.4",
+		"typescript": "^2.7.2"
 	},
 	"scripts": {
 		"test": "grunt test",

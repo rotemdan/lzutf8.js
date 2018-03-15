@@ -59,8 +59,8 @@ LZ-UTF8 is a string compression library and format. Is an extension to the [UTF-
     - [LZUTF8.decodeUTF8(..)](#lzutf8decodeutf8)
     - [LZUTF8.encodeBase64(..)](#lzutf8encodebase64)
     - [LZUTF8.decodeBase64(..)](#lzutf8decodebase64)
-    - [LZUTF8.encodeBinaryString(..)](#lzutf8encodebinarystring)
-    - [LZUTF8.decodeBinaryString(..)](#lzutf8decodebinarystring)
+    - [LZUTF8.encodeStorageBinaryString(..)](#lzutf8encodestoragebinarystring)
+    - [LZUTF8.decodeStorageBinaryString(..)](#lzutf8decodestoragebinarystring)
 - [Release history](#release-history)
 - [License](#license)
 
@@ -102,9 +102,10 @@ IE8/9 and support was dropped at `0.3.0` though these browsers can still be used
 
 *`"Buffer"`* - A Node.js `Buffer` object.
 
-*`"BinaryString"`* - A `string` containing binary data encoded to only use the lowest 15 bits of each character (_Note this encoding method has been deprecated. See more details in the reference for `encodeBinaryString` further in this document_).
+*`"StorageBinaryString"`* - A `string` containing compacted binary data encoded to fit in valid UTF-16 strings. _Please note the older, deprecated, `"BinaryString"` encoding, is still internally supported in the library but has been removed from this document. More details are included further in this document._
 
 *`"Base64"`* - A [base 64](https://en.wikipedia.org/wiki/Base64) string.
+
 
 ## Core Methods
 
@@ -119,7 +120,7 @@ Compresses the given input data.
 
 *`options`* (optional): an object that may have any of the properties:
 
-* `outputEncoding`: `"ByteArray"` (default), `"Buffer"`, `"BinaryString"` or `"Base64"`
+* `outputEncoding`: `"ByteArray"` (default), `"Buffer"`, `"StorageBinaryString"` or `"Base64"`
 
 *returns*: compressed data encoded by `encoding`, or `ByteArray` if not specified.
 
@@ -135,7 +136,7 @@ Decompresses the given compressed data.
 
 *`options`* (optional): an object that may have the properties:
 
-* `inputEncoding`:  `"ByteArray"` (default), `"BinaryString"` or `"Base64"`
+* `inputEncoding`:  `"ByteArray"` (default), `"StorageBinaryString"` or `"Base64"`
 * `outputEncoding`: `"String"` (default), `"ByteArray"` or `"Buffer"` to return UTF-8 bytes
 
 *returns*: decompressed bytes encoded as `encoding`, or as `String` if not specified.
@@ -155,7 +156,7 @@ Asynchronously compresses the given input data.
 
 *`options`* (optional): an object that may have any of the properties:
 
-* `outputEncoding`: `"ByteArray"` (default), `"Buffer"`, `"BinaryString"` or `"Base64"`
+* `outputEncoding`: `"ByteArray"` (default), `"Buffer"`, `"StorageBinaryString"` or `"Base64"`
 * `useWebWorker`: `true` (default) would use a web worker if available. `false` would use iterated yielding instead.
 
 *`callback`*: a user-defined callback function accepting a first argument containing the resulting compressed data as specified by `outputEncoding` (or `ByteArray` if not specified) and a possible second parameter containing an `Error` object.
@@ -164,7 +165,7 @@ Asynchronously compresses the given input data.
 
 *Example:*
 ```js
-LZUTF8.compressAsync(input, {outputEncoding: "BinaryString"}, function (result, error) {
+LZUTF8.compressAsync(input, {outputEncoding: "StorageBinaryString"}, function (result, error) {
     if (error === undefined)
         console.log("Data successfully compressed and encoded to " + result.length + " characters");
     else
@@ -183,7 +184,7 @@ Asynchronously decompresses the given compressed input.
 
 *`options`* (optional): an object that may have the properties:
 
-* `inputEncoding`: `"ByteArray"` (default), `"BinaryString"` or `"Base64"`
+* `inputEncoding`: `"ByteArray"` (default), `"StorageBinaryString"` or `"Base64"`
 * `outputEncoding`: `"String"` (default), `"ByteArray"` or `"Buffer"` to return UTF-8 bytes.
 * `useWebWorker`: `true` (default) would use a web worker if available. `false` would use incremental yielding instead.
 
@@ -193,7 +194,7 @@ Asynchronously decompresses the given compressed input.
 
 *Example:*
 ```js
-LZUTF8.decompressAsync(input, {inputEncoding: "BinaryString", outputEncoding: "ByteArray"}, function (result, error) {
+LZUTF8.decompressAsync(input, {inputEncoding: "StorageBinaryString", outputEncoding: "ByteArray"}, function (result, error) {
     if (error === undefined)
         console.log("Data successfully decompressed to " + result.length + " UTF-8 bytes");
     else
@@ -380,12 +381,12 @@ Decodes UTF-8 bytes to a String.
 
 *remarks:* the decoder cannot decode concatenated base64 strings. Although it is possible to add this capability to the JS version, compatibility with other decoders (such as the Node.js decoder) prevents this feature to be added.
 
-### LZUTF8.encodeBinaryString(..)
+### LZUTF8.encodeStorageBinaryString(..)
 
-_Note: the `BinaryString` encoding has been deprecated due to a [compatibility issue with the IE browser's LocalStorage/SessionStorage implementation](https://github.com/rotemdan/lzutf8.js/issues/11). It is recommended to use the `Base64` encoding instead or output the compressed data to binary and then encode it through a third party implementation._
+_Note: the older `BinaryString` encoding has been deprecated due to a [compatibility issue with the IE browser's LocalStorage/SessionStorage implementation](https://github.com/rotemdan/lzutf8.js/issues/11). This newer version works around that issue by avoiding the `0` codepoint._
 
 ```js
-var outputString = LZUTF8.encodeBinaryString(input);
+var outputString = LZUTF8.encodeStorageBinaryString(input);
 ```
 Encodes binary bytes to a valid UTF-16 string.
 
@@ -395,12 +396,12 @@ Encodes binary bytes to a valid UTF-16 string.
 
 *remarks*: To comply with the UTF-16 standard, it only uses the bottom 15 bits of each character, effectively mapping every 15 input bits to a single 16 bit output character. This Increases the stored byte size to 106.66% of original.
 
-### LZUTF8.decodeBinaryString(..)
+### LZUTF8.decodeStorageBinaryString(..)
 
-_Note: the `BinaryString` encoding has been deprecated due to a [compatibility issue with the IE browser's LocalStorage/SessionStorage implementation](https://github.com/rotemdan/lzutf8.js/issues/11). It is recommended to use the `Base64` encoding instead or encode/decode the data through a third party implementation._
+_Note: the older `BinaryString` encoding has been deprecated due to a [compatibility issue with the IE browser's LocalStorage/SessionStorage implementation](https://github.com/rotemdan/lzutf8.js/issues/11). This newer version works around that issue by avoiding the `0` codepoint._
 
 ```js
-var output = LZUTF8.decodeBinaryString(input);
+var output = LZUTF8.decodeStorageBinaryString(input);
 ```
 Decodes a binary string.
 
@@ -417,9 +418,10 @@ Decodes a binary string.
 * ```0.2.x```: Added async error handling. Added support for `TextEncoder` and `TextDecoder` when available.
 * ```0.3.x```: Removed support to IE8/9. Removed support for plain `Array` inputs. All `"ByteArray"` outputs are now `Uint8Array` objects. A separate `"Buffer"` encoding setting can be used to return `Buffer` objects.
 * ```0.4.x```: Major code restructuring. Removed support for versions of Node.js prior to `4.0`.
+* ```0.5.x```: Added the `"StorageBinaryString"` encoding.
 
 # License
 
-Copyright (c) 2014-2017, Rotem Dan &lt;rotemdan@gmail.com&gt;.
+Copyright (c) 2014-2018, Rotem Dan &lt;rotemdan@gmail.com&gt;.
 
 Source code and documentation are available under the [MIT license](http://choosealicense.com/licenses/mit/).

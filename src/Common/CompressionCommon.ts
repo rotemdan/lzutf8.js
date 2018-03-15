@@ -33,6 +33,8 @@ namespace LZUTF8 {
 					return encodeBase64(compressedBytes);
 				case "BinaryString":
 					return encodeBinaryString(compressedBytes);
+				case "StorageBinaryString":
+					return encodeStorageBinaryString(compressedBytes);
 				default:
 					throw new TypeError("encodeCompressedBytes: invalid output encoding requested");
 			}
@@ -61,6 +63,11 @@ namespace LZUTF8 {
 						throw new TypeError("decodeCompressedData: 'BinaryString' input type was specified but input is not a string");
 
 					return decodeBinaryString(compressedData);
+				case "StorageBinaryString":
+					if (typeof compressedData !== "string")
+						throw new TypeError("decodeCompressedData: 'StorageBinaryString' input type was specified but input is not a string");
+
+					return decodeStorageBinaryString(compressedData);
 
 				default:
 					throw new TypeError(`decodeCompressedData: invalid input encoding requested: '${inputEncoding}'`);

@@ -27,12 +27,36 @@ namespace LZUTF8 {
 				if (typeof input != "string")
 					return false;
 
+				if (input == "") {
+					return true
+				}
+
 				for (let p = 0; p < input.length - 1; p++) {
 					if (input.charCodeAt(p) >= 32768)
 						return false;
 				}
 
 				if (input.charCodeAt(input.length - 1) < 32768)
+					return false;
+
+				return true;
+
+			case "StorageBinaryString":
+				if (typeof input != "string")
+					return false;
+
+				if (input == "") {
+					return true
+				}
+
+				for (let p = 0; p < input.length - 1; p++) {
+					const charCode = input.charCodeAt(p);
+
+					if (charCode == 0 || charCode == 32768 || charCode == 32769 || charCode > 32770)
+						return false;
+				}
+
+				if (input.charCodeAt(input.length - 1) != 32768 && input.charCodeAt(input.length - 1) != 32769)
 					return false;
 
 				return true;

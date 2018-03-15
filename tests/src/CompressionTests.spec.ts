@@ -165,6 +165,8 @@ namespace LZUTF8 {
 			addTestForEncodingCombination("String", "ByteArray", "ByteArray");
 			addTestForEncodingCombination("String", "BinaryString", "String");
 			addTestForEncodingCombination("String", "BinaryString", "ByteArray");
+			addTestForEncodingCombination("String", "StorageBinaryString", "String");
+			addTestForEncodingCombination("String", "StorageBinaryString", "ByteArray");
 			addTestForEncodingCombination("String", "Base64", "String");
 			addTestForEncodingCombination("String", "Base64", "ByteArray");
 
@@ -177,6 +179,8 @@ namespace LZUTF8 {
 			addTestForEncodingCombination("ByteArray", "ByteArray", "ByteArray");
 			addTestForEncodingCombination("ByteArray", "BinaryString", "String");
 			addTestForEncodingCombination("ByteArray", "BinaryString", "ByteArray");
+			addTestForEncodingCombination("ByteArray", "StorageBinaryString", "String");
+			addTestForEncodingCombination("ByteArray", "StorageBinaryString", "ByteArray");
 			addTestForEncodingCombination("ByteArray", "Base64", "String");
 			addTestForEncodingCombination("ByteArray", "Base64", "ByteArray");
 
@@ -219,6 +223,8 @@ namespace LZUTF8 {
 				addTestForEncodingCombination("String", "ByteArray", "ByteArray", false);
 				addTestForEncodingCombination("String", "BinaryString", "String", false);
 				addTestForEncodingCombination("String", "BinaryString", "ByteArray", false);
+				addTestForEncodingCombination("String", "StorageBinaryString", "String", false);
+				addTestForEncodingCombination("String", "StorageBinaryString", "ByteArray", false);
 				addTestForEncodingCombination("String", "Base64", "String", false);
 				addTestForEncodingCombination("String", "Base64", "ByteArray", false);
 
@@ -231,6 +237,8 @@ namespace LZUTF8 {
 				addTestForEncodingCombination("ByteArray", "ByteArray", "ByteArray", false);
 				addTestForEncodingCombination("ByteArray", "BinaryString", "String", false);
 				addTestForEncodingCombination("ByteArray", "BinaryString", "ByteArray", false);
+				addTestForEncodingCombination("ByteArray", "StorageBinaryString", "String", false);
+				addTestForEncodingCombination("ByteArray", "StorageBinaryString", "ByteArray", false);
 				addTestForEncodingCombination("ByteArray", "Base64", "String", false);
 				addTestForEncodingCombination("ByteArray", "Base64", "ByteArray", false);
 
@@ -245,6 +253,8 @@ namespace LZUTF8 {
 				addTestForEncodingCombination("String", "ByteArray", "ByteArray", true);
 				addTestForEncodingCombination("String", "BinaryString", "String", true);
 				addTestForEncodingCombination("String", "BinaryString", "ByteArray", true);
+				addTestForEncodingCombination("String", "StorageBinaryString", "String", true);
+				addTestForEncodingCombination("String", "StorageBinaryString", "ByteArray", true);
 				addTestForEncodingCombination("String", "Base64", "String", true);
 				addTestForEncodingCombination("String", "Base64", "ByteArray", true);
 
@@ -252,6 +262,8 @@ namespace LZUTF8 {
 				addTestForEncodingCombination("ByteArray", "ByteArray", "ByteArray", true);
 				addTestForEncodingCombination("ByteArray", "BinaryString", "String", true);
 				addTestForEncodingCombination("ByteArray", "BinaryString", "ByteArray", true);
+				addTestForEncodingCombination("ByteArray", "StorageBinaryString", "String", true);
+				addTestForEncodingCombination("ByteArray", "StorageBinaryString", "ByteArray", true);
 				addTestForEncodingCombination("ByteArray", "Base64", "String", true);
 				addTestForEncodingCombination("ByteArray", "Base64", "ByteArray", true);
 			});
@@ -261,6 +273,8 @@ namespace LZUTF8 {
 				addTestForEncodingCombination("String", "ByteArray", "ByteArray", undefined);
 				addTestForEncodingCombination("String", "BinaryString", "String", undefined);
 				addTestForEncodingCombination("String", "BinaryString", "ByteArray", undefined);
+				addTestForEncodingCombination("String", "StorageBinaryString", "String", undefined);
+				addTestForEncodingCombination("String", "StorageBinaryString", "ByteArray", undefined);
 				addTestForEncodingCombination("String", "Base64", "String", undefined);
 				addTestForEncodingCombination("String", "Base64", "ByteArray", undefined);
 
@@ -273,6 +287,8 @@ namespace LZUTF8 {
 				addTestForEncodingCombination("ByteArray", "ByteArray", "ByteArray", undefined);
 				addTestForEncodingCombination("ByteArray", "BinaryString", "String", undefined);
 				addTestForEncodingCombination("ByteArray", "BinaryString", "ByteArray", undefined);
+				addTestForEncodingCombination("ByteArray", "StorageBinaryString", "String", undefined);
+				addTestForEncodingCombination("ByteArray", "StorageBinaryString", "ByteArray", undefined);
 				addTestForEncodingCombination("ByteArray", "Base64", "String", undefined);
 				addTestForEncodingCombination("ByteArray", "Base64", "ByteArray", undefined);
 

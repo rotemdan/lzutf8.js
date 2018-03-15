@@ -1,6 +1,6 @@
 namespace LZUTF8 {
 	export type UncompressedEncoding = "String" | "ByteArray";
-	export type CompressedEncoding = "ByteArray" | "Buffer" | "Base64" | "BinaryString";
+	export type CompressedEncoding = "ByteArray" | "Buffer" | "Base64" | "BinaryString" | "StorageBinaryString";
 	export type DecompressedEncoding = "String" | "ByteArray" | "Buffer";
 
 	export type CompressionOptions = {
@@ -137,4 +137,13 @@ namespace LZUTF8 {
 	export function decodeBinaryString(str: string): Uint8Array {
 		return Encoding.BinaryString.decode(str);
 	}
+
+	export function encodeStorageBinaryString(input: Uint8Array): string {
+		return Encoding.StorageBinaryString.encode(input);
+	}
+
+	export function decodeStorageBinaryString(str: string): Uint8Array {
+		return Encoding.StorageBinaryString.decode(str);
+	}
 }
+
