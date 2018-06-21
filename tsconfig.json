@@ -18,7 +18,7 @@
 		"suppressImplicitAnyIndexErrors": true,
 		"noImplicitThis": true,
 		"noImplicitReturns": true,
-		"allowJs": true,
+		"declaration": true,
 		"strictNullChecks": true,
 		"noLib": false,
 		"noEmit": false,

@@ -26,6 +26,15 @@ module.exports = function (grunt) {
 
 				command: tsc + ' -p tsconfig_production.json --diagnostics',
 			},
+
+			moveDefinitionFiles: {
+				options: {
+					stdin: false,
+					failOnError: true,
+				},
+
+				command: 'mv build/production/lzutf8.d.ts types/lzutf8.d.ts',
+			},
 		},
 
 		mochaTest:
@@ -182,7 +191,8 @@ module.exports = function (grunt) {
 		[
 			'shell:buildProduction',
 			'concat:addBannerToProductionBuild',
-			'uglify:minifyProductionBuild'
+			'uglify:minifyProductionBuild',
+			'shell:moveDefinitionFiles'
 		]);
 
 	grunt.registerTask('startDevServer',
