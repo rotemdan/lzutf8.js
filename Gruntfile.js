@@ -1,7 +1,7 @@
 path = require("path");
 
 module.exports = function (grunt) {
-	const banner = '/*!\n LZ-UTF8 v<%=pkg.version%>\n\n Copyright (c) 2017, Rotem Dan\n Released under the MIT license.\n\n Build date: <%= grunt.template.today("yyyy-mm-dd") %> \n\n Please report any issue at https://github.com/rotemdan/lzutf8.js/issues\n*/\n';
+	const banner = '/*!\n LZ-UTF8 v<%=pkg.version%>\n\n Copyright (c) 2018, Rotem Dan\n Released under the MIT license.\n\n Build date: <%= grunt.template.today("yyyy-mm-dd") %> \n\n Please report any issue at https://github.com/rotemdan/lzutf8.js/issues\n*/\n';
 	const tsc = 'node node_modules/typescript/lib/tsc';
 
 	// Project configuration.
@@ -109,6 +109,15 @@ module.exports = function (grunt) {
 				options: {
 					banner: banner
 				}
+			},
+
+			addBannerToMinifiedProductionBuild: {
+				src: ['build/production/lzutf8.min.js'],
+				dest: 'build/production/lzutf8.min.js',
+
+				options: {
+					banner: banner
+				}
 			}
 		},
 
@@ -182,7 +191,8 @@ module.exports = function (grunt) {
 		[
 			'shell:buildProduction',
 			'concat:addBannerToProductionBuild',
-			'uglify:minifyProductionBuild'
+			'uglify:minifyProductionBuild',
+			'concat:addBannerToMinifiedProductionBuild'
 		]);
 
 	grunt.registerTask('startDevServer',
