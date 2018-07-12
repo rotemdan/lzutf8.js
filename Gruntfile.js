@@ -2,6 +2,14 @@ path = require("path");
 
 module.exports = function (grunt) {
 	const banner = '/*!\n LZ-UTF8 v<%=pkg.version%>\n\n Copyright (c) 2018, Rotem Dan\n Released under the MIT license.\n\n Build date: <%= grunt.template.today("yyyy-mm-dd") %> \n\n Please report any issue at https://github.com/rotemdan/lzutf8.js/issues\n*/\n';
+	const dummyTypeDeclarations = `declare namespace LZUTF8 {
+    type Buffer = any;
+
+    namespace stream {
+        type Transform = any;
+    }
+}
+`
 	const tsc = 'node node_modules/typescript/lib/tsc';
 
 	// Project configuration.
@@ -118,6 +126,24 @@ module.exports = function (grunt) {
 				options: {
 					banner: banner
 				}
+			},
+
+			addDummyDeclarationsToDevelopmentDeclarationFile: {
+				src: ['build/development/lzutf8.d.ts'],
+				dest: 'build/development/lzutf8.d.ts',
+
+				options: {
+					banner: dummyTypeDeclarations
+				}
+			},
+
+			addDummyDeclarationsToProductionDeclarationFile: {
+				src: ['build/production/lzutf8.d.ts'],
+				dest: 'build/production/lzutf8.d.ts',
+
+				options: {
+					banner: dummyTypeDeclarations
+				}
 			}
 		},
 
@@ -161,7 +187,8 @@ module.exports = function (grunt) {
 	grunt.registerTask('buildDevelopment',
 		[
 			'shell:buildDevelopment',
-			'concat:addBannerToDevelopmentBuild'
+			'concat:addBannerToDevelopmentBuild',
+			'concat:addDummyDeclarationsToDevelopmentDeclarationFile'
 		]);
 
 	grunt.registerTask('test',
@@ -190,6 +217,7 @@ module.exports = function (grunt) {
 	grunt.registerTask('buildProduction',
 		[
 			'shell:buildProduction',
+			'concat:addDummyDeclarationsToProductionDeclarationFile',
 			'concat:addBannerToProductionBuild',
 			'uglify:minifyProductionBuild',
 			'concat:addBannerToMinifiedProductionBuild'
