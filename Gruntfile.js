@@ -9,6 +9,9 @@ module.exports = function (grunt) {
         type Transform = any;
     }
 }
+
+export = LZUTF8
+
 `
 	const tsc = 'node node_modules/typescript/lib/tsc';
 
