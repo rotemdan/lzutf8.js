@@ -6,7 +6,8 @@
 		"lib": [
 			"es5",
 			"es2015.promise",
-			"dom"
+			"dom",
+			//"webworker"
 		],
 		"outFile": "build/development/lzutf8.js",
 		"watch": false,
