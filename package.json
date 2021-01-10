@@ -49,5 +49,7 @@
 		"test": "grunt test",
 		"build": "grunt"
 	},
-	"dependencies": {}
+	"dependencies": {
+		"readable-stream": "^3.6.0"
+	}
 }

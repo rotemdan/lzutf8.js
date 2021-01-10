@@ -20,7 +20,7 @@ namespace LZUTF8 {
 	}
 
 	export const runningInNullOrigin = function (): boolean {
-		if (typeof window !== "object" || typeof window.location !== "object")
+		if (typeof window !== "object" || typeof window.location !== "object" || typeof document !== "object")
 			return false;
 
 		return document.location.protocol !== 'http:' && document.location.protocol !== 'https:';
