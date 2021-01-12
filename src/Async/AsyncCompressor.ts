@@ -66,7 +66,7 @@ namespace LZUTF8 {
 		static createCompressionStream(): stream.Transform {
 			const compressor = new Compressor();
 
-			const NodeStream: typeof stream = require("stream");
+			const NodeStream: typeof stream = require("readable-stream");
 			const compressionStream = new NodeStream.Transform({ decodeStrings: true, highWaterMark: 65536 });
 
 			compressionStream._transform = (data: Buffer, encoding: string, done: Function) => {
