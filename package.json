@@ -1,6 +1,6 @@
 {
 	"name": "lzutf8",
-	"version": "0.5.7",
+	"version": "0.5.8",
 	"description": "A high-performance string compression library",
 	"keywords": [
 		"compression",

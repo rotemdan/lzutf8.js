@@ -175,6 +175,7 @@ declare var Buffer: {
 	 * The same as buf1.compare(buf2).
 	 */
 	compare(buf1: Buffer, buf2: Buffer): number;
+	from(data: any, encooding?: any): Buffer;
 };
 
 /************************************************

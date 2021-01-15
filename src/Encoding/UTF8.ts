@@ -11,7 +11,8 @@ namespace LZUTF8 {
 					return new Uint8Array(0);
 
 				if (runningInNodeJS()) {
-					return BufferTools.bufferToUint8Array(new Buffer(str, "utf8"));
+					//return BufferTools.bufferToUint8Array(new Buffer(str, "utf8"));
+					return BufferTools.bufferToUint8Array(Buffer.from(str, "utf8"));
 				}
 				else if (createNativeTextEncoderAndDecoderIfAvailable()) {
 					return nativeTextEncoder.encode(str);

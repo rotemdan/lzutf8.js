@@ -24,7 +24,8 @@ namespace LZUTF8 {
 					return new Uint8Array(0);
 
 				if (runningInNodeJS()) {
-					return BufferTools.bufferToUint8Array(new Buffer(base64String, "base64"));
+					//return BufferTools.bufferToUint8Array(new Buffer(base64String, "base64"));
+					return BufferTools.bufferToUint8Array(Buffer.from(base64String, "base64"));
 				}
 				else {
 					return decodeWithJS(base64String);

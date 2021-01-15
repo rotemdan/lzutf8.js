@@ -19,6 +19,7 @@ namespace LZUTF8 {
 			else {
 				const len = arr.length;
 				const buf = new Buffer(len);
+				//const buf = Buffer["from"](len);
 
 				for (let i = 0; i < len; i++)
 					buf[i] = arr[i];
