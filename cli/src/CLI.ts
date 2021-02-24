@@ -1,6 +1,6 @@
 namespace LZUTF8 {
 	export namespace CLI {
-		export const start = function() {
+		export const start = function () {
 			let compareByteArraysAndLogToConsole = (array1: Uint8Array, array2: Uint8Array): boolean => {
 				if (array1.length !== array2.length) {
 					log("Arrays did not match: Array 1 length is " + array1.length + ", Array 2 length is " + array2.length);
@@ -63,7 +63,10 @@ namespace LZUTF8 {
 				resultStream.on("close", () => {
 					let elapsedTime = timer.getElapsedTime();
 					log("Compressed " + getFileSize(sourceFilePath) + " to " + getFileSize(destinationFilePath) + " bytes in " + elapsedTime.toFixed(2) + "ms (" + (getFileSize(sourceFilePath) / 1000000 / elapsedTime * 1000).toFixed(2) + "MB/s).");
+
+					process.exit(0);
 				});
+
 			}
 			else if (command == "d") {
 				if (!destinationFilePath) {
@@ -81,7 +84,10 @@ namespace LZUTF8 {
 				resultStream.on("close", () => {
 					let elapsedTime = timer.getElapsedTime();
 					log("Decompressed " + getFileSize(sourceFilePath) + " to " + getFileSize(destinationFilePath) + " bytes in " + elapsedTime.toFixed(2) + "ms (" + (getFileSize(destinationFilePath) / 1000000 / elapsedTime * 1000).toFixed(2) + "MB/s).");
+
+					process.exit(0);
 				});
+
 			}
 			else if (command == "t") {
 				let temporaryFilePath = sourceFilePath + "." + (Math.random() * Math.pow(10, 8)).toFixed(0);
@@ -107,6 +113,8 @@ namespace LZUTF8 {
 						log("Test result: *Passed* in " + timer.getElapsedTime().toFixed(2) + "ms");
 					else
 						log("Test result: *Failed* in " + timer.getElapsedTime().toFixed(2) + "ms");
+
+					process.exit(0);
 				});
 			}
 			else {
