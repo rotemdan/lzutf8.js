@@ -4,6 +4,7 @@ module.exports = function (grunt) {
 	const banner = '/*!\n LZ-UTF8 v<%=pkg.version%>\n\n Copyright (c) 2021, Rotem Dan\n Released under the MIT license.\n\n Build date: <%= grunt.template.today("yyyy-mm-dd") %> \n\n Please report any issue at https://github.com/rotemdan/lzutf8.js/issues\n*/\n';
 	const dummyTypeDeclarations = `declare namespace LZUTF8 {
     type Buffer = any;
+	type Worker = any;
 
     namespace stream {
         type Transform = any;
