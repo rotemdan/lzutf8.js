@@ -3,6 +3,8 @@
 [![Build Status](https://travis-ci.org/rotemdan/lzutf8.js.svg)](https://travis-ci.org/rotemdan/lzutf8.js)
 [![npm version](https://badge.fury.io/js/lzutf8.svg)](http://badge.fury.io/js/lzutf8)
 
+_Note: this library is significantly out-of-date and will require a full rewrite to update with recent technologies like JS modules and WebAssembly, and for better compatibility with modern frameworks like Angular and Rect.js. The design and documentation was mostly written in 2014, before any of these were relevant. Unfortunately, it is not maintained anymore, and a rewrite is unlikely to take place in the foreseeable future._
+
 LZ-UTF8 is a string compression library and format. Is an extension to the [UTF-8](https://en.wikipedia.org/wiki/UTF-8) character encoding, augmenting the UTF-8 bytestream with optional compression based the [LZ77](https://en.wikipedia.org/wiki/LZ77_and_LZ78) algorithm. Some of its properties:
 
 * Compresses **strings only**. Doesn't support arbitrary byte sequences.
