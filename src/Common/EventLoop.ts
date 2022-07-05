@@ -28,7 +28,7 @@ namespace LZUTF8 {
 				asyncFlushFunc = () => setImmediate(() => flush());
 			}
 
-			if (typeof window === "object" && typeof window.addEventListener === "function" && typeof window.postMessage === "function") {
+			else if (typeof window === "object" && typeof window.addEventListener === "function" && typeof window.postMessage === "function") {
 				const token = "enqueueImmediate-" + Math.random().toString();
 
 				window.addEventListener("message", (event) => {
@@ -45,11 +45,13 @@ namespace LZUTF8 {
 
 				asyncFlushFunc = () => window.postMessage(token, targetOrigin);
 			}
+
 			else if (typeof MessageChannel === "function" && typeof MessagePort === "function") {
 				const channel = new MessageChannel();
 				channel.port1.onmessage = () => flush();
 				asyncFlushFunc = () => channel.port2.postMessage(0);
 			}
+
 			else {
 				asyncFlushFunc = () => setTimeout(() => flush(), 0);
 			}
